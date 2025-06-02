@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGT SmartRecord App</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('https://github.com/Tunnox/Images/blob/main/Home.jpg?raw=true');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        header, footer {
+            text-align: center;
+            margin: 20px 0;
+            color: white;
+        }
+        section {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            width: 200%;
+            max-width: 700px;
+            height: 400%;
+            color: white;
+            margin-bottom: 15px;
+        }
+        h1 {
+            color: #fff;
+            text-align: center;
+        }
+        h2 {
+            color:rgb(255, 255, 255);
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="text"], input[type="email"], input[type="number"], input[type="date"] {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        select {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            height: 50px;
+            font-size: 16px;
+        }
+        .AGT {
+        position: relative;
+        cursor: pointer;
+        padding: 20px;
+        background-image: url('https://github.com/Tunnox/Images/blob/main/Adult-1.jpg?raw=true');
+        background-size: cover;
+        background-position: center;
+        border: 1px solid #ccc; /* Subtle border */
+        border-radius: 5px; /* Rounded corners */
+        text-align: center;
+        }
+        .AGT-Teens {
+        position: relative;
+        cursor: pointer;
+        padding: 20px;
+        background-image: url('https://github.com/Tunnox/Images/blob/main/Teens-1.jpg?raw=true');
+        background-size: cover;
+        background-position: center;
+        border: 1px solid #ccc; /* Subtle border */
+        border-radius: 5px; /* Rounded corners */
+        text-align: center;
+        }
+        .AGT-Child {
+        position: relative;
+        cursor: pointer;
+        padding: 20px;
+        background-image: url('https://github.com/Tunnox/Images/blob/main/Child-1.jpg?raw=true');
+        background-size: cover;
+        background-position: center;
+        border: 1px solid #ccc; /* Subtle border */
+        border-radius: 5px; /* Rounded corners */
+        text-align: center;
+        }
+        .background-fill {
+            background-color: #050141; /* Light yellow background */
+            padding: 10px; /* Adds space around the text */
+            border-radius: 5px; /* Rounds the corners */
+            display: inline-block; /* Makes the background fit the text */
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1><img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="SmartRecord Logo" style="height: 50px; vertical-align: middle;"> AGT SmartRecord App</h1>
+        <h3>Amazing Grace Tebarnacle Sheffield</h3>
+        <p>Data management App in line with the UK GDPR. For more information please contact Admin at xyd@gmail.com</p>
+        <p>Use this page to access gateways</p>
+    </header>
+
+<section id="AGT_Church" class="AGT">
+<h1> </h1>
+<h3> 
+    <br>
+    <h2 class="background-fill">AGT Adult Church</h2>
+    <br>
+</h3>
+<a href="https://agt-adult-login.vercel.app/" class="hidden-link"></a>
+</section>
+
+<section id="AGT_Teens" class="AGT-Teens">
+<h1> </h1>
+<h3> 
+    <br>
+    <h2 class="background-fill">AGT Teens Church</h2>
+    <br>
+</h3>
+<a href="https://agt-login.vercel.app/" class="hidden-link"></a>
+</section>
+
+<section id="AGT_Child" class="AGT-Child">
+<h1> </h1>
+<h3> 
+   <br>
+   <h2 class="background-fill">AGT Children Church</h2>
+   <br>
+</h3>
+<a href="https://agt-child-login.vercel.app/" class="hidden-link"></a>
+</section>
+
+<script>
+    document.querySelector('.AGT').addEventListener('click', function() {
+        window.location.href = 'https://agt-adult-login.vercel.app/';
+    });
+        document.querySelector('.AGT-Teens').addEventListener('click', function() {
+        window.location.href = 'https://agt-login.vercel.app/';
+    });
+        document.querySelector('.AGT-Child').addEventListener('click', function() {
+        window.location.href = 'https://agt-child-login.vercel.app/';
+    });
+</script>
+       
+    <footer>
+        <p>&copy; 2025 AGT Records Management</p>
+    </footer>
+</body>
+</html>
