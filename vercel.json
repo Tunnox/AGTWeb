@@ -3,7 +3,7 @@
     "builds": [
          {
              "src": "api/main.html",
-             "use": "@vercel/html"
+             "use": "@vercel/static"
          }
      ],
      "routes": [
