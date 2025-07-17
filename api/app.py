@@ -159,11 +159,10 @@ def teens_index():
 
 @app.route('/teens_church/search', methods=['POST'])
 def teens_search():
-    keyword = request.form['keyword']
+    keyword = request.form.get('keyword', '')
+
     cursor = connection.cursor()
-    
-    # SQL query to search for data in DATA_RECORDS table
-    sql_query = f"""
+    sql_query = """
         SELECT * FROM "public"."AGT_TEENS_DATA_RECORDS" 
         WHERE "first_name" ILIKE %s 
            OR "last_name" ILIKE %s 
@@ -177,16 +176,34 @@ def teens_search():
            OR "email" ILIKE %s
            OR "address" ILIKE %s
            OR "consent" ILIKE %s
+        LIMIT 10
     """
-    
-    # Execute the query with wildcard search
     cursor.execute(sql_query, [f'%{keyword}%'] * 12)
-    
     results = cursor.fetchall()
-    
-    # Close cursor after fetching results
     cursor.close()
-    
+
+    # Return JSON for AJAX
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        records = []
+        for r in results:
+            record = {
+                "first_name": r[0],
+                "last_name": r[1],
+                "age": r[2],
+                "gender": r[3],
+                "birthday": r[4],
+                "contact_number": r[5],
+                "age_group": r[6],
+                "department": r[7],
+                "relationship_status": r[8],
+                "email": r[9],
+                "address": r[10],
+                "consent": r[11]
+            }
+            records.append(record)
+        return jsonify(records)
+
+    # Else, default to HTML rendering (e.g., for fallback use)
     return render_template('agtteens.html', results=results)
 
 @app.route('/teens_church/update', methods=['POST'])
