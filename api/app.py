@@ -262,6 +262,39 @@ def teens_insert_attendance():
     flash('Attendance record inserted successfully!')
     return redirect(url_for('teens_index'))
 
+@app.route('/teens_church/api/search')
+def teens_api_search():
+    keyword = request.args.get('keyword', '')
+    cursor = connection.cursor()
+
+    sql_query = """
+        SELECT * FROM "public"."AGT_TEENS_DATA_RECORDS" 
+        WHERE "first_name" ILIKE %s 
+           OR "last_name" ILIKE %s 
+           OR "email" ILIKE %s
+    """
+    cursor.execute(sql_query, [f'%{keyword}%'] * 3)
+    rows = cursor.fetchall()
+    cursor.close()
+
+    records = [{
+        "first_name": r[0],
+        "last_name": r[1],
+        "age": r[2],
+        "gender": r[3],
+        "birthday": r[4],
+        "contact_number": r[5],
+        "age_group": r[6],
+        "department": r[7],
+        "relationship_status": r[8],
+        "email": r[9],
+        "address": r[10],
+        "consent": r[11]
+    } for r in rows]
+
+    return jsonify(records)
+
+
 #_______________________AGT CHILDREN CHURCH__________________________________________________________________________________________________________
 @app.route('/childrens_church')
 def children_index():
