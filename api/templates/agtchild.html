@@ -1,68 +1,112 @@
+<!-- CHILD_HTML_UPDATED.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AGT SmartRecord App - Children Department</title>
-  <!-- Bootstrap 5 -->
+
+  <!-- Google Fonts + Bootstrap + AOS -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+
   <style>
+    :root {
+      --accent: #20c997;
+    }
     body {
       background: url('https://github.com/Tunnox/Images/blob/main/Children_Background.jpg?raw=true') no-repeat center center/cover;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Poppins', sans-serif;
       color: white;
+      scroll-behavior: smooth;
     }
-    header, footer {
-      text-align: center;
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      color: white;
+    nav {
+      background: rgba(0,0,0,0.7);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
-    .modal-content {
-      background: rgba(0, 0, 0, 0.9);
-      border-radius: 15px;
-      padding: 2rem;
-      color: white;
+    nav .nav-link {
+      color: #ddd;
     }
-    .form-control, .form-select {
-      margin-bottom: 1rem;
-      border-radius: 0.5rem;
-    }
-    .btn {
-      border-radius: 0.5rem;
+    nav .nav-link:hover {
+      color: var(--accent);
     }
     section {
-      background: rgba(0, 0, 0, 0.7);
-      padding: 30px;
+      background: rgba(0,0,0,0.65);
+      padding: 40px 20px;
       border-radius: 20px;
-      margin: 30px auto;
-      max-width: 800px;
+      margin: 40px auto;
+      max-width: 900px;
+      backdrop-filter: blur(8px);
+    }
+    h1, h2 {
+      text-align: center;
+      text-shadow: 1px 1px 2px #000;
+      margin-bottom: 1.5rem;
+    }
+    .btn {
+      border-radius: 10px;
+      background-color: var(--accent);
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(32, 201, 151, 0.5);
+    }
+    .modal-content {
+      background: rgba(255,255,255,0.95);
+      color: #000;
+      border-radius: 15px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" height="50" alt="AGT Logo">
-    <h1>AGT SmartRecord App - Children Department</h1>
-    <p>Amazing Grace Tabernacle Sheffield | In line with UK GDPR</p>
-  </header>
 
-  <!-- Create Record Modal Trigger -->
-  <section class="text-center">
-    <h2>Create New Record</h2>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Create Record</button>
-  </section>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand" href="#">AGT Children</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#create">Create</a></li>
+        <li class="nav-item"><a class="nav-link" href="#search">Search</a></li>
+        <li class="nav-item"><a class="nav-link" href="#attendance">Attendance</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
-  <!-- Modal -->
-  <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="createModalLabel">Child Data Entry Form</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form action="/childrens_church/insert" method="POST">
+<header class="text-center mt-4">
+  <img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" height="50" alt="AGT Logo">
+  <h1>AGT SmartRecord App - Children Department</h1>
+  <p>Amazing Grace Tabernacle Sheffield | In line with UK GDPR</p>
+</header>
+
+<!-- Create Section -->
+<section id="create" data-aos="fade-up">
+  <h2>Create New Record</h2>
+  <div class="text-center mb-3">
+    <button class="btn" data-bs-toggle="modal" data-bs-target="#createModal">+ Add Record</button>
+  </div>
+</section>
+
+<!-- Modal with Tabs -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-4">
+      <h5 class="modal-title mb-3">Child Data Entry Form</h5>
+      <ul class="nav nav-tabs mb-3" id="childTabs" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#childInfo">Child Info</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#childOther">Other</button></li>
+      </ul>
+      <form action="/childrens_church/insert" method="POST">
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="childInfo">
             <div class="row">
               <div class="col-md-6">
                 <label>First Name</label>
@@ -77,18 +121,15 @@
             <input type="number" class="form-control" name="age" required>
             <label>Gender</label>
             <select class="form-select" name="gender" required>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
+              <option>Male</option><option>Female</option><option>Other</option>
             </select>
+          </div>
+          <div class="tab-pane fade" id="childOther">
             <label>Contact Number</label>
             <input type="text" class="form-control" name="contact_number" required>
             <label>Age Group</label>
             <select class="form-select" name="age_group" required>
-              <option>Child: 0-5</option>
-              <option>Child: 6-8</option>
-              <option>Child: 9-12</option>
-              <option>Other</option>
+              <option>Child: 0-5</option><option>Child: 6-8</option><option>Child: 9-12</option><option>Other</option>
             </select>
             <label>Birthday</label>
             <input type="text" class="form-control" name="birthday" required>
@@ -98,48 +139,113 @@
                 Parent/carer consents to RCCG AGT storing and processing this data in line with UK GDPR.
               </label>
             </div>
-            <button type="submit" class="btn btn-success">Submit</button>
-          </form>
+          </div>
         </div>
-      </div>
+        <button type="submit" class="btn mt-3">Submit</button>
+      </form>
     </div>
   </div>
+</div>
 
-  <!-- Search Section -->
-  <section>
+<!-- Search Section -->
+<!-- Insert this inside your Children HTML -->
+<!-- Replace existing <section id="search"> ... </section> block -->
+
+<section id="search" data-aos="fade-up">
+  <div class="glass-card">
     <h2>Search Records</h2>
-    <form action="/childrens_church/search" method="POST" class="d-flex gap-2">
-      <input type="text" class="form-control" name="keyword" placeholder="Enter keyword" required>
-      <button type="submit" class="btn btn-light">Search</button>
-    </form>
-  </section>
+    <input type="text" id="searchInput" class="form-control" placeholder="Enter name, age, etc." />
+    <div id="searchResults" class="mt-3"></div>
+    <div id="recordDetails" class="mt-4 d-none"></div>
+  </div>
+</section>
 
-  <!-- Attendance Form -->
-  <section>
-    <h2 class="text-center">Record Attendance</h2>
-    <form action="/childrens_church/insert_attendance" method="POST">
-      <div class="row">
-        <div class="col-md-6">
-          <input type="text" class="form-control" name="first_name" placeholder="First Name" required>
-        </div>
-        <div class="col-md-6">
-          <input type="text" class="form-control" name="last_name" placeholder="Last Name" required>
-        </div>
+<!-- Insert this before closing </body> -->
+<script>
+  document.getElementById('searchInput').addEventListener('input', function () {
+    const keyword = this.value;
+    if (keyword.length < 2) return;
+
+    fetch('/childrens_church/search', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: new URLSearchParams({ keyword })
+    })
+    .then(res => res.json())
+    .then(data => {
+      const output = document.getElementById('searchResults');
+      const detail = document.getElementById('recordDetails');
+      output.innerHTML = '';
+      detail.classList.add('d-none');
+
+      data.forEach(record => {
+        const div = document.createElement('div');
+        div.className = 'search-result-item';
+        div.innerText = `${record.first_name} ${record.last_name}`;
+        div.dataset.details = JSON.stringify(record);
+        div.onclick = function () {
+          const r = JSON.parse(this.dataset.details);
+          detail.innerHTML = `
+            <div class="glass-card">
+              <h5>Details for ${r.first_name} ${r.last_name}</h5>
+              <p><strong>Age:</strong> ${r.age}</p>
+              <p><strong>Gender:</strong> ${r.gender}</p>
+              <p><strong>Birthday:</strong> ${r.birthday}</p>
+              <p><strong>Contact:</strong> ${r.contact_number}</p>
+              <p><strong>Age Group:</strong> ${r.age_group}</p>
+              <p><strong>Consent:</strong> ${r.consent}</p>
+            </div>
+          `;
+          detail.classList.remove('d-none');
+        };
+        output.appendChild(div);
+      });
+    });
+  });
+</script>
+
+
+<!-- Attendance Section -->
+<section id="attendance" data-aos="fade-up">
+  <h2>Record Attendance</h2>
+  <form action="/childrens_church/insert_attendance" method="POST">
+    <div class="row">
+      <div class="col-md-6">
+        <input type="text" class="form-control" name="first_name" placeholder="First Name" required>
       </div>
-      <label class="mt-3">Date</label>
-      <input type="date" class="form-control" name="date" required>
-      <div class="text-center mt-3">
-        <button type="submit" class="btn btn-primary">Save Attendance</button>
+      <div class="col-md-6">
+        <input type="text" class="form-control" name="last_name" placeholder="Last Name" required>
       </div>
-    </form>
-  </section>
+    </div>
+    <label class="mt-3">Date</label>
+    <input type="date" class="form-control" name="date" required>
+    <div class="text-center mt-3">
+      <button type="submit" class="btn">Save Attendance</button>
+    </div>
+  </form>
+</section>
 
-  <footer>
-    <p>&copy; 2025 AGT Records Management</p>
-    <p>Contact Admin: xyd@gmail.com</p>
-  </footer>
+<footer class="text-center py-3">
+  <p>&copy; 2025 AGT Records Management | Contact: xyd@gmail.com</p>
+</footer>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 800, once: true });
+
+  // Smooth scroll offset
+  document.querySelectorAll('nav .nav-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const section = document.querySelector(link.getAttribute('href'));
+      const offset = document.querySelector('nav').offsetHeight + 20;
+      window.scrollTo({ top: section.offsetTop - offset, behavior: 'smooth' });
+    });
+  });
+</script>
 </body>
 </html>
