@@ -3,110 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AGT SmartRecord App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <title>AGT Teens Records</title>
   <style>
-    * { box-sizing: border-box; }
     body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: url('https://github.com/Tunnox/Images/blob/main/AgtTeens_1.jpg?raw=true') no-repeat center center fixed;
-      background-size: cover;
-      color: #fff;
+      padding: 0;
     }
     .container {
-      max-width: 960px;
+      max-width: 900px;
       margin: auto;
       padding: 2rem;
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 16px;
+      background: white;
       margin-top: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    header img {
-      height: 50px;
-      vertical-align: middle;
-    }
-    h1, h2, h3 {
-      margin: 0.5rem 0;
-    }
-    button, input[type="submit"], .btn {
-      background-color: #03416c;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    button:hover, .btn:hover {
-      background-color: #046fb0;
-    }
-    input, select {
+    input, select, button {
       width: 100%;
       padding: 10px;
-      margin-top: 8px;
-      margin-bottom: 16px;
-      border: none;
-      border-radius: 6px;
+      margin-bottom: 1rem;
       font-size: 1rem;
-    }
-    label {
-      font-weight: 600;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 10;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.8);
-    }
-    .modal-content {
-      background: rgba(0, 0, 0, 0.95);
-      margin: 5% auto;
-      padding: 2rem;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 600px;
-      color: white;
-    }
-    .close {
-      float: right;
-      font-size: 1.5rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #ccc;
-      text-align: left;
-      background-color: rgba(255, 255, 255, 0.05);
-    }
-    th {
-      background-color: #022b91;
-      color: white;
-    }
-    footer {
-      text-align: center;
-      margin: 2rem 0;
-      color: white;
-    }
-    @media (max-width: 600px) {
-      .modal-content, .container {
-        padding: 1rem;
-      }
     }
     .results-list li {
       padding: 10px;
@@ -124,42 +42,33 @@
     }
   </style>
 </head>
-<!-- ... All previous head and styling here remains unchanged up to the body opening tag ... -->
-
 <body>
-
 <div class="container">
-  <header>
-    <h2>
-      <img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="Logo" />
-      Amazing Grace Tabernacle Sheffield
-    </h2>
-    <p>Teenagers Department Data Management App (UK GDPR Compliant)</p>
-  </header>
+  <h2>Create Teen Record</h2>
+  <form action="/teens_church/insert" method="POST">
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <input type="number" name="age" placeholder="Age" required />
+    <select name="gender" required>
+      <option value="">Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+    <input type="text" name="birthday" placeholder="Birthday" required />
+    <input type="text" name="contact_number" placeholder="Contact Number" required />
+    <input type="text" name="age_group" placeholder="Age Group" required />
+    <input type="text" name="department" placeholder="Department" required />
+    <input type="text" name="relationship_status" placeholder="Relationship Status" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="text" name="address" placeholder="Address" required />
+    <input type="text" name="consent" placeholder="Consent" required />
+    <button type="submit">Create Record</button>
+  </form>
 
-  <button id="openModal">Create New Record</button>
-  <p>Click the button above to add a new record.</p>
-
-  <!-- Modal Create Record -->
-  <div id="myModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeModal">&times;</span>
-      <h2>AGT Sheffield - Data Entry</h2>
-      <form action="/teens_church/insert" method="POST">
-        <!-- Form fields remain unchanged -->
-        <!-- ... same fields as before ... -->
-      </form>
-    </div>
-  </div>
-
-  <hr />
-
-  <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
-<div class="container">
   <h2>Search Teen Records</h2>
   <input type="text" id="live-search" placeholder="Start typing a name..." />
   <ul id="live-results" class="results-list"></ul>
-
   <div id="selected-record" class="record-details"></div>
 
   <div id="updateForm" style="display:none;">
@@ -184,6 +93,14 @@
       <button type="submit">Submit Update</button>
     </form>
   </div>
+
+  <h2>Record Attendance</h2>
+  <form action="/teens_church/insert_attendance" method="POST">
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <input type="date" name="date" required />
+    <button type="submit">Save Attendance</button>
+  </form>
 </div>
 
 <script>
@@ -250,160 +167,5 @@
     updateForm.style.display = "block";
   }
 </script>
-  <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
-
-  <h3>Search Records</h3>
-  <form action="/teens_church/search" method="POST">
-    <input type="text" name="keyword" placeholder="Enter name or keyword..." required />
-    <button type="submit">Search</button>
-  </form>
-
-  <div id="search-results">
-    {% if results %}
-      <label for="name-dropdown">Select Record:</label>
-      <select id="name-dropdown">
-        <option value="">Select record</option>
-        {% for record in results %}
-          <option value="
-            {{ record[0] }}||{{ record[1] }}||{{ record[2] }}||{{ record[3] }}||{{ record[4] }}||{{ record[5] }}||{{ record[6] }}||{{ record[7] }}||{{ record[8] }}||{{ record[9] }}||{{ record[10] }}||{{ record[11] }}">
-            {{ record[0] }} {{ record[1] }}
-          </option>
-        {% endfor %}
-      </select>
-      <button id="get-details">Get Details</button>
-      <button id="updateFormBtn">Update Details</button>
-
-      <div id="record" style="margin-top: 1rem;"></div>
-
-      <div id="updateForm" style="display: none; margin-top: 2rem;">
-        <h3>Update Record</h3>
-        <form method="POST" action="/update">
-          <input type="hidden" name="id" id="update-id" />
-
-          <label>First Name</label>
-          <input type="text" name="first_name" id="update-first-name" required />
-
-          <label>Last Name</label>
-          <input type="text" name="last_name" id="update-last-name" required />
-
-          <label>Age</label>
-          <input type="number" name="age" id="update-age" required />
-
-          <label>Gender</label>
-          <select name="gender" id="update-gender" required>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
-
-          <label>Birthday</label>
-          <input type="text" name="birthday" id="update-birthday" required />
-
-          <label>Contact Number</label>
-          <input type="text" name="contact_number" id="update-contact" required />
-
-          <label>Age Group</label>
-          <input type="text" name="age_group" id="update-age-group" required />
-
-          <label>Department</label>
-          <input type="text" name="department" id="update-department" required />
-
-          <label>Relationship Status</label>
-          <input type="text" name="relationship_status" id="update-relationship" required />
-
-          <label>Email</label>
-          <input type="email" name="email" id="update-email" required />
-
-          <label>Address</label>
-          <input type="text" name="address" id="update-address" required />
-
-          <label>Consent</label>
-          <input type="text" name="consent" id="update-consent" required />
-
-          <button type="submit">Submit</button>
-          <button type="button" onclick="document.getElementById('updateForm').style.display='none'">Cancel</button>
-        </form>
-      </div>
-    {% endif %}
-  </div>
-
-  <hr />
-
-  <h3>Record Attendance</h3>
-  <form action="/teens_church/insert_attendance" method="POST">
-    <input type="text" name="first_name" placeholder="First Name" required />
-    <input type="text" name="last_name" placeholder="Last Name" required />
-    <label>Date</label>
-    <input type="date" name="date" required />
-    <button type="submit">Save Attendance</button>
-  </form>
-</div>
-
-<footer>
-  <p>&copy; 2025 AGT Records Management</p>
-  <p>Contact Admin: xyd@gmail.com</p>
-</footer>
-
-<script>
-  const modal = document.getElementById("myModal");
-  const openBtn = document.getElementById("openModal");
-  const closeBtn = document.getElementById("closeModal");
-
-  openBtn.onclick = () => modal.style.display = "block";
-  closeBtn.onclick = () => modal.style.display = "none";
-  window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
-
-  const dropdown = document.getElementById("name-dropdown");
-  const getDetailsBtn = document.getElementById("get-details");
-  const updateBtn = document.getElementById("updateFormBtn");
-
-  getDetailsBtn?.addEventListener("click", function () {
-    const recordDiv = document.getElementById("record");
-    const selected = dropdown?.value;
-    if (!selected) {
-      recordDiv.innerHTML = "Please select a record.";
-      return;
-    }
-    const fields = selected.split("||");
-    recordDiv.innerHTML = `
-      <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
-        <strong>${fields[0]} ${fields[1]}</strong><br>
-        Age: ${fields[2]}<br>
-        Gender: ${fields[3]}<br>
-        Birthday: ${fields[4]}<br>
-        Contact: ${fields[5]}<br>
-        Age Group: ${fields[6]}<br>
-        Department: ${fields[7]}<br>
-        Relationship: ${fields[8]}<br>
-        Email: ${fields[9]}<br>
-        Address: ${fields[10]}<br>
-        Consent: ${fields[11]}
-      </div>`;
-  });
-
-  updateBtn?.addEventListener("click", function () {
-    const selected = dropdown?.value;
-    if (!selected) {
-      alert("Please select a record.");
-      return;
-    }
-    const fields = selected.split("||");
-    document.getElementById("updateForm").style.display = "block";
-
-    document.getElementById("update-first-name").value = fields[0];
-    document.getElementById("update-last-name").value = fields[1];
-    document.getElementById("update-age").value = fields[2];
-    document.getElementById("update-gender").value = fields[3];
-    document.getElementById("update-birthday").value = fields[4];
-    document.getElementById("update-contact").value = fields[5];
-    document.getElementById("update-age-group").value = fields[6];
-    document.getElementById("update-department").value = fields[7];
-    document.getElementById("update-relationship").value = fields[8];
-    document.getElementById("update-email").value = fields[9];
-    document.getElementById("update-address").value = fields[10];
-    document.getElementById("update-consent").value = fields[11];
-  });
-</script>
-
 </body>
 </html>
