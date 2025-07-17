@@ -115,29 +115,29 @@
     <div class="modal-content p-4">
       <h4>Update Record</h4>
       <form method="POST" action="/teens_church/update" id="updateForm">
-        <input name="first_name" class="form-control" required>
-        <input name="last_name" class="form-control" required>
-        <input name="age" type="number" class="form-control" required>
-        <select name="gender" class="form-select" required>
+        <label>FIrst Name: </label> <input name="first_name" class="form-control" required>
+        <label>Last Name: </label><input name="last_name" class="form-control" required>
+        <label>Age: </label><input name="age" type="number" class="form-control" required>
+        <label>Gender: </label><select name="gender" class="form-select" required>
           <option>Male</option>
           <option>Female</option>
           <option>Other</option>
         </select>
-        <input name="birthday" class="form-control" required>
-        <input name="contact_number" class="form-control" required>
-        <select name="age_group" class="form-select" required>
+        <label>Birthday: </label><input name="birthday" class="form-control" required>
+        <label>Contact Number: </label><input name="contact_number" class="form-control" required>
+        <label>Age Group: </label><select name="age_group" class="form-select" required>
           <option>Teenager</option>
           <option>YAYA</option>
           <option>Adult</option>
         </select>
-        <input name="department" class="form-control" required>
+        <label>Department: </label><input name="department" class="form-control" required>
         <select name="relationship_status" class="form-select" required>
           <option>Single</option>
           <option>Not single</option>
         </select>
-        <input name="email" class="form-control" required>
-        <input name="address" class="form-control" required>
-        <input name="consent" class="form-control" required>
+        <label>EMail: </label><input name="email" class="form-control" required>
+        <label>Addrress: </label><input name="address" class="form-control" required>
+        <label>Consent: </label><input name="consent" class="form-control" required>
         <button class="btn btn-primary mt-3" type="submit">Update</button>
       </form>
     </div>
