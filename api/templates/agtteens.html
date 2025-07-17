@@ -108,6 +108,20 @@
         padding: 1rem;
       }
     }
+    .results-list li {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .results-list li:hover {
+      background-color: #f0f0f0;
+    }
+    .record-details {
+      background: #eef;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <!-- ... All previous head and styling here remains unchanged up to the body opening tag ... -->
@@ -139,6 +153,104 @@
   </div>
 
   <hr />
+
+  <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+<div class="container">
+  <h2>Search Teen Records</h2>
+  <input type="text" id="live-search" placeholder="Start typing a name..." />
+  <ul id="live-results" class="results-list"></ul>
+
+  <div id="selected-record" class="record-details"></div>
+
+  <div id="updateForm" style="display:none;">
+    <h3>Update Record</h3>
+    <form method="POST" action="/teens_church/update">
+      <input type="text" name="first_name" id="update-first-name" required />
+      <input type="text" name="last_name" id="update-last-name" required />
+      <input type="number" name="age" id="update-age" required />
+      <select name="gender" id="update-gender" required>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+      <input type="text" name="birthday" id="update-birthday" required />
+      <input type="text" name="contact_number" id="update-contact" required />
+      <input type="text" name="age_group" id="update-age-group" required />
+      <input type="text" name="department" id="update-department" required />
+      <input type="text" name="relationship_status" id="update-relationship" required />
+      <input type="email" name="email" id="update-email" required />
+      <input type="text" name="address" id="update-address" required />
+      <input type="text" name="consent" id="update-consent" required />
+      <button type="submit">Submit Update</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const searchInput = document.getElementById("live-search");
+  const resultsList = document.getElementById("live-results");
+  const selectedDiv = document.getElementById("selected-record");
+  const updateForm = document.getElementById("updateForm");
+
+  let currentResults = [];
+
+  searchInput.addEventListener("input", async () => {
+    const keyword = searchInput.value.trim();
+    resultsList.innerHTML = "";
+    selectedDiv.innerHTML = "";
+    updateForm.style.display = "none";
+
+    if (keyword.length < 2) return;
+
+    try {
+      const response = await fetch(`/teens_church/api/search?keyword=${encodeURIComponent(keyword)}`);
+      currentResults = await response.json();
+
+      currentResults.forEach((record, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${record.first_name} ${record.last_name}`;
+        li.onclick = () => selectRecord(index);
+        resultsList.appendChild(li);
+      });
+
+    } catch (err) {
+      resultsList.innerHTML = "<li style='color:red;'>Error fetching results</li>";
+    }
+  });
+
+  function selectRecord(index) {
+    const r = currentResults[index];
+    selectedDiv.innerHTML = `
+      <strong>${r.first_name} ${r.last_name}</strong><br>
+      Age: ${r.age}<br>
+      Gender: ${r.gender}<br>
+      Birthday: ${r.birthday}<br>
+      Contact: ${r.contact_number}<br>
+      Age Group: ${r.age_group}<br>
+      Department: ${r.department}<br>
+      Relationship: ${r.relationship_status}<br>
+      Email: ${r.email}<br>
+      Address: ${r.address}<br>
+      Consent: ${r.consent}
+    `;
+
+    document.getElementById("update-first-name").value = r.first_name;
+    document.getElementById("update-last-name").value = r.last_name;
+    document.getElementById("update-age").value = r.age;
+    document.getElementById("update-gender").value = r.gender;
+    document.getElementById("update-birthday").value = r.birthday;
+    document.getElementById("update-contact").value = r.contact_number;
+    document.getElementById("update-age-group").value = r.age_group;
+    document.getElementById("update-department").value = r.department;
+    document.getElementById("update-relationship").value = r.relationship_status;
+    document.getElementById("update-email").value = r.email;
+    document.getElementById("update-address").value = r.address;
+    document.getElementById("update-consent").value = r.consent;
+
+    updateForm.style.display = "block";
+  }
+</script>
+  <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
 
   <h3>Search Records</h3>
   <form action="/teens_church/search" method="POST">
