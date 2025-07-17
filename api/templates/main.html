@@ -16,31 +16,50 @@
     body {
       font-family: 'Inter', sans-serif;
       background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center center / cover;
-      background-color: #000; /* fallback */
+      background-color: #000;
       color: white;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      height: auto;
+      min-height: 100vh;
     }
 
     header {
       text-align: center;
-      padding: 40px 20px 10px;
+      padding: 60px 20px 30px;
+      background: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
 
     header img {
-      height: 60px;
+      height: 70px;
+      margin-bottom: 10px;
     }
 
     header h1 {
+      font-size: 32px;
       margin: 10px 0;
-      font-size: 28px;
     }
 
     header p {
-      font-size: 14px;
-      margin: 5px 0;
+      font-size: 15px;
+      margin: 4px 0;
+      line-height: 1.5;
+    }
+
+    header a {
+      color: #20c997;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 8px;
+      transition: background 0.3s ease;
+    }
+
+    header a:hover {
+      background: rgba(255, 255, 255, 0.2);
     }
 
     .cards-container {
@@ -51,6 +70,8 @@
       padding: 40px 20px;
       width: 100%;
       max-width: 1000px;
+      margin: auto;
+      flex-grow: 1;
     }
 
     .card {
@@ -62,7 +83,7 @@
       box-shadow: 0 6px 15px rgba(0,0,0,0.3);
       cursor: pointer;
       transition: transform 0.3s ease;
-      background-color: #1E1E1E; /* fallback */
+      background-color: #1E1E1E;
       background-size: cover;
       background-position: center;
     }
@@ -101,9 +122,9 @@
     footer {
       text-align: center;
       padding: 20px;
-      background: rgba(0, 0, 0, 0.6);
-      width: 100%;
+      background: rgba(0, 0, 0, 0.7);
       font-size: 14px;
+      margin-top: auto;
     }
 
     @media (max-width: 768px) {
@@ -125,8 +146,8 @@
     <img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="AGT Logo"/>
     <h1>AGT SmartRecord App</h1>
     <p>Amazing Grace Tabernacle, Sheffield</p>
-    <p>Data Management App in line with UK GDPR</p>
-    <p>Contact Admin: <a href="mailto:xyd@gmail.com" style="color: #1E90FF;">xyd@gmail.com</a></p>
+    <p>Data Management Platform in line with UK GDPR</p>
+    <p><a href="mailto:xyd@gmail.com">Contact Admin: xyd@gmail.com</a></p>
   </header>
 
   <div class="cards-container">
