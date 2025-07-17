@@ -266,7 +266,6 @@ def teens_insert_attendance():
 def teens_api_search():
     keyword = request.args.get('keyword', '')
     cursor = connection.cursor()
-
     sql_query = """
         SELECT * FROM "public"."AGT_TEENS_DATA_RECORDS" 
         WHERE "first_name" ILIKE %s 
@@ -276,7 +275,6 @@ def teens_api_search():
     cursor.execute(sql_query, [f'%{keyword}%'] * 3)
     rows = cursor.fetchall()
     cursor.close()
-
     records = [{
         "first_name": r[0],
         "last_name": r[1],
@@ -291,7 +289,6 @@ def teens_api_search():
         "address": r[10],
         "consent": r[11]
     } for r in rows]
-
     return jsonify(records)
 
 
