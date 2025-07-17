@@ -50,9 +50,8 @@ def adult_index():
 def adult_search():
     keyword = request.form['keyword']
     cursor = connection.cursor()
-    
-    # SQL query to search for data in DATA_RECORDS table
-    sql_query = f"""
+
+    sql_query = """
         SELECT * FROM "public"."AGT_ADULT_DATA_RECORDS" 
         WHERE "first_name" ILIKE %s 
            OR "last_name" ILIKE %s 
@@ -66,17 +65,34 @@ def adult_search():
            OR "email" ILIKE %s
            OR "address" ILIKE %s
            OR "consent" ILIKE %s
+        LIMIT 10
     """
-    
-    # Execute the query with wildcard search
     cursor.execute(sql_query, [f'%{keyword}%'] * 12)
-    
     results = cursor.fetchall()
-    
-    # Close cursor after fetching results
     cursor.close()
-    
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        records = [
+            {
+                "first_name": r[0],
+                "last_name": r[1],
+                "age": r[2],
+                "gender": r[3],
+                "birthday": r[4],
+                "contact_number": r[5],
+                "age_group": r[6],
+                "department": r[7],
+                "relationship_status": r[8],
+                "email": r[9],
+                "address": r[10],
+                "consent": r[11]
+            }
+            for r in results
+        ]
+        return jsonify(records)
+
     return render_template('agtadult.html', results=results)
+
 
 @app.route('/adult_church/update', methods=['POST'])
 def adult_update():
@@ -289,9 +305,8 @@ def children_index():
 def children_search():
     keyword = request.form['keyword']
     cursor = connection.cursor()
-    
-    # SQL query to search for data in DATA_RECORDS table
-    sql_query = f"""
+
+    sql_query = """
         SELECT * FROM "public"."AGT_CHILDREN_DATA_RECORDS" 
         WHERE "first_name" ILIKE %s 
            OR "last_name" ILIKE %s 
@@ -301,17 +316,30 @@ def children_search():
            OR "age_group" ILIKE %s
            OR "consent" ILIKE %s
            OR "birthday" ILIKE %s
+        LIMIT 10
     """
-    
-    # Execute the query with wildcard search
     cursor.execute(sql_query, [f'%{keyword}%'] * 8)
-    
     results = cursor.fetchall()
-    
-    # Close cursor after fetching results
     cursor.close()
-    
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        records = [
+            {
+                "first_name": r[0],
+                "last_name": r[1],
+                "age": r[2],
+                "gender": r[3],
+                "contact_number": r[4],
+                "age_group": r[5],
+                "consent": r[6],
+                "birthday": r[7]
+            }
+            for r in results
+        ]
+        return jsonify(records)
+
     return render_template('agtchild.html', results=results)
+
 
 @app.route('/childrens_church/update', methods=['POST'])
 def children_update():
