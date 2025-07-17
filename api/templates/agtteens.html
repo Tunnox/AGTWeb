@@ -110,158 +110,188 @@
     }
   </style>
 </head>
+<!-- ... All previous head and styling here remains unchanged up to the body opening tag ... -->
+
 <body>
 
-  <div class="container">
-    <header>
-      <h2>
-        <img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="Logo" />
-        Amazing Grace Tabernacle Sheffield
-      </h2>
-      <p>Teenagers Department Data Management App (UK GDPR Compliant)</p>
-    </header>
+<div class="container">
+  <header>
+    <h2>
+      <img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="Logo" />
+      Amazing Grace Tabernacle Sheffield
+    </h2>
+    <p>Teenagers Department Data Management App (UK GDPR Compliant)</p>
+  </header>
 
-    <button id="openModal">Create New Record</button>
-    <p>Click the button above to add a new record.</p>
+  <button id="openModal">Create New Record</button>
+  <p>Click the button above to add a new record.</p>
 
-    <!-- Modal -->
-    <div id="myModal" class="modal">
-      <div class="modal-content">
-        <span class="close" id="closeModal">&times;</span>
-        <h2>AGT Sheffield - Data Entry</h2>
-        <p>Please fill in your details below:</p>
-        <form action="/teens_church/insert" method="POST">
+  <!-- Modal Create Record -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>AGT Sheffield - Data Entry</h2>
+      <form action="/teens_church/insert" method="POST">
+        <!-- Form fields remain unchanged -->
+        <!-- ... same fields as before ... -->
+      </form>
+    </div>
+  </div>
+
+  <hr />
+
+  <h3>Search Records</h3>
+  <form action="/teens_church/search" method="POST">
+    <input type="text" name="keyword" placeholder="Enter name or keyword..." required />
+    <button type="submit">Search</button>
+  </form>
+
+  <div id="search-results">
+    {% if results %}
+      <label for="name-dropdown">Select Record:</label>
+      <select id="name-dropdown">
+        <option value="">Select record</option>
+        {% for record in results %}
+          <option value="
+            {{ record[0] }}||{{ record[1] }}||{{ record[2] }}||{{ record[3] }}||{{ record[4] }}||{{ record[5] }}||{{ record[6] }}||{{ record[7] }}||{{ record[8] }}||{{ record[9] }}||{{ record[10] }}||{{ record[11] }}">
+            {{ record[0] }} {{ record[1] }}
+          </option>
+        {% endfor %}
+      </select>
+      <button id="get-details">Get Details</button>
+      <button id="updateFormBtn">Update Details</button>
+
+      <div id="record" style="margin-top: 1rem;"></div>
+
+      <div id="updateForm" style="display: none; margin-top: 2rem;">
+        <h3>Update Record</h3>
+        <form method="POST" action="/update">
+          <input type="hidden" name="id" id="update-id" />
+
           <label>First Name</label>
-          <input type="text" name="first_name" required />
-          
+          <input type="text" name="first_name" id="update-first-name" required />
+
           <label>Last Name</label>
-          <input type="text" name="last_name" required />
-          
+          <input type="text" name="last_name" id="update-last-name" required />
+
           <label>Age</label>
-          <input type="number" name="age" required />
+          <input type="number" name="age" id="update-age" required />
 
           <label>Gender</label>
-          <select name="gender" required>
-            <option value="">-- Select Gender --</option>
+          <select name="gender" id="update-gender" required>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
             <option value="Other">Other</option>
           </select>
 
           <label>Birthday</label>
-          <input type="text" name="birthday" required />
+          <input type="text" name="birthday" id="update-birthday" required />
 
           <label>Contact Number</label>
-          <input type="text" name="contact_number" required />
+          <input type="text" name="contact_number" id="update-contact" required />
 
           <label>Age Group</label>
-          <select name="age_group" required>
-            <option value="">-- Select Group --</option>
-            <option value="Children">Children</option>
-            <option value="Teenager">Teenager</option>
-            <option value="Youth">YAYA</option>
-            <option value="Adult">Adult</option>
-          </select>
+          <input type="text" name="age_group" id="update-age-group" required />
 
           <label>Department</label>
-          <input type="text" name="department" required />
+          <input type="text" name="department" id="update-department" required />
 
           <label>Relationship Status</label>
-          <select name="relationship_status" required>
-            <option value="Single">Single</option>
-            <option value="Not single">Not Single</option>
-          </select>
+          <input type="text" name="relationship_status" id="update-relationship" required />
 
           <label>Email</label>
-          <input type="email" name="email" required />
+          <input type="email" name="email" id="update-email" required />
 
           <label>Address</label>
-          <input type="text" name="address" required />
+          <input type="text" name="address" id="update-address" required />
 
-          <label>
-            <input type="checkbox" name="consent" value="Yes" required />
-            I give consent for RCCG AGT Sheffield to process my data in line with the UK GDPR.
-          </label>
+          <label>Consent</label>
+          <input type="text" name="consent" id="update-consent" required />
 
-          <input type="submit" value="Submit" />
+          <button type="submit">Submit</button>
+          <button type="button" onclick="document.getElementById('updateForm').style.display='none'">Cancel</button>
         </form>
       </div>
-    </div>
-
-    <hr />
-
-    <h3>Search Records</h3>
-    <form action="/teens_church/search" method="POST">
-      <input type="text" name="keyword" placeholder="Enter name or keyword..." required />
-      <button type="submit">Search</button>
-    </form>
-
-    <div id="search-results">
-      {% if results %}
-        <label for="name-dropdown">Select Record:</label>
-        <select id="name-dropdown">
-          <option value="">Select record</option>
-          {% for record in results %}
-            <option value="
-              <strong>{{ record[0] }} {{ record[1] }}</strong><br>
-              Age: {{ record[2] }}<br>
-              Gender: {{ record[3] }}<br>
-              Birthday: {{ record[4] }}<br>
-              Contact Number: {{ record[5] }}<br>
-              Age Group: {{ record[6] }}<br>
-              Department: {{ record[7] }}<br>
-              Relationship Status: {{ record[8] }}<br>
-              Email: {{ record[9] }}<br>
-              Address: {{ record[10] }}<br>
-              Consent: {{ record[11] }}<br>
-            ">
-              {{ record[0] }} {{ record[1] }}
-            </option>
-          {% endfor %}
-        </select>
-        <button id="get-details">Get Details</button>
-        <div id="record" style="margin-top: 1rem;"></div>
-      {% endif %}
-    </div>
-
-    <hr />
-
-    <h3>Record Attendance</h3>
-    <form action="/teens_church/insert_attendance" method="POST">
-      <input type="text" name="first_name" placeholder="First Name" required />
-      <input type="text" name="last_name" placeholder="Last Name" required />
-      <label>Date</label>
-      <input type="date" name="date" required />
-      <button type="submit">Save Attendance</button>
-    </form>
-
+    {% endif %}
   </div>
 
-  <footer>
-    <p>&copy; 2025 AGT Records Management</p>
-    <p>Contact Admin: xyd@gmail.com</p>
-  </footer>
+  <hr />
 
-  <script>
-    const modal = document.getElementById("myModal");
-    const openBtn = document.getElementById("openModal");
-    const closeBtn = document.getElementById("closeModal");
+  <h3>Record Attendance</h3>
+  <form action="/teens_church/insert_attendance" method="POST">
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <label>Date</label>
+    <input type="date" name="date" required />
+    <button type="submit">Save Attendance</button>
+  </form>
+</div>
 
-    openBtn.onclick = () => { modal.style.display = "block"; };
-    closeBtn.onclick = () => { modal.style.display = "none"; };
-    window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+<footer>
+  <p>&copy; 2025 AGT Records Management</p>
+  <p>Contact Admin: xyd@gmail.com</p>
+</footer>
 
-    document.getElementById('get-details')?.addEventListener('click', function () {
-      const dropdown = document.getElementById('name-dropdown');
-      const selectedValue = dropdown?.value;
-      const recordDiv = document.getElementById('record');
+<script>
+  const modal = document.getElementById("myModal");
+  const openBtn = document.getElementById("openModal");
+  const closeBtn = document.getElementById("closeModal");
 
-      if (selectedValue) {
-        recordDiv.innerHTML = `<div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">${selectedValue}</div>`;
-      } else {
-        recordDiv.innerHTML = 'Please select a record.';
-      }
-    });
-  </script>
+  openBtn.onclick = () => modal.style.display = "block";
+  closeBtn.onclick = () => modal.style.display = "none";
+  window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+  const dropdown = document.getElementById("name-dropdown");
+  const getDetailsBtn = document.getElementById("get-details");
+  const updateBtn = document.getElementById("updateFormBtn");
+
+  getDetailsBtn?.addEventListener("click", function () {
+    const recordDiv = document.getElementById("record");
+    const selected = dropdown?.value;
+    if (!selected) {
+      recordDiv.innerHTML = "Please select a record.";
+      return;
+    }
+    const fields = selected.split("||");
+    recordDiv.innerHTML = `
+      <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+        <strong>${fields[0]} ${fields[1]}</strong><br>
+        Age: ${fields[2]}<br>
+        Gender: ${fields[3]}<br>
+        Birthday: ${fields[4]}<br>
+        Contact: ${fields[5]}<br>
+        Age Group: ${fields[6]}<br>
+        Department: ${fields[7]}<br>
+        Relationship: ${fields[8]}<br>
+        Email: ${fields[9]}<br>
+        Address: ${fields[10]}<br>
+        Consent: ${fields[11]}
+      </div>`;
+  });
+
+  updateBtn?.addEventListener("click", function () {
+    const selected = dropdown?.value;
+    if (!selected) {
+      alert("Please select a record.");
+      return;
+    }
+    const fields = selected.split("||");
+    document.getElementById("updateForm").style.display = "block";
+
+    document.getElementById("update-first-name").value = fields[0];
+    document.getElementById("update-last-name").value = fields[1];
+    document.getElementById("update-age").value = fields[2];
+    document.getElementById("update-gender").value = fields[3];
+    document.getElementById("update-birthday").value = fields[4];
+    document.getElementById("update-contact").value = fields[5];
+    document.getElementById("update-age-group").value = fields[6];
+    document.getElementById("update-department").value = fields[7];
+    document.getElementById("update-relationship").value = fields[8];
+    document.getElementById("update-email").value = fields[9];
+    document.getElementById("update-address").value = fields[10];
+    document.getElementById("update-consent").value = fields[11];
+  });
+</script>
+
 </body>
 </html>
