@@ -6,9 +6,7 @@
   <title>AGT SmartRecord App</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
@@ -198,9 +196,32 @@
       <button type="submit">Search</button>
     </form>
 
-    <!-- Record Section Placeholder -->
     <div id="search-results">
-      <!-- Dynamic content goes here -->
+      {% if results %}
+        <label for="name-dropdown">Select Record:</label>
+        <select id="name-dropdown">
+          <option value="">Select record</option>
+          {% for record in results %}
+            <option value="
+              <strong>{{ record[0] }} {{ record[1] }}</strong><br>
+              Age: {{ record[2] }}<br>
+              Gender: {{ record[3] }}<br>
+              Birthday: {{ record[4] }}<br>
+              Contact Number: {{ record[5] }}<br>
+              Age Group: {{ record[6] }}<br>
+              Department: {{ record[7] }}<br>
+              Relationship Status: {{ record[8] }}<br>
+              Email: {{ record[9] }}<br>
+              Address: {{ record[10] }}<br>
+              Consent: {{ record[11] }}<br>
+            ">
+              {{ record[0] }} {{ record[1] }}
+            </option>
+          {% endfor %}
+        </select>
+        <button id="get-details">Get Details</button>
+        <div id="record" style="margin-top: 1rem;"></div>
+      {% endif %}
     </div>
 
     <hr />
@@ -229,6 +250,18 @@
     openBtn.onclick = () => { modal.style.display = "block"; };
     closeBtn.onclick = () => { modal.style.display = "none"; };
     window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+    document.getElementById('get-details')?.addEventListener('click', function () {
+      const dropdown = document.getElementById('name-dropdown');
+      const selectedValue = dropdown?.value;
+      const recordDiv = document.getElementById('record');
+
+      if (selectedValue) {
+        recordDiv.innerHTML = `<div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">${selectedValue}</div>`;
+      } else {
+        recordDiv.innerHTML = 'Please select a record.';
+      }
+    });
   </script>
 </body>
 </html>
