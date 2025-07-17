@@ -7,6 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     html, body {
       height: 100%;
       margin: 0;
@@ -16,7 +20,6 @@
     body {
       font-family: 'Inter', sans-serif;
       background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center center / cover;
-      background-color: #000;
       color: white;
       display: flex;
       flex-direction: column;
@@ -24,6 +27,7 @@
     }
 
     header {
+      width: 100%;
       text-align: center;
       padding: 60px 20px 30px;
       background: rgba(0, 0, 0, 0.5);
@@ -62,16 +66,23 @@
       background: rgba(255, 255, 255, 0.2);
     }
 
+    .main-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-direction: column;
+      padding: 40px 20px;
+    }
+
     .cards-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 30px;
-      padding: 40px 20px;
       width: 100%;
       max-width: 1000px;
-      margin: auto;
-      flex-grow: 1;
+      margin: 0 auto;
     }
 
     .card {
@@ -124,7 +135,7 @@
       padding: 20px;
       background: rgba(0, 0, 0, 0.7);
       font-size: 14px;
-      margin-top: auto;
+      width: 100%;
     }
 
     @media (max-width: 768px) {
@@ -150,15 +161,17 @@
     <p><a href="mailto:xyd@gmail.com">Contact Admin: xyd@gmail.com</a></p>
   </header>
 
-  <div class="cards-container">
-    <div class="card AGT" onclick="window.location.href='/adult_church'">
-      <div class="overlay"><h2>AGT Adult Church</h2></div>
-    </div>
-    <div class="card AGT-Teens" onclick="window.location.href='/teens_church'">
-      <div class="overlay"><h2>AGT Teens Church</h2></div>
-    </div>
-    <div class="card AGT-Child" onclick="window.location.href='/childrens_church'">
-      <div class="overlay"><h2>AGT Children Church</h2></div>
+  <div class="main-content">
+    <div class="cards-container">
+      <div class="card AGT" onclick="window.location.href='/adult_church'">
+        <div class="overlay"><h2>AGT Adult Church</h2></div>
+      </div>
+      <div class="card AGT-Teens" onclick="window.location.href='/teens_church'">
+        <div class="overlay"><h2>AGT Teens Church</h2></div>
+      </div>
+      <div class="card AGT-Child" onclick="window.location.href='/childrens_church'">
+        <div class="overlay"><h2>AGT Children Church</h2></div>
+      </div>
     </div>
   </div>
 
