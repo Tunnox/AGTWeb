@@ -110,7 +110,6 @@
 </head>
 <body>
 
-<!-- NAVIGATION -->
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container-fluid px-4">
     <a class="navbar-brand" href="#">AGT Adults</a>
@@ -127,14 +126,12 @@
   </div>
 </nav>
 
-<!-- HEADER -->
 <header class="text-center mt-4">
   <img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" height="50" alt="AGT Logo" />
   <h1>AGT Adult SmartRecord</h1>
   <p>Smart Data App in line with UK GDPR</p>
 </header>
 
-<!-- SECTION: CREATE RECORD -->
 <section id="create" data-aos="fade-up">
   <div class="glass-card">
     <h3>Create New Record</h3>
@@ -144,7 +141,7 @@
   </div>
 </section>
 
-<!-- MODAL: CREATE RECORD -->
+<!-- Create Record Modal -->
 <div class="modal fade" id="recordModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content p-4">
@@ -202,7 +199,7 @@
   </div>
 </div>
 
-<!-- SECTION: SEARCH -->
+<!-- Search Section -->
 <section id="search" data-aos="fade-up">
   <div class="glass-card">
     <h3>Search Records</h3>
@@ -212,7 +209,49 @@
   </div>
 </section>
 
-<!-- SECTION: ATTENDANCE -->
+<!-- Update Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4">
+      <h5 class="modal-title mb-3">Update Adult Record</h5>
+      <form method="POST" action="/adult_church/update" class="row g-3" id="updateForm">
+        <input type="hidden" name="id" id="update_id">
+        <div class="col-md-6"><input name="first_name" id="update_first_name" class="form-control" required></div>
+        <div class="col-md-6"><input name="last_name" id="update_last_name" class="form-control" required></div>
+        <div class="col-md-4"><input name="age" id="update_age" type="number" class="form-control" required></div>
+        <div class="col-md-4">
+          <select name="gender" id="update_gender" class="form-select" required>
+            <option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+        <div class="col-md-4"><input name="birthday" id="update_birthday" class="form-control" required></div>
+        <div class="col-md-6"><input name="contact_number" id="update_contact_number" class="form-control" required></div>
+        <div class="col-md-6">
+          <select name="age_group" id="update_age_group" class="form-select" required>
+            <option>YAYA</option><option>Adult</option>
+          </select>
+        </div>
+        <div class="col-md-6"><input name="email" id="update_email" class="form-control" required></div>
+        <div class="col-md-6"><input name="address" id="update_address" class="form-control" required></div>
+        <div class="col-md-6"><input name="department" id="update_department" class="form-control" required></div>
+        <div class="col-md-6">
+          <select name="relationship_status" id="update_relationship_status" class="form-select" required>
+            <option>Single</option><option>Married</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <select name="consent" id="update_consent" class="form-select" required>
+            <option>Yes</option><option>No</option>
+          </select>
+        </div>
+        <div class="text-end mt-3">
+          <button type="submit" class="btn">Submit Updates</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <section id="attendance" data-aos="fade-up">
   <div class="glass-card">
     <h3>Record Attendance</h3>
@@ -225,13 +264,11 @@
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="text-center py-3">
   <p class="mb-0">&copy; 2025 AGT Records Management</p>
   <p>Contact Admin: xyd@gmail.com</p>
 </footer>
 
-<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
@@ -246,9 +283,24 @@
     });
   });
 
-  // AJAX Search Logic
+  function fillUpdateModal(record) {
+    document.getElementById('update_first_name').value = record.first_name;
+    document.getElementById('update_last_name').value = record.last_name;
+    document.getElementById('update_age').value = record.age;
+    document.getElementById('update_gender').value = record.gender;
+    document.getElementById('update_birthday').value = record.birthday;
+    document.getElementById('update_contact_number').value = record.contact_number;
+    document.getElementById('update_age_group').value = record.age_group;
+    document.getElementById('update_email').value = record.email;
+    document.getElementById('update_address').value = record.address;
+    document.getElementById('update_department').value = record.department;
+    document.getElementById('update_relationship_status').value = record.relationship_status;
+    document.getElementById('update_consent').value = record.consent;
+    document.getElementById('update_id').value = record.id || '';
+  }
+
   document.getElementById('searchInput').addEventListener('input', function () {
-    const keyword = this.value;
+    const keyword = this.value.trim();
     if (keyword.length < 2) return;
 
     fetch('/adult_church/search', {
@@ -261,36 +313,42 @@
     })
     .then(res => res.json())
     .then(data => {
-      const resultDiv = document.getElementById('searchResults');
-      const detailDiv = document.getElementById('recordDetails');
-      resultDiv.innerHTML = '';
-      detailDiv.classList.add('d-none');
+      const resultsDiv = document.getElementById('searchResults');
+      const detailsDiv = document.getElementById('recordDetails');
+      resultsDiv.innerHTML = '';
+      detailsDiv.classList.add('d-none');
 
       data.forEach(record => {
-        const div = document.createElement('div');
-        div.className = 'search-result-item';
-        div.textContent = `${record.first_name} ${record.last_name}`;
-        div.dataset.details = JSON.stringify(record);
-        div.onclick = function () {
-          const r = JSON.parse(this.dataset.details);
-          detailDiv.innerHTML = `
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.textContent = `${record.first_name} ${record.last_name}`;
+        item.onclick = () => {
+          resultsDiv.innerHTML = '';
+          detailsDiv.innerHTML = `
             <div class="glass-card">
-              <h5>Details for ${r.first_name} ${r.last_name}</h5>
-              <p><strong>Age:</strong> ${r.age}</p>
-              <p><strong>Gender:</strong> ${r.gender}</p>
-              <p><strong>Birthday:</strong> ${r.birthday}</p>
-              <p><strong>Contact:</strong> ${r.contact_number}</p>
-              <p><strong>Group:</strong> ${r.age_group}</p>
-              <p><strong>Dept:</strong> ${r.department}</p>
-              <p><strong>Status:</strong> ${r.relationship_status}</p>
-              <p><strong>Email:</strong> ${r.email}</p>
-              <p><strong>Address:</strong> ${r.address}</p>
-              <p><strong>Consent:</strong> ${r.consent}</p>
+              <h5>${record.first_name} ${record.last_name}</h5>
+              <p><strong>Age:</strong> ${record.age}</p>
+              <p><strong>Gender:</strong> ${record.gender}</p>
+              <p><strong>Birthday:</strong> ${record.birthday}</p>
+              <p><strong>Contact:</strong> ${record.contact_number}</p>
+              <p><strong>Email:</strong> ${record.email}</p>
+              <p><strong>Address:</strong> ${record.address}</p>
+              <p><strong>Group:</strong> ${record.age_group}</p>
+              <p><strong>Department:</strong> ${record.department}</p>
+              <p><strong>Status:</strong> ${record.relationship_status}</p>
+              <p><strong>Consent:</strong> ${record.consent}</p>
+              <div class="text-end mt-3">
+                <button class="btn" id="editRecordBtn">Get Details</button>
+              </div>
             </div>
           `;
-          detailDiv.classList.remove('d-none');
+          detailsDiv.classList.remove('d-none');
+          document.getElementById('editRecordBtn').addEventListener('click', () => {
+            fillUpdateModal(record);
+            new bootstrap.Modal(document.getElementById('updateModal')).show();
+          });
         };
-        resultDiv.appendChild(div);
+        resultsDiv.appendChild(item);
       });
     });
   });
