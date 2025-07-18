@@ -22,7 +22,7 @@ connection = psycopg2.connect(dbname='AGT', user='postgres', password='pgsqtk116
 # Adult Data Management Routes
 @app.route('/')
 def index():
-    return render_template('my_profile.html')
+    return render_template('main.html')
 
 @app.route('/agt_login', methods=['POST'])
 def agt_login():
