@@ -24,6 +24,14 @@ connection = psycopg2.connect(dbname='AGT', user='postgres', password='pgsqtk116
 def index():
     return render_template('main.html')
 
+@app.route('/admin')
+def admin_page():
+    return render_template('admin.html')
+
+@app.route('/my_profile')
+def my_profile_page():
+    return render_template('my_profile.html')
+    
 @app.route('/agt_login', methods=['POST'])
 def agt_login():
     data = request.get_json()
