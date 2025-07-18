@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AGT Amazing Grace Tabernacle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f9fa;
+      color: #212529;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    nav {
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: center;
+      padding: 15px;
+      gap: 20px;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #04395E;
+      padding: 10px 16px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+      background-color: #20c997;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .admin-button {
+      background-color: #20c997;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .admin-button:hover {
+      background-color: #198754;
+      transform: scale(1.1);
+    }
+
+    header {
+      background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center center / cover;
+      color: white;
+      padding: 80px 20px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      max-width: 1000px;
+      text-align: center;
+    }
+
+    .header-content img {
+      height: 100px;
+    }
+
+    .header-text h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .header-text p {
+      font-size: 18px;
+    }
+
+    section {
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .gallery {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 20px;
+    }
+
+    .gallery img {
+      height: 200px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    iframe {
+      width: 90%;
+      max-width: 800px;
+      height: 450px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    footer {
+      background-color: #04395E;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="admin-button">Home</a>
+    <a href="my_profile.hmtl" class="admin-button">My Profile</a>
+    <a href="#about" class="admin-button">About</a>
+    <a href="#contact"class="admin-button">Contact</a>
+    <a href="admin.html" class="admin-button">Admin Center</a>
+  </nav>
+
+  <header>
+    <div class="header-content">
+      <img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="Church Logo">
+      <div class="header-text">
+        <h1>Welcome to Amazing Grace Tabernacle</h1>
+        <p>“Where God’s Grace Transforms Lives”</p>
+      </div>
+    </div>
+  </header>
+
+  <section id="intro">
+    <h2>Welcome</h2>
+    <p>We are a vibrant church community based in Sheffield, dedicated to worship, outreach, and transformation through God’s grace.</p>
+  </section>
+
+  <section id="youtube">
+    <h2>Watch Our Services Live</h2>
+    <iframe src="https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID" allowfullscreen></iframe>
+  </section>
+
+  <section id="posters">
+    <h2>Upcoming Events</h2>
+    <div class="gallery">
+      <img src="https://via.placeholder.com/300x200?text=Poster+1" alt="Poster 1">
+      <img src="https://via.placeholder.com/300x200?text=Poster+2" alt="Poster 2">
+      <img src="https://via.placeholder.com/300x200?text=Poster+3" alt="Poster 3">
+    </div>
+  </section>
+
+  <section id="announcements">
+    <h2>Announcements</h2>
+    <p>Check here for upcoming programs, church-wide news, and more updates weekly.</p>
+  </section>
+
+  <section id="location">
+    <h2>Find Us</h2>
+    <p>123 Church Road, Sheffield, UK</p>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18..." width="90%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+  </section>
+
+  <section id="giving">
+    <h2>Giving & Donations</h2>
+    <p>Your generous giving supports our mission. <a href="#">Click here to give online.</a></p>
+  </section>
+
+  <footer>
+    &copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love
+  </footer>
+
+</body>
+</html>
