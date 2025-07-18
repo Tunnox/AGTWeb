@@ -15,10 +15,6 @@ load_dotenv()
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
 GITHUB_USERNAME = os.environ.get('GITHUB_USERNAME')
 GITHUB_REPO = os.environ.get('GITHUB_REPO')
-
-print("GitHub token loaded:", os.environ.get("GITHUB_TOKEN")[:6] + "..." if os.environ.get("GITHUB_TOKEN") else "None")
-print("GitHub username:", os.environ.get("GITHUB_USERNAME"))
-print("GitHub repo:", os.environ.get("GITHUB_REPO"))
 # Configure your PostgreSQL database connection here
 connection = psycopg2.connect(dbname='AGT', user='postgres', password='pgsqtk116chuk95', host='chukspace.ctiuisa62ks5.eu-north-1.rds.amazonaws.com', port='5432')
 
