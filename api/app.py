@@ -6,6 +6,8 @@ import base64
 import requests
 import datetime
 from dotenv import load_dotenv
+import smtplib
+from email.message import EmailMessage
 
 
 app = Flask(__name__)
@@ -573,25 +575,57 @@ def reset_password():
     if not identity or not new_password:
         return jsonify({'error': 'Missing identity or new password'}), 400
 
+    # ✅ Server-side password strength validation
+    if (len(new_password) < 8 or
+        not re.search(r'[A-Z]', new_password) or
+        not re.search(r'[a-z]', new_password) or
+        not re.search(r'[0-9]', new_password) or
+        not re.search(r'[^a-zA-Z0-9]', new_password)):
+        return jsonify({'error': 'Password is too weak. Must include uppercase, lowercase, number, and symbol.'}), 400
+
     cur = connection.cursor()
     try:
-        # Update password by email or username
+        # Check if user exists and update password
         cur.execute("""
             UPDATE public."AGT_User_Profile"
             SET "Password" = %s
             WHERE "Username" = %s OR "Email" = %s
+            RETURNING "Email", "Full_Name";
         """, (new_password, identity, identity))
 
-        if cur.rowcount == 0:
+        result = cur.fetchone()
+        if not result:
             return jsonify({'error': 'User not found'}), 404
 
+        email, full_name = result
         connection.commit()
-        return jsonify({'message': 'Password reset successful!'}), 200
+
+        # ✅ Send confirmation email
+        send_email(
+            to=email,
+            subject="Your AGT Profile Password Was Reset",
+            body=f"Hello {full_name},\n\nYour password has been reset successfully.\n\nIf you didn't request this, please contact admin immediately."
+        )
+
+        return jsonify({'message': 'Password reset successful! A confirmation email has been sent.'}), 200
+
     except Exception as e:
         connection.rollback()
         return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
+
+#______--------_______________--------
+def send_email(to, subject, body):
+    msg = EmailMessage()
+    msg['Subject'] = subject
+    msg['From'] = 'your_email@gmail.com'  # ✅ Replace with your email
+    msg['To'] = to
+    msg.set_content(body)
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login('your_email@gmail.com', 'your_app_password')  # ✅ Use App Password
+        smtp.send_message(msg)
 
 @app.route('/get_user_details', methods=['POST'])
 def get_user_details():
