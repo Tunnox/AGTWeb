@@ -21,45 +21,75 @@
       min-height: 100vh;
     }
 
-    nav {
+    /* Navigation */
+    .navbar {
       background-color: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: center;
-      padding: 15px;
-      gap: 20px;
-      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 15px 20px;
       position: sticky;
       top: 0;
       z-index: 999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    nav a {
+    .nav-brand {
+      font-size: 20px;
+      font-weight: bold;
+      color: #04395E;
+    }
+
+    .nav-toggle {
+      display: none;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #04395E;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-links a {
       text-decoration: none;
       color: #04395E;
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-radius: 6px;
+      font-weight: 600;
       transition: all 0.3s ease;
     }
 
-    nav a:hover {
+    .nav-links a:hover {
       background-color: #20c997;
       color: white;
       transform: scale(1.05);
     }
 
-    .admin-button {
-      background-color: #20c997;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: all 0.3s ease;
-    }
+    @media (max-width: 768px) {
+      .nav-links {
+        flex-direction: column;
+        background-color: #fff;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        width: 200px;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: none;
+      }
 
-    .admin-button:hover {
-      background-color: #198754;
-      transform: scale(1.1);
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
     }
 
     header {
@@ -70,6 +100,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      text-align: center;
     }
 
     header::after {
@@ -83,11 +114,11 @@
     .header-content {
       position: relative;
       z-index: 2;
-      display: flex;
-      align-items: center;
-      gap: 30px;
       max-width: 1000px;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
     }
 
     .header-content img {
@@ -136,16 +167,33 @@
       text-align: center;
       margin-top: auto;
     }
+
+    a.button-link {
+      background-color: #20c997;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 6px;
+      display: inline-block;
+      transition: background 0.3s ease;
+    }
+
+    a.button-link:hover {
+      background-color: #198754;
+    }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a href="admin.html" class="admin-button">Home</a>
-    <a href='/my_profile' class="admin-button">My Profile</a>
-    <a href="#about" class="admin-button">About</a>
-    <a href="#contact"class="admin-button">Contact</a>
-    <a href='/admin' class="admin-button">Admin Center</a>
+  <nav class="navbar">
+    <div class="nav-brand">AGT Sheffield</div>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
+    <div class="nav-links">
+      <a href="admin.html">Home</a>
+      <a href="/my_profile">My Profile</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      <a href="/admin">Admin Center</a>
+    </div>
   </nav>
 
   <header>
@@ -185,17 +233,25 @@
   <section id="location">
     <h2>Find Us</h2>
     <p>123 Church Road, Sheffield, UK</p>
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18..." width="90%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18..." loading="lazy"></iframe>
   </section>
 
   <section id="giving">
     <h2>Giving & Donations</h2>
-    <p>Your generous giving supports our mission. <a href="#">Click here to give online.</a></p>
+    <p>Your generous giving supports our mission. <a class="button-link" href="#">Click here to give online</a></p>
   </section>
 
   <footer>
     &copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love
   </footer>
 
+  <script>
+    // Optionally close nav when clicking a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.remove('open');
+      });
+    });
+  </script>
 </body>
 </html>
