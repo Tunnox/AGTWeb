@@ -563,6 +563,35 @@ def login_profile():
             'profile_picture': user[4]
         }
     }), 200
+    
+@app.route('/reset_password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    identity = data.get('identity')
+    new_password = data.get('new_password')
+
+    if not identity or not new_password:
+        return jsonify({'error': 'Missing identity or new password'}), 400
+
+    cur = connection.cursor()
+    try:
+        # Update password by email or username
+        cur.execute("""
+            UPDATE public."AGT_User_Profile"
+            SET "Password" = %s
+            WHERE "Username" = %s OR "Email" = %s
+        """, (new_password, identity, identity))
+
+        if cur.rowcount == 0:
+            return jsonify({'error': 'User not found'}), 404
+
+        connection.commit()
+        return jsonify({'message': 'Password reset successful!'}), 200
+    except Exception as e:
+        connection.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cur.close()
 
 @app.route('/get_user_details', methods=['POST'])
 def get_user_details():
