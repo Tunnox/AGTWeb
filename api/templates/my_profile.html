@@ -412,6 +412,20 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
   const text = await response.text();
   try {
     const result = JSON.parse(text);
+    if (response.status === 409) {
+  const msg = result.error || 'A profile already exists.';
+  alert(msg);
+
+  // If it's a name conflict, return to login tab
+  if (msg.toLowerCase().includes('full name')) {
+    document.querySelector('[data-target="login"]').click();
+  }
+
+  form.reset();
+  document.getElementById('photo-preview').src = '';
+  return;
+}
+
     if (response.ok) {
       alert(result.message || 'Profile created!');
       form.reset();
@@ -423,6 +437,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     alert('Server error: ' + text);
   }
 });
+
 </script>
 <script>
     // Optionally close nav when clicking a link
