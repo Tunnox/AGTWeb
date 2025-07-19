@@ -31,6 +31,10 @@ def admin_page():
 @app.route('/my_profile')
 def my_profile_page():
     return render_template('my_profile.html')
+
+@app.route('/login_admin')
+def login_admin():
+    return render_template('login.html')
     
 @app.route('/agt_login', methods=['POST'])
 def agt_login():
@@ -56,7 +60,7 @@ def agt_login():
         cur.close()
         
 #_____________________________AGT HOME PAGE_____________________________________________________________________________________________
-@app.route('/agt_home')
+@app.route('/main')
 def home_index():
     return render_template('main.html')
 #____________________________AGT ADULT CHURCH______________________________________________________________________________________________
