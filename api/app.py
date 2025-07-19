@@ -513,7 +513,7 @@ def register_profile():
         if existing:
             existing_name, existing_user, existing_email = existing
             if existing_name == fullname:
-                return jsonify({'error': 'A profile already exists for this full name.'}), 409
+                return jsonify({'error': 'A profile already exists for ', fullname}), 409
             elif existing_user == username:
                 return jsonify({'error': 'Username is already taken.'}), 409
             elif existing_email == email:
