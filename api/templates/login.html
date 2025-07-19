@@ -79,9 +79,92 @@
       font-size: 13px;
       opacity: 0.85;
     }
+    /* Navigation */
+    .navbar {
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 15px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      font-size: 20px;
+      font-weight: bold;
+      color: #04395E;
+    }
+
+    .nav-toggle {
+      display: none;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #04395E;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #04395E;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      background-color: #20c997;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        flex-direction: column;
+        background-color: #fff;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        width: 200px;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: none;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+    }
+
   </style>
 </head>
 <body>
+
+  <nav class="navbar">
+    <div class="nav-brand">AGT Sheffield</div>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/my_profile">My Profile</a>
+      <a href="https://www.rccgamazinggracesheffield.org/about-us/">About</a>
+      <a href="https://www.rccgamazinggracesheffield.org/contact/">Contact</a>
+      <a href="/login_admin">Admin Center</a>
+    </div>
+  </nav>
   <header>
     <h1>
       <img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="SmartRecord Logo" />
@@ -123,6 +206,14 @@
         window.location.href = '/admin';
       }
     };
+  </script>
+  <script>
+    // Optionally close nav when clicking a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.remove('open');
+      });
+    });
   </script>
 </body>
 </html>
