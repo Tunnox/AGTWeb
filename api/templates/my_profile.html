@@ -256,17 +256,18 @@ button:hover {
 </div>
 
 <!-- Reset Password Modal -->
+<!-- Reset Password Modal -->
 <div id="reset-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
-  <div style="background:white; padding:30px; border-radius:12px; width:90%; max-width:400px; text-align:center;">
-    <h3 style="margin-bottom: 20px;">Reset Your Password</h3>
+  <div style="background:white; padding:30px; border-radius:12px; width:90%; max-width:400px; position:relative;">
+    <button onclick="document.getElementById('reset-modal').style.display='none'" style="position:absolute; top:10px; right:12px; font-size:20px; background:none; border:none; cursor:pointer;">&times;</button>
+    <h3 style="margin-bottom: 20px; text-align:center;">Reset Your Password</h3>
     <input type="text" id="reset-identity" placeholder="Enter your email or username" style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #ccc;">
     <input type="password" id="new-password" placeholder="New password" style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #ccc;">
     <input type="password" id="confirm-password" placeholder="Confirm password" style="width:100%; padding:10px; margin-bottom:20px; border-radius:6px; border:1px solid #ccc;">
-    <button onclick="submitPasswordReset()" style="background:#20c997; color:white; padding:10px 20px; border:none; border-radius:6px;">Reset Password</button>
-    <br><br>
-    <button onclick="document.getElementById('reset-modal').style.display='none'" style="background:#dee2e6; padding:8px 16px; border:none; border-radius:6px;">Cancel</button>
+    <button onclick="submitPasswordReset()" style="background:#20c997; color:white; padding:10px 20px; border:none; border-radius:6px; width:100%;">Reset Password</button>
   </div>
 </div>
+
 
 
 
@@ -495,6 +496,14 @@ document.getElementById('forgot-password-link').onclick = (e) => {
   document.getElementById('reset-modal').style.display = 'flex';
 };
 
+function isStrongPassword(pw) {
+  return pw.length >= 8 &&
+         /[a-z]/.test(pw) &&
+         /[A-Z]/.test(pw) &&
+         /[0-9]/.test(pw) &&
+         /[^a-zA-Z0-9]/.test(pw); // symbol
+}
+
 async function submitPasswordReset() {
   const identity = document.getElementById('reset-identity').value.trim();
   const newPass = document.getElementById('new-password').value;
@@ -507,6 +516,11 @@ async function submitPasswordReset() {
 
   if (newPass !== confirmPass) {
     alert("Passwords do not match.");
+    return;
+  }
+
+  if (!isStrongPassword(newPass)) {
+    alert("Password must be at least 8 characters, include uppercase, lowercase, number, and symbol.");
     return;
   }
 
@@ -524,6 +538,7 @@ async function submitPasswordReset() {
     alert(result.error || "Unable to reset password.");
   }
 }
+
 
 </script>
 <script>
