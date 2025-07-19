@@ -496,22 +496,47 @@ def register_profile():
         email = data.get('email') or f"{username}@agt.org"
         fullname = data.get('fullname')
         contact_number = data.get('contact_number')
+
         if password != confirm_password:
             return jsonify({'error': 'Passwords do not match'}), 400
+
+        cur = connection.cursor()
+
+        # ✅ Check for existing profile by full name, username, or email
+        cur.execute("""
+            SELECT "Full_Name", "Username", "Email" FROM public."AGT_User_Profile"
+            WHERE "Full_Name" = %s OR "Username" = %s OR "Email" = %s
+            LIMIT 1
+        """, (fullname, username, email))
+        existing = cur.fetchone()
+
+        if existing:
+            existing_name, existing_user, existing_email = existing
+            if existing_name == fullname:
+                return jsonify({'error': 'A profile already exists for this full name.'}), 409
+            elif existing_user == username:
+                return jsonify({'error': 'Username is already taken.'}), 409
+            elif existing_email == email:
+                return jsonify({'error': 'Email is already registered.'}), 409
+
+        # ✅ Upload picture and insert new profile
         profile_pic.stream.seek(0)
         url, _ = upload_to_github(profile_pic)
-        cur = connection.cursor()
+
         cur.execute("""
             INSERT INTO public."AGT_User_Profile" 
             ("Email", "Username", "Password", "Full_Name", "Contact_Number", "Profile_Picture")
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (email, username, password, fullname, contact_number, url))
+
         connection.commit()
         cur.close()
         return jsonify({'message': 'Profile created successfully!'}), 201
+
     except Exception as e:
         connection.rollback()
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/login_profile', methods=['POST'])
 def login_profile():
