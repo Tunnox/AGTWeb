@@ -212,16 +212,19 @@
 
   
 <!-- Download Attendance Modal -->
-
-<div class="modal fade" id="downloadModal" tabindex="-1">
-  <div class="modal-dialog">
+<div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4">
-      <h5 class="modal-title mb-3">Download Attendance Records</h5>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="modal-title">Download Attendance Records</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
       <select id="dateDropdown" class="form-select mb-3"></select>
       <button class="btn btn-primary w-100" id="downloadCsvBtn">Download CSV</button>
     </div>
   </div>
 </div>
+
 
 <!-- Create Modal -->
 <div class="modal fade" id="createModal" tabindex="-1">
