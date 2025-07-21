@@ -470,24 +470,65 @@ def children_insert():
     flash('Record inserted successfully!')
     return redirect(url_for('children_index'))
 
-@app.route('/childrens_church/insert_attendance', methods=['GET', 'POST'])
-def children_insert_attendance():
-    if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        date = request.form['date']
+@app.route('/record_attendance', methods=['POST'])
+def record_attendance():
+    data = request.get_json()
+    name = data.get('name')
+    contact = data.get('contact')
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        cursor = connection.cursor()
-        
-        cursor.execute("""
-            INSERT INTO "public"."attendance_manager" ("first_name", "last_name", "date")
+    try:
+        cur = connection.cursor()
+        cur.execute("""
+            INSERT INTO public."AGT_Attendacne" ("Name", "Date", "Contact")
             VALUES (%s, %s, %s);
-        """, (first_name, last_name, date))
-        connection.commit()  # Don't forget to commit the transaction!
-        cursor.close()
-    
-    flash('Attendance record inserted successfully!')
-    return redirect(url_for('children_index'))
+        """, (name, now, contact))
+        connection.commit()
+        cur.close()
+        return jsonify({"message": "Attendance recorded successfully!"})
+    except Exception as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/get_attendance_dates')
+def get_attendance_dates():
+    cur = connection.cursor()
+    cur.execute("""
+        SELECT DISTINCT DATE("Date") FROM public."AGT_Attendacne"
+        ORDER BY DATE("Date") DESC
+    """)
+    dates = [str(r[0]) for r in cur.fetchall()]
+    cur.close()
+    return jsonify(dates)
+
+@app.route('/download_attendance_csv')
+def download_attendance_csv():
+    import csv
+    from io import StringIO
+    date = request.args.get('date')
+    cur = connection.cursor()
+    cur.execute("""
+        SELECT "Name", "Date", "Contact" FROM public."AGT_Attendacne"
+        WHERE DATE("Date") = %s
+    """, (date,))
+    records = cur.fetchall()
+    cur.close()
+
+    si = StringIO()
+    cw = csv.writer(si)
+    cw.writerow(["Name", "Date", "Contact"])
+    cw.writerows(records)
+    output = si.getvalue().encode('utf-8')
+
+    return (
+        output,
+        200,
+        {
+            'Content-Type': 'text/csv',
+            'Content-Disposition': f'attachment; filename="AGT_Attendance_{date}.csv"'
+        }
+    )
 #__________________________________________________________________________________________________________________________________
 #__________________________________________________________________________________________________________________________________
 # Profile feature routes for user registration, login, and record view/edit
