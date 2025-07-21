@@ -244,14 +244,35 @@
 </div>
 
 <section id="attendance" data-aos="fade-up">
-  <h2>Record Attendance</h2>
-  <form action="/childrens_church/insert_attendance" method="POST">
-    <input class="form-control mb-2" name="first_name" placeholder="First Name" required>
-    <input class="form-control mb-2" name="last_name" placeholder="Last Name" required>
-    <input class="form-control mb-2" name="date" type="date" required>
-    <button type="submit" class="btn">Submit</button>
-  </form>
+  <h2>Take Attendance</h2>
+  <input type="text" id="attendanceSearchInput" class="form-control mb-2" placeholder="Search by child name..." />
+  <div id="attendanceSearchResults" class="mt-2"></div>
+  <div id="selectedRecord" class="glass-card d-none mt-3">
+    <h5 id="selectedName"></h5>
+    <p id="selectedContact"></p>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="markPresent">
+      <label class="form-check-label" for="markPresent">Mark as Present</label>
+    </div>
+    <button class="btn mt-3" id="submitAttendance">Take Attendance</button>
+  </div>
 </section>
+
+<!-- DOWNLOAD MODAL -->
+<div class="modal fade" id="downloadModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-4">
+      <h5 class="modal-title mb-3">Download Attendance Records</h5>
+      <select id="dateDropdown" class="form-select mb-3"></select>
+      <button class="btn w-100" id="downloadCsvBtn">Download CSV</button>
+    </div>
+  </div>
+</div>
+
+<div class="text-center mt-4">
+  <button class="btn" data-bs-toggle="modal" data-bs-target="#downloadModal">📥 Download Attendance</button>
+</div>
+
 
 <footer class="text-center py-4">
   <p>&copy; 2025 AGT Records Management | Contact: xyd@gmail.com</p>
@@ -341,5 +362,99 @@
       });
     });
   </script>
+    <script>
+const attendanceSearchInput = document.getElementById('attendanceSearchInput');
+const searchResults = document.getElementById('attendanceSearchResults');
+const selectedCard = document.getElementById('selectedRecord');
+let selectedChild = null;
+
+attendanceSearchInput.addEventListener('input', function () {
+  const keyword = this.value;
+  if (keyword.length < 2) return;
+
+  fetch('/childrens_church/search', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: new URLSearchParams({ keyword })
+  })
+  .then(res => res.json())
+  .then(data => {
+    searchResults.innerHTML = '';
+    selectedCard.classList.add('d-none');
+
+    data.forEach(record => {
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      div.innerText = `${record.first_name} ${record.last_name}`;
+      div.onclick = function () {
+        selectedChild = record;
+        document.getElementById('selectedName').innerText = `${record.first_name} ${record.last_name}`;
+        document.getElementById('selectedContact').innerText = `Contact: ${record.contact_number}`;
+        selectedCard.classList.remove('d-none');
+      };
+      searchResults.appendChild(div);
+    });
+  });
+});
+
+document.getElementById('submitAttendance').addEventListener('click', function () {
+  if (!selectedChild || !document.getElementById('markPresent').checked) {
+    alert("Please select a child and check the attendance box.");
+    return;
+  }
+
+  fetch('/record_attendance', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: `${selectedChild.first_name} ${selectedChild.last_name}`,
+      contact: selectedChild.contact_number
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message || "Attendance recorded.");
+    selectedCard.classList.add('d-none');
+    document.getElementById('markPresent').checked = false;
+    attendanceSearchInput.value = '';
+    searchResults.innerHTML = '';
+  });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  fetch('/get_attendance_dates')
+    .then(res => res.json())
+    .then(data => {
+      const dropdown = document.getElementById('dateDropdown');
+      data.forEach(date => {
+        const option = document.createElement('option');
+        option.value = date;
+        option.textContent = date;
+        dropdown.appendChild(option);
+      });
+    });
+
+  document.getElementById('downloadCsvBtn').addEventListener('click', () => {
+    const date = document.getElementById('dateDropdown').value;
+    if (!date) return;
+
+    fetch(`/download_attendance_csv?date=${date}`)
+      .then(res => res.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `AGT_Attendance_${date}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+  });
+});
+</script>
 </body>
 </html>
