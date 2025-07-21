@@ -16,14 +16,14 @@
       backdrop-filter: blur(4px);
     }
 
-    .glass-card {
+    .glass-card, .section-card {
       background: rgba(0, 0, 0, 0.5);
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 20px;
+      padding: 30px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
       backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 30px;
     }
 
     .form-control, .form-select {
@@ -40,8 +40,9 @@
       background-color: rgba(10, 12, 17, 0.986);
       color: #fff;
     }
+
     .form-select {
-        background-color: rgba(10, 12, 17, 0.986);
+      background-color: rgba(10, 12, 17, 0.986);
     }
 
     .search-result-item {
@@ -61,7 +62,7 @@
       border-radius: 10px;
     }
 
-    h1, h3, h4 {
+    h1, h2, h3, h4, h5 {
       text-shadow: 1px 1px 2px #000;
     }
 
@@ -74,7 +75,7 @@
     label {
       margin-top: 8px;
     }
-    /* Navigation */
+
     .navbar {
       background-color: #fff;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -145,6 +146,15 @@
       }
     }
 
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 1px 1px 3px #000;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -161,39 +171,48 @@
     </div>
   </nav>
 
-<div class="container py-4">
-  <div class="glass-card">
-    <h1 class="text-center mb-4">AGT Teens Record Management</h1>
+  <div class="container py-4">
+    <div class="section-card text-center">
+      <h2 class="section-title">AGT Teens Record Management</h2>
+      <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal">Create New Record</button>
+    </div>
 
-    <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal">Create New Record</button>
-
-    <div class="mb-3">
-      <input type="text" id="searchInput" class="form-control" placeholder="Search by name, age, gender...">
+    <div class="section-card">
+      <h3 class="section-title">🔍 Search Teens</h3>
+      <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search by name, age, gender...">
       <div id="searchResults" class="mt-2"></div>
     </div>
 
-    <div id="details-card" class="glass-card d-none">
-      <h4>Record Details</h4>
+    <div id="details-card" class="section-card d-none">
+      <h3 class="section-title">👤 Record Details</h3>
       <div id="recordDetails"></div>
       <button class="btn btn-warning mt-3" data-bs-toggle="modal" data-bs-target="#updateModal">Update Details</button>
     </div>
 
-    
-<h3 class="mt-5">Record Attendance</h3>
-<input type="text" id="attendanceSearchInput" class="form-control mb-2" placeholder="Search by name...">
-<div id="attendanceSearchResults" class="mt-2"></div>
+    <div class="section-card">
+      <h3 class="section-title">📝 Record Attendance</h3>
+      <input type="text" id="attendanceSearchInput" class="form-control mb-2" placeholder="Search by name...">
+      <div id="attendanceSearchResults" class="mt-2"></div>
+      <div id="selectedRecord" class="glass-card d-none mt-3">
+        <h5 id="selectedName"></h5>
+        <p id="selectedContact"></p>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="markPresent">
+          <label class="form-check-label" for="markPresent">Mark as Present</label>
+        </div>
+        <button class="btn btn-success mt-3" id="submitAttendance">Take Attendance</button>
+      </div>
+    </div>
 
-<div id="selectedRecord" class="glass-card d-none mt-3">
-  <h5 id="selectedName"></h5>
-  <p id="selectedContact"></p>
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="markPresent">
-    <label class="form-check-label" for="markPresent">Mark as Present</label>
+    <div class="section-card text-center">
+      <h3 class="section-title">📥 Download Attendance</h3>
+      <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#downloadModal">Download CSV</button>
+    </div>
   </div>
-  <button class="btn btn-success mt-3" id="submitAttendance">Take Attendance</button>
-</div>
 
+  
 <!-- Download Attendance Modal -->
+
 <div class="modal fade" id="downloadModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content p-4">
@@ -201,13 +220,6 @@
       <select id="dateDropdown" class="form-select mb-3"></select>
       <button class="btn btn-primary w-100" id="downloadCsvBtn">Download CSV</button>
     </div>
-  </div>
-</div>
-
-<div class="text-center mt-3">
-  <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#downloadModal">📥 Download Attendance</button>
-</div>
-
   </div>
 </div>
 
@@ -284,6 +296,11 @@
     </div>
   </div>
 </div>
+
+<footer class="text-center py-3">
+  <p class="mb-0">&copy; 2025 AGT Records Management</p>
+  <p>Contact Admin: xyd@gmail.com</p>
+</footer>
 
 <!-- AJAX SEARCH -->
 <script>
