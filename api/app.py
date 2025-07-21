@@ -173,24 +173,79 @@ def adult_insert():
     flash('Record inserted successfully!')
     return redirect(url_for('adult_index'))
 
-@app.route('/adult_church/insert_attendance', methods=['GET', 'POST'])
-def adult_insert_attendance():
-    if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        date = request.form['date']
+@app.route('/record_adult_attendance', methods=['POST'])
+def record_adult_attendance():
+    data = request.get_json()
+    name = data.get('name')
+    contact = data.get('contact')
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        cursor = connection.cursor()
-        
-        cursor.execute("""
-            INSERT INTO "public"."ADULT_ATTENDANCE_MANAGER" ("first_name", "last_name", "date")
+    try:
+        cur = connection.cursor()
+        cur.execute("""
+            INSERT INTO public."AGT_Attendacne" ("Name", "Date", "Contact")
             VALUES (%s, %s, %s);
-        """, (first_name, last_name, date))
-        connection.commit()  # Don't forget to commit the transaction!
-        cursor.close()
-    
-    flash('Attendance record inserted successfully!')
-    return redirect(url_for('adult_index'))
+        """, (name, now, contact))
+        connection.commit()
+        cur.close()
+        return jsonify({"message": "Attendance recorded successfully!"}), 200
+    except Exception as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/get_adult_attendance_dates', methods=['GET'])
+def get_adult_attendance_dates():
+    cur = connection.cursor()
+    try:
+        cur.execute("""
+            SELECT DISTINCT DATE("Date") FROM public."AGT_Attendacne"
+            ORDER BY DATE("Date") DESC
+        """)
+        dates = [str(row[0]) for row in cur.fetchall()]
+        return jsonify(dates)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+
+@app.route('/download_adult_attendance_csv', methods=['GET'])
+def download_adult_attendance_csv():
+    import csv
+    from io import StringIO
+
+    selected_date = request.args.get('date')
+    if not selected_date:
+        return jsonify({"error": "Date parameter is required"}), 400
+
+    cur = connection.cursor()
+    try:
+        cur.execute("""
+            SELECT "Name", "Date", "Contact"
+            FROM public."AGT_Attendacne"
+            WHERE DATE("Date") = %s
+        """, (selected_date,))
+        records = cur.fetchall()
+        cur.close()
+
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["Name", "Date", "Contact"])
+        writer.writerows(records)
+        csv_data = output.getvalue().encode('utf-8')
+
+        return (
+            csv_data,
+            200,
+            {
+                'Content-Type': 'text/csv',
+                'Content-Disposition': f'attachment; filename="AGT_Attendance_{selected_date}.csv"'
+            }
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 
 #_____________________________AGT TEENS CHURCH___________________________________________________________________________________________________
 
