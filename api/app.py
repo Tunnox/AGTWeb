@@ -35,7 +35,7 @@ def my_profile_page():
     return render_template('my_profile.html')
 
 @app.route('/profile_view')
-def my_profile_page():
+def profile_view():
     return render_template('profile_view.html')
 
 @app.route('/login_admin')
