@@ -6,7 +6,6 @@
   <title>My Profile | AGT</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css"/>
-
   <style>
     :root {
       --bg-light: #f1f3f5;
@@ -18,12 +17,10 @@
       --primary: #20c997;
       --primary-hover: #198754;
     }
-
     [data-theme="dark"] {
       background-color: var(--bg-dark);
       color: var(--text-dark);
     }
-
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
@@ -33,7 +30,6 @@
       backdrop-filter: blur(6px);
       transition: all 0.3s ease;
     }
-
     .navbar {
       background-color: rgba(255, 255, 255, 0.9);
       padding: 15px 20px;
@@ -47,22 +43,18 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       color: var(--text-light);
     }
-
     [data-theme="dark"] .navbar {
       background-color: rgba(33, 37, 41, 0.9);
       color: var(--text-dark);
     }
-
     .nav-brand {
       font-size: 22px;
       font-weight: bold;
     }
-
     .nav-links {
       display: flex;
       gap: 14px;
     }
-
     .nav-links a {
       text-decoration: none;
       color: inherit;
@@ -71,13 +63,11 @@
       font-weight: 600;
       transition: all 0.3s ease;
     }
-
     .nav-links a:hover {
       background-color: var(--primary);
       color: white;
       transform: scale(1.05);
     }
-
     .theme-toggle {
       background: var(--primary);
       color: white;
@@ -87,14 +77,12 @@
       cursor: pointer;
       margin-left: 20px;
     }
-
     h1 {
       font-size: 36px;
       margin-bottom: 20px;
       font-weight: 700;
       text-align: center;
     }
-
     .card {
       background: var(--card-bg-light);
       padding: 30px;
@@ -104,18 +92,10 @@
       max-width: 720px;
       margin: auto;
       transition: all 0.3s ease;
-      animation: fadeInUp 0.5s ease;
     }
-
     [data-theme="dark"] .card {
       background: var(--card-bg-dark);
     }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     .tabs {
       display: flex;
       justify-content: center;
@@ -123,7 +103,6 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-
     .tab-button {
       padding: 12px 24px;
       background: #dee2e6;
@@ -131,15 +110,11 @@
       cursor: pointer;
       font-weight: 500;
       color: #495057;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-
     .tab-button.active {
       background: linear-gradient(135deg, #20c997, #17a2b8);
       color: white;
     }
-
     input, button {
       width: 100%;
       padding: 14px;
@@ -149,18 +124,15 @@
       font-size: 16px;
       background: #f8f9fa;
     }
-
     button {
       background-color: var(--primary);
       color: white;
       font-weight: bold;
       cursor: pointer;
     }
-
     button:hover {
       background-color: var(--primary-hover);
     }
-
     .photo-preview {
       width: 140px;
       height: 140px;
@@ -170,10 +142,8 @@
       border: 3px solid var(--primary);
       display: block;
     }
-
     .section { display: none; }
     .section.active { display: block; }
-
     #progress-container {
       margin-top: 20px;
       background: #e9ecef;
@@ -181,14 +151,12 @@
       overflow: hidden;
       height: 16px;
     }
-
     #progress-bar {
       height: 100%;
       background: var(--primary);
       width: 0%;
       transition: width 0.3s ease;
     }
-
     #cropper-modal {
       display: none;
       position: fixed;
@@ -199,7 +167,6 @@
       align-items: center;
       z-index: 1000;
     }
-
     #cropper-modal-content {
       background: white;
       padding: 20px;
@@ -207,28 +174,6 @@
       max-width: 90%;
       max-height: 90%;
       overflow: auto;
-    }
-
-    @media (max-width: 768px) {
-      .nav-links {
-        flex-direction: column;
-        background: white;
-        position: absolute;
-        top: 60px;
-        right: 10px;
-        padding: 10px;
-        border-radius: 8px;
-        display: none;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      }
-
-      .nav-links.open {
-        display: flex;
-      }
-
-      .theme-toggle {
-        margin-top: 10px;
-      }
     }
   </style>
 </head>
@@ -265,20 +210,25 @@
     </div>
 
     <div class="section" id="register">
-      <input type="text" placeholder="Full Name" class="profile-field">
-      <input type="text" placeholder="Contact Number" class="profile-field">
-      <input type="text" placeholder="Username" class="profile-field">
-      <input type="email" placeholder="Email" class="profile-field">
-      <input type="password" placeholder="Password" class="profile-field">
-      <input type="password" placeholder="Confirm Password" class="profile-field">
-      <input type="file" accept="image/*" id="image-input">
-      <img src="" class="photo-preview" id="preview-img" alt="Preview"/>
-      <div id="progress-container"><div id="progress-bar"></div></div>
-      <button type="submit">Create Profile</button>
+      <p style="text-align:center;">Contact <strong>Admin</strong> to register your details.</p>
+      <input type="text" id="search-name" placeholder="Search for your name..." style="margin-bottom: 8px;">
+      <div id="search-results" style="margin-bottom:16px;"></div>
+
+      <form id="register-form" style="display:none;">
+        <input type="text" id="fullname" class="profile-field" placeholder="Full Name" readonly>
+        <input type="text" id="contact_number" class="profile-field" placeholder="Contact Number" readonly>
+        <input type="text" name="username" class="profile-field" placeholder="Username" required>
+        <input type="email" name="email" class="profile-field" placeholder="Email address" required>
+        <input type="password" name="password" class="profile-field" placeholder="Password" required>
+        <input type="password" name="confirm_password" class="profile-field" placeholder="Confirm Password" required>
+        <input type="file" accept="image/*" id="image-input">
+        <img src="" class="photo-preview" id="preview-img" alt="Preview"/>
+        <div id="progress-container"><div id="progress-bar"></div></div>
+        <button type="submit">Create Profile</button>
+      </form>
     </div>
   </div>
 
-  <!-- Cropper Modal -->
   <div id="cropper-modal">
     <div id="cropper-modal-content">
       <h3>Crop your photo</h3>
@@ -304,17 +254,14 @@
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);
     }
-
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
       setTheme(current === 'dark' ? 'light' : 'dark');
     }
-
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
 
-    // Profile completion progress
     const fields = document.querySelectorAll('.profile-field');
     const bar = document.getElementById('progress-bar');
     fields.forEach(field => {
@@ -325,13 +272,11 @@
       });
     });
 
-    // Image cropper
     let cropper;
     const input = document.getElementById('image-input');
     const modal = document.getElementById('cropper-modal');
     const cropperImg = document.getElementById('cropper-image');
     const preview = document.getElementById('preview-img');
-
     input.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -344,12 +289,41 @@
       };
       reader.readAsDataURL(file);
     });
-
     window.applyCrop = function() {
       const canvas = cropper.getCroppedCanvas({ width: 200, height: 200 });
       preview.src = canvas.toDataURL();
       modal.style.display = 'none';
     };
+
+    const searchBox = document.getElementById('search-name');
+    const resultsBox = document.getElementById('search-results');
+    const fullNameField = document.getElementById('fullname');
+    const contactField = document.getElementById('contact_number');
+    const registerForm = document.getElementById('register-form');
+    searchBox.addEventListener('input', async () => {
+      const keyword = searchBox.value;
+      if (keyword.length < 2) {
+        resultsBox.innerHTML = '';
+        return;
+      }
+      const res = await fetch(`/search_user_records?keyword=${encodeURIComponent(keyword)}`);
+      const results = await res.json();
+      resultsBox.innerHTML = '';
+      results.forEach(person => {
+        const fullName = `${person.first_name} ${person.last_name}`.replace(/\s+/g, ' ').trim();
+        const div = document.createElement('div');
+        div.textContent = fullName;
+        div.style = 'padding:6px 10px; cursor:pointer; background:#f8f9fa; margin-bottom:4px; border-radius:6px;';
+        div.onclick = () => {
+          searchBox.value = fullName;
+          fullNameField.value = fullName;
+          contactField.value = person.contact_number || 'N/A';
+          registerForm.style.display = 'block';
+          resultsBox.innerHTML = '';
+        };
+        resultsBox.appendChild(div);
+      });
+    });
   </script>
 </body>
 </html>
