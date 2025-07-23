@@ -44,10 +44,20 @@
       display: none;
       font-size: 24px;
       cursor: pointer;
-      background: none;
+      background-color: #20c997; /* Primary button color */
       border: none;
-      color: #04395E;
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s ease, transform 0.2s ease;
     }
+    
+    .nav-toggle:hover {
+      background-color: #198754; /* Darker green on hover */
+      transform: scale(1.05);
+    }
+
 
     .nav-links {
       display: flex;
@@ -222,7 +232,7 @@ header::after {
 
   <nav class="navbar">
     <div class="nav-brand">AGT Sheffield</div>
-    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
+    <button class="nav-toggle" aria-label="Toggle navigation menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
     <div class="nav-links">
       <a href="/">Home</a>
       <a href="/my_profile">My Profile</a>
