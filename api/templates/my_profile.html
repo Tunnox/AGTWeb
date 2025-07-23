@@ -298,136 +298,283 @@
 
   <h1>👤 My Profile</h1>
 
-  <div class="card">
-    <div class="tabs">
-      <div class="tab-button active" data-target="login">Login</div>
-      <div class="tab-button" data-target="register">Create Profile</div>
-    </div>
+  <!-- profile.html (Restructured for login, profile view & update) -->
+<div class="card">
+  <div class="tabs">
+    <div class="tab-button active" data-target="login">Login</div>
+    <div class="tab-button" data-target="register">Create Profile</div>
+  </div>
 
-    <div class="section active" id="login">
-      <form>
-        <input type="text" placeholder="Email or Username" />
-        <input type="password" placeholder="Password" />
-        <button type="submit">Login</button>
-        <p style="text-align:right;"><a href="#" style="font-size: 14px; color: var(--primary);">Forgot password?</a></p>
-      </form>
-    </div>
+  <!-- Login Section -->
+  <div class="section active" id="login">
+    <form>
+      <input type="text" placeholder="Email or Username" required />
+      <input type="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+      <p style="text-align:right;"><a href="#" style="font-size: 14px; color: var(--primary);">Forgot password?</a></p>
+    </form>
+  </div>
 
-    <div class="section" id="register">
-      <p style="text-align:center;">Contact <strong>Admin</strong> to register your details.</p>
-      <input type="text" id="search-name" placeholder="Search for your name..." style="margin-bottom: 8px;">
-      <div id="search-results" style="margin-bottom:16px;"></div>
-
-      <form id="register-form" style="display:none;">
-        <input type="text" id="fullname" class="profile-field" placeholder="Full Name" readonly>
-        <input type="text" id="contact_number" class="profile-field" placeholder="Contact Number" readonly>
-        <input type="text" name="username" class="profile-field" placeholder="Username" required>
-        <input type="email" name="email" class="profile-field" placeholder="Email address" required>
-        <input type="password" name="password" class="profile-field" placeholder="Password" required>
-        <input type="password" name="confirm_password" class="profile-field" placeholder="Confirm Password" required>
-        <input type="file" accept="image/*" id="image-input">
-        <img src="" class="photo-preview" id="preview-img" alt="Preview"/>
-        <div id="progress-container"><div id="progress-bar"></div></div>
-        <button type="submit">Create Profile</button>
-      </form>
+  <!-- Profile View Section -->
+  <div class="section" id="profile-view" style="display:none;">
+    <img id="profile-picture" class="photo-preview" alt="Profile Picture" />
+    <div class="profile-info">
+      <div class="field-row"><strong>Full Name:</strong> <span id="profile-fullname"></span> <button class="edit-btn" data-field="fullname">✎</button></div>
+      <div class="field-row"><strong>Age:</strong> <span id="profile-age"></span> <button class="edit-btn" data-field="age">✎</button></div>
+      <div class="field-row"><strong>Gender:</strong> <span id="profile-gender"></span> <button class="edit-btn" data-field="gender">✎</button></div>
+      <div class="field-row"><strong>Birthday:</strong> <span id="profile-birthday"></span> <button class="edit-btn" data-field="birthday">✎</button></div>
+      <div class="field-row"><strong>Contact Number:</strong> <span id="profile-contact"></span> <button class="edit-btn" data-field="contact_number">✎</button></div>
+      <div class="field-row"><strong>Age Group:</strong> <span id="profile-agegroup"></span> <button class="edit-btn" data-field="age_group">✎</button></div>
+      <div class="field-row"><strong>Department:</strong> <span id="profile-department"></span> <button class="edit-btn" data-field="department">✎</button></div>
+      <div class="field-row"><strong>Relationship Status:</strong> <span id="profile-relationship"></span> <button class="edit-btn" data-field="relationship_status">✎</button></div>
+      <div class="field-row"><strong>Email:</strong> <span id="profile-email"></span> <button class="edit-btn" data-field="email">✎</button></div>
+      <div class="field-row"><strong>Address:</strong> <span id="profile-address"></span> <button class="edit-btn" data-field="address">✎</button></div>
+      <div class="field-row"><strong>Consent:</strong> <span id="profile-consent"></span> <button class="edit-btn" data-field="consent">✎</button></div>
+      <div style="text-align:center; margin-top:20px;">
+        <input type="file" id="new-image-input" accept="image/*" style="display:none;"/>
+        <button onclick="document.getElementById('new-image-input').click()">Update Profile Picture</button>
+      </div>
     </div>
   </div>
 
-  <div id="cropper-modal">
-    <div id="cropper-modal-content">
-      <h3>Crop your photo</h3>
-      <img id="cropper-image" style="max-width:100%; max-height:60vh;">
-      <button onclick="applyCrop()">Done</button>
-    </div>
+  <!-- Create Profile Section -->
+  <div class="section" id="register">
+    <p style="text-align:center;">Contact <strong>Admin</strong> to register your details.</p>
+    <input type="text" id="search-name" placeholder="Search for your name." style="margin-bottom: 8px;">
+    <div id="search-results" style="margin-bottom:16px;"></div>
+    <form id="register-form" style="display:none;">
+      <input type="text" id="fullname" class="profile-field" placeholder="Full Name" readonly>
+      <input type="text" id="contact_number" class="profile-field" placeholder="Contact Number" readonly>
+      <input type="text" name="username" class="profile-field" placeholder="Username" required>
+      <input type="email" name="email" class="profile-field" placeholder="Email address" required>
+      <input type="password" name="password" class="profile-field" placeholder="Password" required>
+      <input type="password" name="confirm_password" class="profile-field" placeholder="Confirm Password" required>
+      <input type="file" accept="image/*" id="image-input">
+      <img src="" class="photo-preview" id="preview-img" alt="Preview"/>
+      <div id="progress-container"><div id="progress-bar"></div></div>
+      <button type="submit">Create Profile</button>
+    </form>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
-  <script>
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const sections = document.querySelectorAll('.section');
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabButtons.forEach(b => b.classList.remove('active'));
-        sections.forEach(s => s.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.target).classList.add('active');
-      });
+<!-- Crop Modal -->
+<div id="cropper-modal">
+  <div id="cropper-modal-content">
+    <h3>Crop your photo</h3>
+    <img id="cropper-image" style="max-width:100%; max-height:60vh;">
+    <button onclick="applyCrop()">Done</button>
+  </div>
+</div>
+
+ <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+<script>
+  let currentUser = null;
+  let currentCategory = null;
+
+  // Theme toggling
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  }
+  setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+  // Tab toggle
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).classList.add('active');
+    };
+  });
+
+  // Login handler
+  document.querySelector('#login form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const identity = e.target.querySelector('input[type="text"]').value;
+    const password = e.target.querySelector('input[type="password"]').value;
+
+    const loginRes = await fetch('/login_profile', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ identity, password })
     });
+    const loginData = await loginRes.json();
+    if (!loginRes.ok) return alert(loginData.error || 'Login failed');
 
-    function setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-    }
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      setTheme(current === 'dark' ? 'light' : 'dark');
-    }
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+    currentUser = loginData.user;
 
-    const fields = document.querySelectorAll('.profile-field');
-    const bar = document.getElementById('progress-bar');
-    fields.forEach(field => {
-      field.addEventListener('input', () => {
-        const filled = Array.from(fields).filter(f => f.value.trim() !== '').length;
-        const percent = Math.round((filled / fields.length) * 100);
-        bar.style.width = percent + '%';
-      });
+    const detailsRes = await fetch('/get_user_details', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: currentUser.email })
     });
+    const detailsData = await detailsRes.json();
+    if (!detailsRes.ok) return alert(detailsData.error || 'Failed to load details');
 
-    let cropper;
-    const input = document.getElementById('image-input');
-    const modal = document.getElementById('cropper-modal');
-    const cropperImg = document.getElementById('cropper-image');
-    const preview = document.getElementById('preview-img');
-    input.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        cropperImg.src = reader.result;
-        modal.style.display = 'flex';
-        if (cropper) cropper.destroy();
-        cropper = new Cropper(cropperImg, { aspectRatio: 1, viewMode: 1 });
-      };
-      reader.readAsDataURL(file);
-    });
-    window.applyCrop = function() {
-      const canvas = cropper.getCroppedCanvas({ width: 200, height: 200 });
-      preview.src = canvas.toDataURL();
-      modal.style.display = 'none';
+    currentCategory = detailsData.category;
+    populateUserProfile(detailsData.data);
+  });
+
+  function populateUserProfile(data) {
+    document.querySelector('.section.active').classList.remove('active');
+    const viewSection = document.getElementById('profile-view');
+    viewSection.classList.add('active');
+
+    document.getElementById('profile-picture').src = currentUser.profile_picture;
+
+    const fieldMap = {
+      fullname: 'Full_Name',
+      age: 'age',
+      gender: 'gender',
+      birthday: 'birthday',
+      contact: 'contact_number',
+      agegroup: 'age_group',
+      department: 'department',
+      relationship: 'relationship_status',
+      email: 'email',
+      address: 'address',
+      consent: 'consent'
     };
 
-    const searchBox = document.getElementById('search-name');
-    const resultsBox = document.getElementById('search-results');
-    const fullNameField = document.getElementById('fullname');
-    const contactField = document.getElementById('contact_number');
-    const registerForm = document.getElementById('register-form');
-    searchBox.addEventListener('input', async () => {
-      const keyword = searchBox.value;
-      if (keyword.length < 2) {
-        resultsBox.innerHTML = '';
-        return;
-      }
-      const res = await fetch(`/search_user_records?keyword=${encodeURIComponent(keyword)}`);
-      const results = await res.json();
-      resultsBox.innerHTML = '';
-      results.forEach(person => {
-        const fullName = `${person.first_name} ${person.last_name}`.replace(/\s+/g, ' ').trim();
-        const div = document.createElement('div');
-        div.textContent = fullName;
-        div.style = 'padding:6px 10px; cursor:pointer; background:#f8f9fa; margin-bottom:4px; border-radius:6px;';
-        div.onclick = () => {
-          searchBox.value = fullName;
-          fullNameField.value = fullName;
-          contactField.value = person.contact_number || 'N/A';
-          registerForm.style.display = 'block';
-          resultsBox.innerHTML = '';
+    for (const id in fieldMap) {
+      const el = document.getElementById('profile-' + id);
+      if (el) el.textContent = data[fieldMap[id]] || '';
+    }
+
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.onclick = () => {
+        const fieldKey = btn.dataset.field;
+        const displayEl = document.getElementById('profile-' + fieldKey.replace(/_/g, ''));
+        const current = displayEl.textContent;
+        const input = document.createElement('input');
+        input.value = current;
+        input.style = 'width: 100%; padding: 6px;';
+        input.onblur = () => {
+          displayEl.textContent = input.value;
+          displayEl.dataset.updated = input.value;
         };
-        resultsBox.appendChild(div);
-      });
+        displayEl.innerHTML = '';
+        displayEl.appendChild(input);
+        input.focus();
+      };
     });
-  </script>
+
+    document.getElementById('new-image-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('profile_picture', file);
+      formData.append('email', currentUser.email);
+
+      const previewURL = URL.createObjectURL(file);
+      document.getElementById('profile-picture').src = previewURL;
+    });
+
+    document.getElementById('save-updates').onclick = async () => {
+      const updates = {};
+      document.querySelectorAll('[id^=\"profile-\"]').forEach(el => {
+        const field = el.id.replace('profile-', '');
+        if (el.dataset.updated) updates[field] = el.dataset.updated;
+      });
+
+      const res = await fetch('/update_user_details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: currentUser.email,
+          category: currentCategory,
+          updates
+        })
+      });
+
+      const result = await res.json();
+      alert(result.message || result.error);
+    };
+  }
+
+  // Search user records for registration
+  const searchBox = document.getElementById('search-name');
+  const resultsBox = document.getElementById('search-results');
+  const fullNameField = document.getElementById('fullname');
+  const contactField = document.getElementById('contact_number');
+  const registerForm = document.getElementById('register-form');
+
+  searchBox.addEventListener('input', async () => {
+    const keyword = searchBox.value;
+    if (keyword.length < 2) {
+      resultsBox.innerHTML = '';
+      return;
+    }
+    const res = await fetch(`/search_user_records?keyword=${encodeURIComponent(keyword)}`);
+    const results = await res.json();
+    resultsBox.innerHTML = '';
+    results.forEach(person => {
+      const fullName = `${person.first_name} ${person.last_name}`.trim();
+      const div = document.createElement('div');
+      div.textContent = fullName;
+      div.style = 'padding:6px 10px; cursor:pointer; background:#f8f9fa; margin-bottom:4px; border-radius:6px;';
+      div.onclick = () => {
+        searchBox.value = fullName;
+        fullNameField.value = fullName;
+        contactField.value = person.contact_number || 'N/A';
+        registerForm.style.display = 'block';
+        resultsBox.innerHTML = '';
+      };
+      resultsBox.appendChild(div);
+    });
+  });
+
+  // Registration submit
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(registerForm);
+    const imageBlob = await fetch(document.getElementById('preview-img').src).then(r => r.blob());
+    formData.append('profile_picture', imageBlob, 'profile.png');
+
+    const res = await fetch('/register_profile', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+      alert(result.message);
+      location.reload();
+    } else {
+      alert(result.error || 'Error creating profile');
+    }
+  });
+
+  // Cropper setup
+  let cropper;
+  const input = document.getElementById('image-input');
+  const modal = document.getElementById('cropper-modal');
+  const cropperImg = document.getElementById('cropper-image');
+  const preview = document.getElementById('preview-img');
+  input.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      cropperImg.src = reader.result;
+      modal.style.display = 'flex';
+      if (cropper) cropper.destroy();
+      cropper = new Cropper(cropperImg, { aspectRatio: 1, viewMode: 1 });
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.applyCrop = function() {
+    const canvas = cropper.getCroppedCanvas({ width: 200, height: 200 });
+    preview.src = canvas.toDataURL();
+    modal.style.display = 'none';
+  };
+</script>
+
 </body>
 </html>
