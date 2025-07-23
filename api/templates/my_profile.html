@@ -17,10 +17,17 @@
       --primary: #20c997;
       --primary-hover: #198754;
     }
+
     [data-theme="dark"] {
       background-color: var(--bg-dark);
       color: var(--text-dark);
     }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
@@ -30,6 +37,7 @@
       backdrop-filter: blur(6px);
       transition: all 0.3s ease;
     }
+
     .navbar {
       background-color: rgba(255, 255, 255, 0.9);
       padding: 15px 20px;
@@ -39,22 +47,28 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       color: var(--text-light);
     }
+
     [data-theme="dark"] .navbar {
       background-color: rgba(33, 37, 41, 0.9);
       color: var(--text-dark);
     }
+
     .nav-brand {
       font-size: 22px;
       font-weight: bold;
     }
+
     .nav-links {
       display: flex;
+      flex-wrap: wrap;
       gap: 14px;
     }
+
     .nav-links a {
       text-decoration: none;
       color: inherit;
@@ -63,11 +77,13 @@
       font-weight: 600;
       transition: all 0.3s ease;
     }
+
     .nav-links a:hover {
       background-color: var(--primary);
       color: white;
       transform: scale(1.05);
     }
+
     .theme-toggle {
       background: var(--primary);
       color: white;
@@ -77,12 +93,14 @@
       cursor: pointer;
       margin-left: 20px;
     }
+
     h1 {
       font-size: 36px;
       margin-bottom: 20px;
       font-weight: 700;
       text-align: center;
     }
+
     .card {
       background: var(--card-bg-light);
       padding: 30px;
@@ -93,9 +111,11 @@
       margin: auto;
       transition: all 0.3s ease;
     }
+
     [data-theme="dark"] .card {
       background: var(--card-bg-dark);
     }
+
     .tabs {
       display: flex;
       justify-content: center;
@@ -103,6 +123,7 @@
       gap: 12px;
       flex-wrap: wrap;
     }
+
     .tab-button {
       padding: 12px 24px;
       background: #dee2e6;
@@ -111,10 +132,12 @@
       font-weight: 500;
       color: #495057;
     }
+
     .tab-button.active {
       background: linear-gradient(135deg, #20c997, #17a2b8);
       color: white;
     }
+
     input, button {
       width: 100%;
       padding: 14px;
@@ -123,27 +146,35 @@
       border: 1px solid #dee2e6;
       font-size: 16px;
       background: #f8f9fa;
+      box-sizing: border-box;
     }
+
     button {
       background-color: var(--primary);
       color: white;
       font-weight: bold;
       cursor: pointer;
     }
+
     button:hover {
       background-color: var(--primary-hover);
     }
+
     .photo-preview {
-      width: 140px;
-      height: 140px;
+      width: 35vw;
+      height: 35vw;
+      max-width: 140px;
+      max-height: 140px;
       border-radius: 50%;
       object-fit: cover;
       margin: 12px auto;
       border: 3px solid var(--primary);
       display: block;
     }
+
     .section { display: none; }
     .section.active { display: block; }
+
     #progress-container {
       margin-top: 20px;
       background: #e9ecef;
@@ -151,12 +182,14 @@
       overflow: hidden;
       height: 16px;
     }
+
     #progress-bar {
       height: 100%;
       background: var(--primary);
       width: 0%;
       transition: width 0.3s ease;
     }
+
     #cropper-modal {
       display: none;
       position: fixed;
@@ -167,6 +200,7 @@
       align-items: center;
       z-index: 1000;
     }
+
     #cropper-modal-content {
       background: white;
       padding: 20px;
@@ -174,6 +208,58 @@
       max-width: 90%;
       max-height: 90%;
       overflow: auto;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 10px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .nav-links a {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      .tabs {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .tab-button {
+        width: 100%;
+        text-align: center;
+      }
+
+      .card {
+        padding: 20px;
+        margin: 10px;
+      }
+
+      input, button {
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      .theme-toggle {
+        margin-left: 0;
+        margin-top: 10px;
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
