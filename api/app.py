@@ -716,16 +716,43 @@ def login_profile():
     cur.close()
     if not user:
         return jsonify({'error': 'Invalid login credentials'}), 401
-    return jsonify({
-        'message': 'Login successful',
-        'user': {
-            'email': user[0],
-            'username': user[1],
-            'fullname': user[2],
-            'contact_number': user[3],
-            'profile_picture': user[4]
-        }
-    }), 200
+    cur.execute("""
+    SELECT "Email", "Username", "Full_Name", "Contact_Number", "Profile_Picture"
+    FROM public."AGT_User_Profile"
+    WHERE ("Username" = %s OR "Email" = %s) AND "Password" = %s;
+""", (identity, identity, password))
+user = cur.fetchone()
+
+if not user:
+    return jsonify({'error': 'Invalid login credentials'}), 401
+
+user_email = user[0]
+
+# Get detailed user record
+detail = None
+category = None
+
+for cat, table in [('teens', 'AGT_TEENS_DATA_RECORDS'), ('adult', 'AGT_ADULT_DATA_RECORDS'), ('children', 'AGT_CHILDREN_DATA_RECORDS')]:
+    cur.execute(f'SELECT * FROM "public"."{table}" WHERE "email" = %s LIMIT 1', (user_email,))
+    row = cur.fetchone()
+    if row:
+        category = cat
+        detail = dict(zip([desc[0] for desc in cur.description], row))
+        break
+
+return jsonify({
+    'message': 'Login successful',
+    'user': {
+        'email': user_email,
+        'username': user[1],
+        'fullname': user[2],
+        'contact_number': user[3],
+        'profile_picture': user[4],
+        'category': category,
+        'details': detail
+    }
+}), 200
+
     
 @app.route('/reset_password', methods=['POST'])
 def reset_password():
