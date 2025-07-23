@@ -315,28 +315,6 @@
     </form>
   </div>
 
-  <!-- Profile View Section -->
-  <div class="section" id="profile-view" style="display:none;">
-    <img id="profile-picture" class="photo-preview" alt="Profile Picture" />
-    <div class="profile-info">
-      <div class="field-row"><strong>Full Name:</strong> <span id="profile-fullname"></span> <button class="edit-btn" data-field="fullname">✎</button></div>
-      <div class="field-row"><strong>Age:</strong> <span id="profile-age"></span> <button class="edit-btn" data-field="age">✎</button></div>
-      <div class="field-row"><strong>Gender:</strong> <span id="profile-gender"></span> <button class="edit-btn" data-field="gender">✎</button></div>
-      <div class="field-row"><strong>Birthday:</strong> <span id="profile-birthday"></span> <button class="edit-btn" data-field="birthday">✎</button></div>
-      <div class="field-row"><strong>Contact Number:</strong> <span id="profile-contact"></span> <button class="edit-btn" data-field="contact_number">✎</button></div>
-      <div class="field-row"><strong>Age Group:</strong> <span id="profile-agegroup"></span> <button class="edit-btn" data-field="age_group">✎</button></div>
-      <div class="field-row"><strong>Department:</strong> <span id="profile-department"></span> <button class="edit-btn" data-field="department">✎</button></div>
-      <div class="field-row"><strong>Relationship Status:</strong> <span id="profile-relationship"></span> <button class="edit-btn" data-field="relationship_status">✎</button></div>
-      <div class="field-row"><strong>Email:</strong> <span id="profile-email"></span> <button class="edit-btn" data-field="email">✎</button></div>
-      <div class="field-row"><strong>Address:</strong> <span id="profile-address"></span> <button class="edit-btn" data-field="address">✎</button></div>
-      <div class="field-row"><strong>Consent:</strong> <span id="profile-consent"></span> <button class="edit-btn" data-field="consent">✎</button></div>
-      <div style="text-align:center; margin-top:20px;">
-        <input type="file" id="new-image-input" accept="image/*" style="display:none;"/>
-        <button onclick="document.getElementById('new-image-input').click()">Update Profile Picture</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Create Profile Section -->
   <div class="section" id="register">
     <p style="text-align:center;">Contact <strong>Admin</strong> to register your details.</p>
@@ -366,6 +344,38 @@
   </div>
 </div>
 
+<!-- Profile Info Modal -->
+<div id="profile-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; color:black; padding:20px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.3); max-width:600px; width:90%; z-index:9999;">
+  <h2 id="modal-username"></h2>
+  <img id="profile-picture" class="photo-preview" alt="Profile Picture" />
+  <div class="profile-info">
+    <div class="field-row"><strong>Full Name:</strong> <span id="profile-fullname"></span> <button class="edit-btn" data-field="fullname">✎</button></div>
+    <div class="field-row"><strong>Age:</strong> <span id="profile-age"></span> <button class="edit-btn" data-field="age">✎</button></div>
+    <div class="field-row"><strong>Gender:</strong> <span id="profile-gender"></span> <button class="edit-btn" data-field="gender">✎</button></div>
+    <div class="field-row"><strong>Birthday:</strong> <span id="profile-birthday"></span> <button class="edit-btn" data-field="birthday">✎</button></div>
+    <div class="field-row"><strong>Contact Number:</strong> <span id="profile-contact"></span> <button class="edit-btn" data-field="contact_number">✎</button></div>
+    <div class="field-row"><strong>Age Group:</strong> <span id="profile-agegroup"></span> <button class="edit-btn" data-field="age_group">✎</button></div>
+    <div class="field-row"><strong>Department:</strong> <span id="profile-department"></span> <button class="edit-btn" data-field="department">✎</button></div>
+    <div class="field-row"><strong>Relationship Status:</strong> <span id="profile-relationship"></span> <button class="edit-btn" data-field="relationship_status">✎</button></div>
+    <div class="field-row"><strong>Email:</strong> <span id="profile-email"></span> <button class="edit-btn" data-field="email">✎</button></div>
+    <div class="field-row"><strong>Address:</strong> <span id="profile-address"></span> <button class="edit-btn" data-field="address">✎</button></div>
+    <div class="field-row"><strong>Consent:</strong> <span id="profile-consent"></span> <button class="edit-btn" data-field="consent">✎</button></div>
+  </div>
+  <div style="margin-top:20px; text-align:center;">
+    <input type="file" id="new-image-input" accept="image/*" style="display:none;"/>
+    <button onclick="document.getElementById('new-image-input').click()">Update Profile Picture</button>
+    <button id="save-updates" style="margin-left:10px;">Save Changes</button>
+    <button onclick="document.getElementById('profile-modal').style.display='none'" style="margin-left:10px;">Close</button>
+  </div>
+</div>
+
+<!-- Feedback Modal -->
+<div id="feedback-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; color:black; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:10000;">
+  <p id="feedback-message"></p>
+  <button onclick="document.getElementById('feedback-modal').style.display='none'" style="margin-top:10px;">Close</button>
+</div>
+
+
  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
 <script>
   let currentUser = null;
@@ -392,42 +402,17 @@
     };
   });
 
-  // Login handler
-  document.querySelector('#login form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const identity = e.target.querySelector('input[type="text"]').value;
-    const password = e.target.querySelector('input[type="password"]').value;
+  // Utility
+  function showFeedback(message) {
+    document.getElementById('feedback-message').textContent = message;
+    document.getElementById('feedback-modal').style.display = 'block';
+  }
 
-    const loginRes = await fetch('/login_profile', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ identity, password })
-    });
-    const loginData = await loginRes.json();
-    if (!loginRes.ok) return alert(loginData.error || 'Login failed');
+  function populateProfileModal(user, details) {
+    document.getElementById('modal-username').textContent = user.username;
+    document.getElementById('profile-picture').src = user.profile_picture;
 
-    currentUser = loginData.user;
-
-    const detailsRes = await fetch('/get_user_details', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: currentUser.email })
-    });
-    const detailsData = await detailsRes.json();
-    if (!detailsRes.ok) return alert(detailsData.error || 'Failed to load details');
-
-    currentCategory = detailsData.category;
-    populateUserProfile(detailsData.data);
-  });
-
-  function populateUserProfile(data) {
-    document.querySelector('.section.active').classList.remove('active');
-    const viewSection = document.getElementById('profile-view');
-    viewSection.classList.add('active');
-
-    document.getElementById('profile-picture').src = currentUser.profile_picture;
-
-    const fieldMap = {
+    const mapping = {
       fullname: 'Full_Name',
       age: 'age',
       gender: 'gender',
@@ -441,63 +426,135 @@
       consent: 'consent'
     };
 
-    for (const id in fieldMap) {
+    for (const id in mapping) {
       const el = document.getElementById('profile-' + id);
-      if (el) el.textContent = data[fieldMap[id]] || '';
+      if (el && details[mapping[id]] !== undefined) {
+        el.textContent = details[mapping[id]] || '';
+      }
     }
 
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.onclick = () => {
-        const fieldKey = btn.dataset.field;
-        const displayEl = document.getElementById('profile-' + fieldKey.replace(/_/g, ''));
-        const current = displayEl.textContent;
-        const input = document.createElement('input');
-        input.value = current;
-        input.style = 'width: 100%; padding: 6px;';
-        input.onblur = () => {
-          displayEl.textContent = input.value;
-          displayEl.dataset.updated = input.value;
-        };
-        displayEl.innerHTML = '';
-        displayEl.appendChild(input);
-        input.focus();
-      };
-    });
-
-    document.getElementById('new-image-input').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const formData = new FormData();
-      formData.append('profile_picture', file);
-      formData.append('email', currentUser.email);
-
-      const previewURL = URL.createObjectURL(file);
-      document.getElementById('profile-picture').src = previewURL;
-    });
-
-    document.getElementById('save-updates').onclick = async () => {
-      const updates = {};
-      document.querySelectorAll('[id^=\"profile-\"]').forEach(el => {
-        const field = el.id.replace('profile-', '');
-        if (el.dataset.updated) updates[field] = el.dataset.updated;
-      });
-
-      const res = await fetch('/update_user_details', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: currentUser.email,
-          category: currentCategory,
-          updates
-        })
-      });
-
-      const result = await res.json();
-      alert(result.message || result.error);
-    };
+    document.getElementById('profile-modal').style.display = 'block';
   }
 
-  // Search user records for registration
+  // Login Handler
+  document.querySelector('#login form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const identity = e.target.querySelector('input[type="text"]').value;
+    const password = e.target.querySelector('input[type="password"]').value;
+
+    if (!identity || !password) {
+      return showFeedback("Please enter both email/username and password.");
+    }
+
+    const res = await fetch('/login_profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identity, password })
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        showFeedback("Invalid login details.");
+      } else if (res.status === 404) {
+        showFeedback("No login exists for this user.");
+      } else {
+        showFeedback(result.error || "An error occurred.");
+      }
+      return;
+    }
+
+    currentUser = result.user;
+
+    const detailRes = await fetch('/get_user_details', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: currentUser.email })
+    });
+
+    const detailData = await detailRes.json();
+    if (!detailRes.ok) return showFeedback(detailData.error || "Failed to fetch details");
+
+    currentCategory = detailData.category;
+    populateProfileModal(currentUser, detailData.data);
+  });
+
+  // Editable Fields
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const fieldKey = btn.dataset.field;
+      const targetSpan = document.getElementById('profile-' + fieldKey.replace(/_/g, ''));
+      const current = targetSpan.textContent;
+      const input = document.createElement('input');
+      input.value = current;
+      input.style = 'width: 100%; padding: 6px;';
+      input.onblur = () => {
+        targetSpan.textContent = input.value;
+        targetSpan.dataset.updated = input.value;
+      };
+      targetSpan.textContent = '';
+      targetSpan.appendChild(input);
+      input.focus();
+    });
+  });
+
+  // Save Updates
+  document.getElementById('save-updates').addEventListener('click', async () => {
+    const updates = {};
+    document.querySelectorAll('[id^=\"profile-\"]').forEach(el => {
+      const key = el.id.replace('profile-', '');
+      if (el.dataset.updated) updates[key] = el.dataset.updated;
+    });
+
+    const res = await fetch('/update_user_details', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: currentUser.email,
+        category: currentCategory,
+        updates
+      })
+    });
+
+    const result = await res.json();
+    showFeedback(result.message || result.error || "Update complete.");
+  });
+
+  // Update Profile Picture Preview
+  document.getElementById('new-image-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    document.getElementById('profile-picture').src = url;
+  });
+
+  // Cropper Setup
+  let cropper;
+  const input = document.getElementById('image-input');
+  const modal = document.getElementById('cropper-modal');
+  const cropperImg = document.getElementById('cropper-image');
+  const preview = document.getElementById('preview-img');
+  input.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      cropperImg.src = reader.result;
+      modal.style.display = 'flex';
+      if (cropper) cropper.destroy();
+      cropper = new Cropper(cropperImg, { aspectRatio: 1, viewMode: 1 });
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.applyCrop = function() {
+    const canvas = cropper.getCroppedCanvas({ width: 200, height: 200 });
+    preview.src = canvas.toDataURL();
+    modal.style.display = 'none';
+  };
+
+  // Search & Register
   const searchBox = document.getElementById('search-name');
   const resultsBox = document.getElementById('search-results');
   const fullNameField = document.getElementById('fullname');
@@ -529,11 +586,10 @@
     });
   });
 
-  // Registration submit
   registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(registerForm);
-    const imageBlob = await fetch(document.getElementById('preview-img').src).then(r => r.blob());
+    const imageBlob = await fetch(preview.src).then(r => r.blob());
     formData.append('profile_picture', imageBlob, 'profile.png');
 
     const res = await fetch('/register_profile', {
@@ -543,10 +599,12 @@
 
     const result = await res.json();
     if (res.ok) {
-      alert(result.message);
-      location.reload();
+      showFeedback(result.message || 'Profile created successfully!');
+      registerForm.reset();
+      document.getElementById('preview-img').src = '';
+      document.getElementById('progress-bar').style.width = '0%';
     } else {
-      alert(result.error || 'Error creating profile');
+      showFeedback(result.error || 'Failed to create profile');
     }
   });
 
