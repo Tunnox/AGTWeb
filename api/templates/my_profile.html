@@ -450,82 +450,48 @@
     <button onclick="document.getElementById('invalid-login-modal').style.display='none'">Close</button>
   </div>
 </div>
-  <script>
-document.getElementById('login-form').addEventListener('submit', async (e) => {
+ <script>
+document.getElementById('login-form').addEventListener('submit', async function (e) {
   e.preventDefault();
+
   const form = e.target;
   const identity = form.identity.value.trim();
   const password = form.password.value;
 
-  const res = await fetch('/login_profile', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ identity, password })
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    document.getElementById('invalid-login-modal').style.display = 'flex';
-    return;
-  }
-
-  const user = data.user;
-  const detailRes = await fetch('/get_user_details', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: user.email })
-  });
-
-  const detailData = await detailRes.json();
-  if (!detailRes.ok) {
-    alert(detailData.error || 'Record not found');
-    return;
-  }
-
-  const category = detailData.category;
-  const details = detailData.data;
-  const modal = document.getElementById('user-modal');
-  document.getElementById('modal-profile-pic').src = user.profile_picture;
-  const detailContainer = document.getElementById('modal-details');
-  detailContainer.innerHTML = '';
-  for (const [k, v] of Object.entries(details)) {
-    const row = document.createElement('div');
-    row.innerHTML = `<strong>${k}</strong>: <span data-key="${k}">${v}</span>`;
-    detailContainer.appendChild(row);
-  }
-
-  document.getElementById('edit-btn').onclick = () => {
-    detailContainer.querySelectorAll('span').forEach(span => {
-      const key = span.getAttribute('data-key');
-      const val = span.textContent;
-      const input = document.createElement('input');
-      input.value = val;
-      input.setAttribute('data-key', key);
-      span.replaceWith(input);
-    });
-    document.getElementById('save-btn').style.display = 'inline-block';
-  };
-
-  document.getElementById('save-btn').onclick = async () => {
-    const inputs = detailContainer.querySelectorAll('input');
-    const updates = {};
-    inputs.forEach(input => {
-      updates[input.getAttribute('data-key')] = input.value;
-    });
-    const updateRes = await fetch('/update_user_details', {
+  try {
+    const res = await fetch('/login_profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: user.email, updates, category })
+      body: JSON.stringify({ identity, password })
     });
-    const updateData = await updateRes.json();
-    alert(updateData.message || updateData.error);
-    if (updateRes.ok) modal.style.display = 'none';
-  };
 
-  modal.style.display = 'flex';
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || 'Login failed');
+      return;
+    }
+
+    const user = data.user;
+
+    // Save user data to localStorage for profile_view.html
+    localStorage.setItem('loggedInUser', JSON.stringify({
+      email: user.email,
+      username: user.username,
+      profile_picture: user.profile_picture,
+      category: user.category,
+      details: user.details
+    }));
+
+    // Redirect to profile view page
+    window.location.href = '/profile_view';
+  } catch (err) {
+    alert('An error occurred during login.');
+    console.error(err);
+  }
 });
 </script>
+
 
 
 </body>
