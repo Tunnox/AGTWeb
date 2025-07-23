@@ -40,17 +40,17 @@
 
     .navbar {
       background-color: rgba(255, 255, 255, 0.9);
-      padding: 15px 20px;
+      padding: 10px 16px;
       position: sticky;
       top: 0;
       z-index: 999;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       color: var(--text-light);
+      flex-wrap: wrap;
     }
 
     [data-theme="dark"] .navbar {
@@ -59,23 +59,32 @@
     }
 
     .nav-brand {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      margin-left: auto;
     }
 
     .nav-links {
       display: flex;
-      flex-wrap: wrap;
       gap: 14px;
     }
 
     .nav-links a {
       text-decoration: none;
       color: inherit;
-      padding: 10px 16px;
+      padding: 8px 12px;
       border-radius: 8px;
       font-weight: 600;
       transition: all 0.3s ease;
+      display: block;
     }
 
     .nav-links a:hover {
@@ -88,10 +97,11 @@
       background: var(--primary);
       color: white;
       border: none;
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 4px 8px;
+      border-radius: 6px;
       cursor: pointer;
-      margin-left: 20px;
+      font-size: 14px;
+      margin-left: 10px;
     }
 
     h1 {
@@ -210,33 +220,29 @@
       overflow: auto;
     }
 
-    @media (max-width: 600px) {
-      body {
-        padding: 20px 10px;
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .theme-toggle {
+        font-size: 12px;
+        padding: 4px 8px;
       }
 
       h1 {
         font-size: 24px;
-      }
-
-      .nav-links {
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .nav-links a {
-        padding: 8px 12px;
-        font-size: 14px;
-      }
-
-      .tabs {
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .tab-button {
-        width: 100%;
-        text-align: center;
       }
 
       .card {
@@ -249,16 +255,14 @@
         font-size: 14px;
       }
 
-      .theme-toggle {
-        margin-left: 0;
-        margin-top: 10px;
-        padding: 6px 10px;
-        font-size: 14px;
+      .tabs {
+        flex-direction: column;
+        gap: 8px;
       }
 
-      .navbar {
-        flex-direction: column;
-        align-items: flex-start;
+      .tab-button {
+        width: 100%;
+        text-align: center;
       }
     }
   </style>
@@ -266,7 +270,8 @@
 <body>
   <nav class="navbar">
     <div class="nav-brand">AGT Sheffield</div>
-    <div style="display:flex; align-items:center;">
+    <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
+    <div style="display:flex; align-items:center; flex-wrap:wrap;">
       <div class="nav-links">
         <a href="/">Home</a>
         <a href="/my_profile">My Profile</a>
@@ -274,7 +279,7 @@
         <a href="https://www.rccgamazinggracesheffield.org/contact/">Contact</a>
         <a href="/login_admin">Admin Center</a>
       </div>
-      <button class="theme-toggle" onclick="toggleTheme()">🌗 Theme</button>
+      <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
     </div>
   </nav>
 
