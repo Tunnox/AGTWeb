@@ -34,6 +34,10 @@ def admin_page():
 def my_profile_page():
     return render_template('my_profile.html')
 
+@app.route('/profile_view')
+def my_profile_page():
+    return render_template('profile_view.html')
+
 @app.route('/login_admin')
 def login_admin():
     return render_template('login.html')
