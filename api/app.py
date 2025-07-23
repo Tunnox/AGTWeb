@@ -706,52 +706,52 @@ def login_profile():
     data = request.get_json()
     identity = data.get('identity')
     password = data.get('password')
+
     cur = connection.cursor()
-    cur.execute("""
-        SELECT "Email", "Username", "Full_Name", "Contact_Number", "Profile_Picture"
-        FROM public."AGT_User_Profile"
-        WHERE ("Username" = %s OR "Email" = %s) AND "Password" = %s;
-    """, (identity, identity, password))
-    user = cur.fetchone()
-    cur.close()
-    if not user:
-        return jsonify({'error': 'Invalid login credentials'}), 401
-    cur.execute("""
-    SELECT "Email", "Username", "Full_Name", "Contact_Number", "Profile_Picture"
-    FROM public."AGT_User_Profile"
-    WHERE ("Username" = %s OR "Email" = %s) AND "Password" = %s;
-""", (identity, identity, password))
-user = cur.fetchone()
+    try:
+        # Step 1: Check user in AGT_User_Profile
+        cur.execute("""
+            SELECT "Email", "Username", "Full_Name", "Contact_Number", "Profile_Picture"
+            FROM public."AGT_User_Profile"
+            WHERE ("Username" = %s OR "Email" = %s) AND "Password" = %s;
+        """, (identity, identity, password))
+        user = cur.fetchone()
 
-if not user:
-    return jsonify({'error': 'Invalid login credentials'}), 401
+        if not user:
+            return jsonify({'error': 'Invalid login credentials'}), 401
 
-user_email = user[0]
+        user_email = user[0]
 
-# Get detailed user record
-detail = None
-category = None
+        # Step 2: Get user category + details from relevant table
+        detail = None
+        category = None
 
-for cat, table in [('teens', 'AGT_TEENS_DATA_RECORDS'), ('adult', 'AGT_ADULT_DATA_RECORDS'), ('children', 'AGT_CHILDREN_DATA_RECORDS')]:
-    cur.execute(f'SELECT * FROM "public"."{table}" WHERE "email" = %s LIMIT 1', (user_email,))
-    row = cur.fetchone()
-    if row:
-        category = cat
-        detail = dict(zip([desc[0] for desc in cur.description], row))
-        break
+        for cat, table in [('teens', 'AGT_TEENS_DATA_RECORDS'), ('adult', 'AGT_ADULT_DATA_RECORDS'), ('children', 'AGT_CHILDREN_DATA_RECORDS')]:
+            cur.execute(f'SELECT * FROM "public"."{table}" WHERE "email" = %s LIMIT 1', (user_email,))
+            row = cur.fetchone()
+            if row:
+                category = cat
+                detail = dict(zip([desc[0] for desc in cur.description], row))
+                break
 
-return jsonify({
-    'message': 'Login successful',
-    'user': {
-        'email': user_email,
-        'username': user[1],
-        'fullname': user[2],
-        'contact_number': user[3],
-        'profile_picture': user[4],
-        'category': category,
-        'details': detail
-    }
-}), 200
+        return jsonify({
+            'message': 'Login successful',
+            'user': {
+                'email': user_email,
+                'username': user[1],
+                'fullname': user[2],
+                'contact_number': user[3],
+                'profile_picture': user[4],
+                'category': category,
+                'details': detail
+            }
+        }), 200
+
+    except Exception as e:
+        connection.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cur.close()
 
     
 @app.route('/reset_password', methods=['POST'])
