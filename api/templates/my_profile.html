@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -7,548 +7,287 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-  body {
-  font-family: 'Inter', sans-serif;
-  background: #f1f3f5;
-  padding: 40px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+    :root {
+      --bg-light: #f1f3f5;
+      --bg-dark: #1e1e2f;
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #2a2a3d;
+      --text-light: #212529;
+      --text-dark: #f8f9fa;
+      --primary: #20c997;
+      --primary-hover: #198754;
+    }
 
-h1 {
-  font-size: 32px;
-  margin-bottom: 20px;
-  color: #04395E;
-}
+    [data-theme="dark"] {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
 
-.card {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-  width: 100%;
-  max-width: 600px;
-  transition: box-shadow 0.3s ease;
-}
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      background: url('https://github.com/Tunnox/Images/blob/main/AGT_profile_page_BG.jpg?raw=true') no-repeat center center fixed;
+      background-size: cover;
+      backdrop-filter: blur(6px);
+      color: var(--text-light);
+      transition: all 0.3s ease;
+    }
 
-.card:hover {
-  box-shadow: 0 18px 36px rgba(0,0,0,0.12);
-}
+    [data-theme="dark"] body {
+      color: var(--text-dark);
+    }
 
-.tabs {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  gap: 12px;
-  flex-wrap: wrap;
-}
+    .navbar {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 15px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
-.tab-button {
-  padding: 10px 20px;
-  background: #e9ecef;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s;
-}
+    [data-theme="dark"] .navbar {
+      background-color: rgba(33, 37, 41, 0.9);
+    }
 
-.tab-button:hover {
-  background: #dee2e6;
-  transform: scale(1.03);
-}
+    .nav-brand {
+      font-size: 22px;
+      font-weight: bold;
+      color: #04395E;
+    }
 
-.tab-button.active {
-  background: #20c997;
-  color: white;
-}
+    .nav-links {
+      display: flex;
+      gap: 14px;
+    }
 
-.section {
-  display: none;
-}
+    .nav-links a {
+      text-decoration: none;
+      color: #04395E;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
 
-.section.active {
-  display: block;
-}
+    .nav-links a:hover {
+      background-color: var(--primary);
+      color: white;
+      transform: scale(1.05);
+    }
 
-input, button {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ced4da;
-  font-size: 16px;
-}
+    .theme-toggle {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-left: 20px;
+    }
 
-button {
-  background-color: #20c997;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s;
-}
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      text-align: center;
+    }
 
-button:hover {
-  background-color: #198754;
-}
+    .card {
+      background: var(--card-bg-light);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 720px;
+      margin: auto;
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.5s ease;
+    }
 
-.photo-preview {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  background-color: #dee2e6;
-  margin-bottom: 10px;
-  border: 2px solid #adb5bd;
-}
+    [data-theme="dark"] .card {
+      background: var(--card-bg-dark);
+    }
 
-.photo-button {
-  background: #20c997;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  display: inline-block;
-  transition: background 0.3s;
-}
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-.photo-button:hover {
-  background-color: #198754;
-}
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-/* Modal */
-#user-modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.6);
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
+    .tab-button {
+      padding: 12px 24px;
+      background: #dee2e6;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 500;
+      color: #495057;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
 
-#user-modal .modal-content {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 600px;
-  text-align: center;
-}
+    .tab-button:hover {
+      transform: translateY(-2px);
+    }
 
-#modal-details div {
-  margin-bottom: 12px;
-  font-size: 16px;
-  text-align: left;
-}
+    .tab-button.active {
+      background: linear-gradient(135deg, #20c997, #17a2b8);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 
-#modal-details strong {
-  display: inline-block;
-  width: 140px;
-  color: #495057;
-}
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin: 12px 0;
+      border-radius: 10px;
+      border: 1px solid #dee2e6;
+      font-size: 16px;
+      background: #f8f9fa;
+      transition: border-color 0.3s ease;
+    }
 
-/* Navigation */
-.navbar {
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 15px 20px;
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 100vw;
-}
+    button {
+      background-color: var(--primary);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
 
-.nav-brand {
-  font-size: 22px;
-  font-weight: bold;
-  color: #04395E;
-}
+    button:hover {
+      background-color: var(--primary-hover);
+    }
 
-.nav-toggle {
-  display: none;
-  font-size: 26px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: #04395E;
-}
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #ffffff;
+    }
 
-.nav-links {
-  display: flex;
-  gap: 14px;
-}
+    .photo-preview {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 12px auto;
+      border: 3px solid var(--primary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: block;
+    }
 
-.nav-links a {
-  text-decoration: none;
-  color: #04395E;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
+    .section { display: none; }
+    .section.active { display: block; }
 
-.nav-links a:hover {
-  background-color: #20c997;
-  color: white;
-  transform: scale(1.05);
-}
+    @media (max-width: 768px) {
+      .nav-links {
+        flex-direction: column;
+        position: absolute;
+        background: #fff;
+        right: 10px;
+        top: 60px;
+        border-radius: 8px;
+        display: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      }
 
-@media (max-width: 768px) {
-  .nav-links {
-    flex-direction: column;
-    background-color: #fff;
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    width: 200px;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    display: none;
-  }
+      .nav-links.open {
+        display: flex;
+      }
 
-  .nav-links.open {
-    display: flex;
-  }
-
-  .nav-toggle {
-    display: block;
-  }
-}
+      .theme-toggle {
+        margin-top: 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <nav class="navbar">
     <div class="nav-brand">AGT Sheffield</div>
-    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
-    <div class="nav-links">
-      <a href="/">Home</a>
-      <a href="/my_profile">My Profile</a>
-      <a href="https://www.rccgamazinggracesheffield.org/about-us/">About</a>
-      <a href="https://www.rccgamazinggracesheffield.org/contact/">Contact</a>
-      <a href="/login_admin">Admin Center</a>
+    <div style="display:flex; align-items:center;">
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/my_profile">My Profile</a>
+        <a href="https://www.rccgamazinggracesheffield.org/about-us/">About</a>
+        <a href="https://www.rccgamazinggracesheffield.org/contact/">Contact</a>
+        <a href="/login_admin">Admin Center</a>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">🌗 Theme</button>
     </div>
   </nav>
 
-<h1>My Profile</h1>
-<div class="card">
-  <div class="tabs">
-    <div class="tab-button active" data-target="login">Login</div>
-    <div class="tab-button" data-target="register">Create Profile</div>
-  </div>
+  <h1>👤 My Profile</h1>
 
- <div class="section active" id="login">
-  <form id="login-form">
-    <input type="text" name="identity" placeholder="Email or Username" required />
-    <input type="password" name="password" placeholder="Password" required />
-    <button type="submit">Login</button>
-    <p style="text-align:right; margin-top: 8px;">
-      <a href="#" id="forgot-password-link" style="font-size: 14px; color: #20c997;">Forgot password?</a>
-    </p>
-  </form>
-</div>
+  <div class="card">
+    <div class="tabs">
+      <div class="tab-button active" data-target="login">Login</div>
+      <div class="tab-button" data-target="register">Create Profile</div>
+    </div>
 
-<!-- Reset Password Modal -->
-<!-- Reset Password Modal -->
-<div id="reset-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
-  <div style="background:white; padding:30px; border-radius:12px; width:90%; max-width:400px; position:relative;">
-    <button onclick="document.getElementById('reset-modal').style.display='none'" style="position:absolute; top:10px; right:12px; font-size:20px; background:none; border:none; cursor:pointer;">&times;</button>
-    <h3 style="margin-bottom: 20px; text-align:center;">Reset Your Password</h3>
-    <input type="text" id="reset-identity" placeholder="Enter your email or username" style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #ccc;">
-    <input type="password" id="new-password" placeholder="New password" style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #ccc;">
-    <input type="password" id="confirm-password" placeholder="Confirm password" style="width:100%; padding:10px; margin-bottom:20px; border-radius:6px; border:1px solid #ccc;">
-    <button onclick="submitPasswordReset()" style="background:#20c997; color:white; padding:10px 20px; border:none; border-radius:6px; width:100%;">Reset Password</button>
-  </div>
-</div>
+    <div class="section active" id="login">
+      <form>
+        <input type="text" placeholder="Email or Username" required />
+        <input type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+        <p style="text-align:right;"><a href="#" style="font-size: 14px; color: var(--primary);">Forgot password?</a></p>
+      </form>
+    </div>
 
-
-
-
-  <div class="section" id="register">
-    <p>Contact <strong>Admin</strong> to register your details.</p>
-    <input type="text" id="search-name" placeholder="Search for your name...">
-    <div id="search-results"></div>
-    <form id="register-form" style="display:none">
-      <input type="text" id="fullname" name="fullname" placeholder="Full Name" readonly>
-      <input type="text" id="contact_number" name="contact_number" placeholder="Contact Number" readonly>
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="email" name="email" placeholder="Email address" required>
-      <input type="password" name="password" placeholder="Password" required>
-      <input type="password" name="confirm_password" placeholder="Confirm Password" required>
-
-      <div class="photo-upload">
-        <img id="photo-preview" class="photo-preview" src="" />
-        <label class="photo-button" for="profile-picture-input">Upload Photo</label>
-        <input type="file" id="profile-picture-input" name="profile_picture" accept="image/*" style="display:none" required>
-      </div>
-
+    <div class="section" id="register">
+      <input type="text" placeholder="Full Name">
+      <input type="text" placeholder="Contact Number">
+      <input type="text" placeholder="Username">
+      <input type="email" placeholder="Email">
+      <input type="password" placeholder="Password">
+      <input type="password" placeholder="Confirm Password">
+      <img class="photo-preview" src="" alt="Preview">
+      <input type="file" accept="image/*">
       <button type="submit">Create Profile</button>
-    </form>
+    </div>
   </div>
-</div>
 
-<!-- Modal -->
-<div id="user-modal">
-  <div class="modal-content">
-    <h2>User Profile</h2>
-    <img id="modal-profile-pic" src="" class="photo-preview">
-    <div id="modal-details"></div>
-    <button id="edit-btn">Edit</button>
-    <button id="save-btn" style="display:none;">Save</button>
-    <button onclick="document.getElementById('user-modal').style.display='none'">Close</button>
-  </div>
-</div>
-
-<script>
-document.querySelectorAll('.tab-button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.target).classList.add('active');
-  });
-});
-
-const searchBox = document.getElementById('search-name');
-const resultsBox = document.getElementById('search-results');
-const fullNameField = document.getElementById('fullname');
-const contactField = document.getElementById('contact_number');
-const registerForm = document.getElementById('register-form');
-
-searchBox.addEventListener('input', async () => {
-  const keyword = searchBox.value;
-  if (keyword.length < 2) return;
-  const res = await fetch(`/search_user_records?keyword=${encodeURIComponent(keyword)}`);
-  const results = await res.json();
-  resultsBox.innerHTML = '';
-  results.forEach(person => {
-    const div = document.createElement('div');
-    const fullName = `${person.first_name} ${person.last_name}`.replace(/\s+/g, ' ').trim();
-    div.textContent = fullName;
-    div.onclick = () => {
-      searchBox.value = fullName;
-      fullNameField.value = fullName;
-      contactField.value = person.contact_number || 'N/A';
-      registerForm.style.display = 'block';
-      resultsBox.innerHTML = '';
-    };
-    resultsBox.appendChild(div);
-  });
-});
-
-document.getElementById('profile-picture-input').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = e => document.getElementById('photo-preview').src = e.target.result;
-    reader.readAsDataURL(file);
-  }
-});
-
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const identity = formData.get('identity');
-  const password = formData.get('password');
-
-  const res = await fetch('/login_profile', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ identity, password })
-  });
-
-  const data = await res.json();
-  if (!res.ok) return alert(data.error);
-
-  const user = data.user;
-  const detailRes = await fetch('/get_user_details', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: user.email })
-  });
-
-  const detailData = await detailRes.json();
-  if (!detailRes.ok) return alert(detailData.error || 'Record not found');
-
-  const category = detailData.category;
-  const details = detailData.data;
-  const modal = document.getElementById('user-modal');
-  document.getElementById('modal-profile-pic').src = user.profile_picture;
-  const detailContainer = document.getElementById('modal-details');
-  detailContainer.innerHTML = '';
-  for (const [k, v] of Object.entries(details)) {
-    const row = document.createElement('div');
-    row.innerHTML = `<strong>${k}</strong>: <span data-key=\"${k}\">${v}</span>`;
-    detailContainer.appendChild(row);
-  }
-
-  document.getElementById('edit-btn').onclick = () => {
-    detailContainer.querySelectorAll('span').forEach(span => {
-      const key = span.getAttribute('data-key');
-      const val = span.textContent;
-      const input = document.createElement('input');
-      input.value = val;
-      input.setAttribute('data-key', key);
-      span.replaceWith(input);
-    });
-    document.getElementById('save-btn').style.display = 'inline-block';
-  };
-
-  document.getElementById('save-btn').onclick = async () => {
-    const inputs = detailContainer.querySelectorAll('input');
-    const updates = {};
-    inputs.forEach(input => {
-      updates[input.getAttribute('data-key')] = input.value;
-    });
-    const updateRes = await fetch('/update_user_details', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: user.email, updates, category })
-    });
-    const updateData = await updateRes.json();
-    alert(updateData.message || updateData.error);
-    if (updateRes.ok) modal.style.display = 'none';
-  };
-
-  modal.style.display = 'flex';
-});
-
-document.getElementById('register-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const formData = new FormData(form);
-  const response = await fetch('/register_profile', {
-    method: 'POST',
-    body: formData
-  });
-
-  const text = await response.text();
-  try {
-    const result = JSON.parse(text);
-    if (response.status === 409) {
-  const msg = result.error || 'A profile already exists.';
-  alert(msg);
-
-  // If it's a name conflict, return to login tab
-  if (msg.toLowerCase().includes('full name')) {
-    document.querySelector('[data-target="login"]').click();
-  }
-
-  form.reset();
-  document.getElementById('photo-preview').src = '';
-  return;
-}
-
-    if (response.ok) {
-      alert(result.message || 'Profile created!');
-      form.reset();
-      document.getElementById('photo-preview').src = '';
-    } else {
-      alert(result.error || 'Failed to create profile');
-    }
-  } catch (err) {
-    alert('Server error: ' + text);
-  }
-});
-
-  document.getElementById('forgot-password-link').onclick = (e) => {
-  e.preventDefault();
-  document.getElementById('reset-modal').style.display = 'flex';
-};
-
-async function submitPasswordReset() {
-  const identity = document.getElementById('reset-identity').value.trim();
-  const newPass = document.getElementById('new-password').value;
-  const confirmPass = document.getElementById('confirm-password').value;
-
-  if (!identity || !newPass || !confirmPass) {
-    alert("Please fill in all fields.");
-    return;
-  }
-
-  if (newPass !== confirmPass) {
-    alert("Passwords do not match.");
-    return;
-  }
-
-  const res = await fetch('/reset_password', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ identity, new_password: newPass })
-  });
-
-  const result = await res.json();
-  if (res.ok) {
-    alert(result.message);
-    document.getElementById('reset-modal').style.display = 'none';
-  } else {
-    alert(result.error || "Unable to reset password.");
-  }
-}
-document.getElementById('forgot-password-link').onclick = (e) => {
-  e.preventDefault();
-  document.getElementById('reset-modal').style.display = 'flex';
-};
-
-function isStrongPassword(pw) {
-  return pw.length >= 8 &&
-         /[a-z]/.test(pw) &&
-         /[A-Z]/.test(pw) &&
-         /[0-9]/.test(pw) &&
-         /[^a-zA-Z0-9]/.test(pw); // symbol
-}
-
-async function submitPasswordReset() {
-  const identity = document.getElementById('reset-identity').value.trim();
-  const newPass = document.getElementById('new-password').value;
-  const confirmPass = document.getElementById('confirm-password').value;
-
-  if (!identity || !newPass || !confirmPass) {
-    alert("Please fill in all fields.");
-    return;
-  }
-
-  if (newPass !== confirmPass) {
-    alert("Passwords do not match.");
-    return;
-  }
-
-  if (!isStrongPassword(newPass)) {
-    alert("Password must be at least 8 characters, include uppercase, lowercase, number, and symbol.");
-    return;
-  }
-
-  const res = await fetch('/reset_password', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ identity, new_password: newPass })
-  });
-
-  const result = await res.json();
-  if (res.ok) {
-    alert(result.message);
-    document.getElementById('reset-modal').style.display = 'none';
-  } else {
-    alert(result.error || "Unable to reset password.");
-  }
-}
-
-
-</script>
-<script>
-    // Optionally close nav when clicking a link
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', () => {
-        document.querySelector('.nav-links').classList.remove('open');
+  <script>
+    // Tabs
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
       });
     });
+
+    // Theme toggle
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    // Auto theme detection
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else if (prefersDark) {
+      setTheme('dark');
+    }
   </script>
 </body>
 </html>
