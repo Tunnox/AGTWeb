@@ -199,6 +199,23 @@ header::after {
     a.button-link:hover {
       background-color: #198754;
     }
+
+    .datetime-display {
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #17a2b8;
+        background-color: #f1f3f5;
+        padding: 6px 12px;
+        border-radius: 8px;
+        display: inline-block;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+      [data-theme="dark"] .datetime-display {
+        background-color: #2a2a3d;
+        color: #20c997;
+      }
+
   </style>
 </head>
 <body>
@@ -217,16 +234,36 @@ header::after {
   </nav>
 
   <header>
-    <div class="header-content">
-      <!--<img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="Church Logo">-->
-      <div class="header-text">
-        <h2>RCCG Amazing Grace Tabernacle Sheffield</h2>
-        <h3>Web App</h3>
-        <P>Under development. Not all features are fully implemented. For any feedback, please contact the church admin</P>
-        
-      </div>
+  <div class="header-content">
+    <!--<img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="Church Logo">-->
+    <div class="header-text">
+      <h2>RCCG Amazing Grace Tabernacle Sheffield</h2>
+      <h3>Web App</h3>
+      <p>Under development. Not all features are fully implemented. For any feedback, please contact the church admin.</p>
+      <div id="datetime" class="datetime-display"></div>
     </div>
-  </header>
+  </div>
+    <script>
+  function updateDateTime() {
+    const now = new Date();
+    const options = {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    };
+    const formatted = now.toLocaleString('en-US', options);
+    document.getElementById('datetime').textContent = formatted.replace(',', ' ·');
+  }
+
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+</script>
+</header>
+  
+
 
   <section id="intro">
     <h2>Welcome</h2>
