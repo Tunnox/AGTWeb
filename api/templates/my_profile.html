@@ -120,6 +120,8 @@
       max-width: 720px;
       margin: auto;
       transition: all 0.3s ease;
+      box-sizing: border-box;
+      overflow-wrap: break-word;
     }
 
     [data-theme="dark"] .card {
@@ -258,11 +260,13 @@
       .tabs {
         flex-direction: column;
         gap: 8px;
+        align-items: stretch;
       }
 
       .tab-button {
         width: 100%;
         text-align: center;
+        box-sizing: border-box;
       }
     }
   </style>
