@@ -129,6 +129,12 @@
         display: block;
       }
     }
+    #childRollCallPresent {
+    background-color: black !important;
+    border: 2px solid #fff;
+    width: 1.2em;
+    height: 1.2em;
+  }
 
   </style>
 </head>
@@ -320,6 +326,7 @@ function showChildRollCallName() {
   display.innerText = current.name;
   checkbox.checked = false;
   checkbox.disabled = false;
+  checkbox.style.display = 'inline-block';
   alertMsg.innerText = '';
 
   checkChildAttendance(current.name).then(result => {
