@@ -486,24 +486,26 @@ attendanceSearchInput.addEventListener('input', function () {
         document.getElementById('selectedName').innerText = `${record.first_name} ${record.last_name}`;
         document.getElementById('selectedContact').innerText = `Contact: ${record.contact_number}`;
         selectedCard.classList.remove('d-none');
-      };
-      searchResults.appendChild(div);
+      const fullName = `${record.first_name} ${record.last_name}`;
+          checkIfAlreadyPresent(fullName).then(result => {
+            const checkbox = document.getElementById('markPresent');
+            const msg = document.getElementById('attendanceAlreadyMarked');
+            checkbox.checked = false;
+            checkbox.disabled = false;
+            msg.innerText = '';
+
+            if (result.present) {
+              checkbox.checked = true;
+              checkbox.disabled = true;
+              msg.innerText = `✅ Already marked present on ${result.date}`;
+            }
+          });
+        };
+        searchResults.appendChild(div);
+      });
     });
   });
-});
-checkIfAlreadyPresent(`${record.first_name} ${record.last_name}`).then(result => {
-  const checkbox = document.getElementById('markPresent');
-  const msg = document.getElementById('attendanceAlreadyMarked');
-  checkbox.checked = false;
-  checkbox.disabled = false;
-  msg.innerText = '';
 
-  if (result.present) {
-    checkbox.checked = true;
-    checkbox.disabled = true;
-    msg.innerText = `✅ Already marked present on ${result.date}`;
-  }
-});
 
 document.getElementById('submitAttendance').addEventListener('click', function () {
   if (!selectedTeen || !document.getElementById('markPresent').checked) {
