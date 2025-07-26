@@ -69,6 +69,32 @@ def agt_login():
 @app.route('/main')
 def home_index():
     return render_template('main.html')
+
+
+#______________________________________________________Attendacne Checker_______________________________________________________________
+@app.route('/teens_check_attendance', methods=['POST'])
+def teens_check_attendance():
+    data = request.get_json()
+    name = data.get('name')
+    today = datetime.datetime.now().date()
+
+    try:
+        cur = connection.cursor()
+        cur.execute("""
+            SELECT "Date"
+            FROM public."AGT_Attendacne"
+            WHERE "Name" = %s AND DATE("Date") = %s
+            LIMIT 1;
+        """, (name, today))
+        result = cur.fetchone()
+        cur.close()
+        if result:
+            return jsonify({"present": True, "date": str(result[0])})
+        else:
+            return jsonify({"present": False})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 #____________________________AGT ADULT CHURCH______________________________________________________________________________________________
 
 @app.route('/adult_church')
