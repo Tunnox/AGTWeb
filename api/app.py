@@ -439,6 +439,20 @@ def download_teens_attendance_csv():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/teens_roll_call_names', methods=['GET'])
+def teens_roll_call_names():
+    try:
+        cur = connection.cursor()
+        cur.execute("""
+            SELECT CONCAT("first_name", ' ', "last_name") AS full_name, contact_number
+            FROM public."AGT_TEENS_DATA_RECORDS"
+            ORDER BY "first_name", "last_name";
+        """)
+        data = [{"name": row[0], "contact": row[1]} for row in cur.fetchall()]
+        cur.close()
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 #_______________________AGT CHILDREN CHURCH__________________________________________________________________________________________________________
