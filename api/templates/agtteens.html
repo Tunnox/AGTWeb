@@ -472,6 +472,56 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 });
+
+  <script>
+let rollCallIndex = 0;
+let rollCallList = [];
+
+function loadRollCallList() {
+  fetch('/teens_roll_call_names')
+    .then(res => res.json())
+    .then(data => {
+      rollCallList = data;
+      rollCallIndex = 0;
+      showRollCallName();
+    });
+}
+
+function showRollCallName() {
+  const display = document.getElementById('rollCallName');
+  const checkbox = document.getElementById('rollCallPresent');
+
+  if (rollCallIndex >= rollCallList.length) {
+    display.innerText = "🎉 Roll call complete!";
+    checkbox.style.display = 'none';
+    document.getElementById('nextRollCall').disabled = true;
+    return;
+  }
+
+  const current = rollCallList[rollCallIndex];
+  display.innerText = current.name;
+  checkbox.checked = false;
+}
+
+document.getElementById('nextRollCall').addEventListener('click', function () {
+  const checkbox = document.getElementById('rollCallPresent');
+
+  if (rollCallIndex < rollCallList.length && checkbox.checked) {
+    const teen = rollCallList[rollCallIndex];
+    fetch('/teens_record_attendance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: teen.name, contact: teen.contact })
+    });
+  }
+
+  rollCallIndex++;
+  showRollCallName();
+});
+
+document.addEventListener('DOMContentLoaded', loadRollCallList);
+</script>
+
 </script>
 </body>
 
