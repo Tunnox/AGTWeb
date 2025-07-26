@@ -456,37 +456,38 @@ document.getElementById('searchInput').addEventListener('input', function () {
 
 <script>
 const attendanceSearchInput = document.getElementById('attendanceSearchInput');
-const searchResults = document.getElementById('attendanceSearchResults');
-const selectedCard = document.getElementById('selectedRecord');
-let selectedTeen = null;
+  const searchResults = document.getElementById('attendanceSearchResults');
+  const selectedCard = document.getElementById('selectedRecord');
+  let selectedTeen = null;
 
-attendanceSearchInput.addEventListener('input', function () {
-  const keyword = this.value;
-  if (keyword.length < 2) return;
+  attendanceSearchInput.addEventListener('input', function () {
+    const keyword = this.value;
+    if (keyword.length < 2) return;
 
-  fetch('/teens_church/search', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'X-Requested-With': 'XMLHttpRequest'
-    },
-    body: new URLSearchParams({ keyword })
-  })
-  .then(res => res.json())
-  .then(data => {
-    searchResults.innerHTML = '';
-    selectedCard.classList.add('d-none');
+    fetch('/teens_church/search', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: new URLSearchParams({ keyword })
+    })
+    .then(res => res.json())
+    .then(data => {
+      searchResults.innerHTML = '';
+      selectedCard.classList.add('d-none');
 
-    data.forEach(record => {
-      const div = document.createElement('div');
-      div.className = 'search-result-item';
-      div.innerText = `${record.first_name} ${record.last_name}`;
-      div.onclick = function () {
-        selectedTeen = record;
-        document.getElementById('selectedName').innerText = `${record.first_name} ${record.last_name}`;
-        document.getElementById('selectedContact').innerText = `Contact: ${record.contact_number}`;
-        selectedCard.classList.remove('d-none');
-      const fullName = `${record.first_name} ${record.last_name}`;
+      data.forEach(record => {
+        const div = document.createElement('div');
+        div.className = 'search-result-item';
+        div.innerText = `${record.first_name} ${record.last_name}`;
+        div.onclick = function () {
+          selectedTeen = record;
+          document.getElementById('selectedName').innerText = `${record.first_name} ${record.last_name}`;
+          document.getElementById('selectedContact').innerText = `Contact: ${record.contact_number}`;
+          selectedCard.classList.remove('d-none');
+
+          const fullName = `${record.first_name} ${record.last_name}`;
           checkIfAlreadyPresent(fullName).then(result => {
             const checkbox = document.getElementById('markPresent');
             const msg = document.getElementById('attendanceAlreadyMarked');
@@ -505,7 +506,6 @@ attendanceSearchInput.addEventListener('input', function () {
       });
     });
   });
-
 
 document.getElementById('submitAttendance').addEventListener('click', function () {
   if (!selectedTeen || !document.getElementById('markPresent').checked) {
