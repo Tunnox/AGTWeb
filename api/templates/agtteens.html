@@ -200,9 +200,96 @@
           <input class="form-check-input" type="checkbox" id="markPresent">
           <label class="form-check-label" for="markPresent">Mark as Present</label>
         </div>
+        <p id="attendanceAlreadyMarked" class="text-warning mt-2"></p>
         <button class="btn btn-success mt-3" id="submitAttendance">Take Attendance</button>
       </div>
     </div>
+    
+    <div class="section-card">
+  <h3 class="section-title">📣 Roll Call Attendance</h3>
+  <div id="rollCallCard" class="glass-card text-center">
+    <h4 id="rollCallName">Loading...</h4>
+    <p>
+      <input class="form-check-input" type="checkbox" id="rollCallPresent">
+      <label for="rollCallPresent" class="form-check-label ms-2">Mark Present</label>
+    </p>
+    <p id="rollCallAlreadyMarked" class="text-warning mt-2"></p>
+    <button class="btn btn-primary" id="nextRollCall">Next Name</button>
+  </div>
+</div>
+<script>
+let rollCallIndex = 0;
+let rollCallList = [];
+
+function checkIfAlreadyPresent(name) {
+  return fetch('/teens_check_attendance', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name })
+  }).then(res => res.json());
+}
+
+function loadRollCallList() {
+  fetch('/teens_roll_call_names')
+    .then(res => res.json())
+    .then(data => {
+      rollCallList = data;
+      rollCallIndex = 0;
+      showRollCallName();
+    })
+    .catch(error => {
+      console.error("Failed to load roll call names:", error);
+      document.getElementById('rollCallName').innerText = "❌ Failed to load names";
+    });
+}
+
+function showRollCallName() {
+  const display = document.getElementById('rollCallName');
+  const checkbox = document.getElementById('rollCallPresent');
+  const alertMsg = document.getElementById('rollCallAlreadyMarked');
+
+  if (rollCallIndex >= rollCallList.length) {
+    display.innerText = "🎉 Roll call complete!";
+    checkbox.style.display = 'none';
+    document.getElementById('nextRollCall').disabled = true;
+    alertMsg.innerText = '';
+    return;
+  }
+
+  const current = rollCallList[rollCallIndex];
+  display.innerText = current.name;
+  checkbox.checked = false;
+  checkbox.disabled = false;
+  alertMsg.innerText = '';
+
+  checkIfAlreadyPresent(current.name).then(result => {
+    if (result.present) {
+      checkbox.checked = true;
+      checkbox.disabled = true;
+      alertMsg.innerText = `✅ Already marked present on ${result.date}`;
+    }
+  });
+}
+
+document.getElementById('nextRollCall').addEventListener('click', function () {
+  const checkbox = document.getElementById('rollCallPresent');
+
+  if (rollCallIndex < rollCallList.length && checkbox.checked && !checkbox.disabled) {
+    const teen = rollCallList[rollCallIndex];
+    fetch('/teens_record_attendance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: teen.name, contact: teen.contact })
+    });
+  }
+
+  rollCallIndex++;
+  showRollCallName();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  loadRollCallList();
+  </script>
 
     <div class="section-card text-center">
       <h3 class="section-title">📥 Download Attendance</h3>
@@ -403,6 +490,19 @@ attendanceSearchInput.addEventListener('input', function () {
       searchResults.appendChild(div);
     });
   });
+});
+checkIfAlreadyPresent(`${record.first_name} ${record.last_name}`).then(result => {
+  const checkbox = document.getElementById('markPresent');
+  const msg = document.getElementById('attendanceAlreadyMarked');
+  checkbox.checked = false;
+  checkbox.disabled = false;
+  msg.innerText = '';
+
+  if (result.present) {
+    checkbox.checked = true;
+    checkbox.disabled = true;
+    msg.innerText = `✅ Already marked present on ${result.date}`;
+  }
 });
 
 document.getElementById('submitAttendance').addEventListener('click', function () {
