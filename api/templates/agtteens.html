@@ -236,10 +236,6 @@ function loadRollCallList() {
       rollCallList = data;
       rollCallIndex = 0;
       showRollCallName();
-    })
-    .catch(error => {
-      console.error("Failed to load roll call names:", error);
-      document.getElementById('rollCallName').innerText = "❌ Failed to load names";
     });
 }
 
@@ -274,7 +270,7 @@ function showRollCallName() {
 document.getElementById('nextRollCall').addEventListener('click', function () {
   const checkbox = document.getElementById('rollCallPresent');
 
-  if (rollCallIndex < rollCallList.length && checkbox.checked && !checkbox.disabled) {
+  if (rollCallIndex < rollCallList.length && checkbox.checked) {
     const teen = rollCallList[rollCallIndex];
     fetch('/teens_record_attendance', {
       method: 'POST',
@@ -287,9 +283,8 @@ document.getElementById('nextRollCall').addEventListener('click', function () {
   showRollCallName();
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-  loadRollCallList();
-  </script>
+document.addEventListener('DOMContentLoaded', loadRollCallList);
+</script>
 
     <div class="section-card text-center">
       <h3 class="section-title">📥 Download Attendance</h3>
