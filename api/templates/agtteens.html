@@ -157,174 +157,95 @@
     }
   </style>
 </head>
-<body>
-
-  <nav class="navbar">
-    <div class="nav-brand">AGT Sheffield</div>
-    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
-    <div class="nav-links">
-      <a href="/">Home</a>
-      <a href="/my_profile">My Profile</a>
-      <a href="https://www.rccgamazinggracesheffield.org/about-us/">About</a>
-      <a href="https://www.rccgamazinggracesheffield.org/contact/">Contact</a>
-      <a href="/login_admin">Admin Center</a>
-    </div>
-  </nav>
-
+<body class="bg-dark text-light">
   <div class="container py-4">
-    <div class="section-card text-center">
-      <h2 class="section-title">AGT Teens Record Management</h2>
-      <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal">Create New Record</button>
+    <h2 class="text-center mb-4">AGT Teens Record Management</h2>
+
+    <!-- Create Record -->
+    <div class="mb-4">
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">Create New Record</button>
     </div>
 
-    <div class="section-card">
-      <h3 class="section-title">🔍 Search Teens</h3>
-      <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search by name, age, gender...">
+    <!-- Search -->
+    <div class="mb-4">
+      <h4>Search Teens</h4>
+      <input type="text" id="searchInput" class="form-control" placeholder="Search by name, age, gender...">
       <div id="searchResults" class="mt-2"></div>
     </div>
 
-    <div id="details-card" class="section-card d-none">
-      <h3 class="section-title">👤 Record Details</h3>
-      <div id="recordDetails"></div>
-      <button class="btn btn-warning mt-3" data-bs-toggle="modal" data-bs-target="#updateModal">Update Details</button>
-    </div>
-
-    <div class="section-card">
-      <h3 class="section-title">📝 Record Attendance</h3>
+    <!-- Attendance -->
+    <div class="mb-4">
+      <h4>Record Attendance</h4>
       <input type="text" id="attendanceSearchInput" class="form-control mb-2" placeholder="Search by name...">
       <div id="attendanceSearchResults" class="mt-2"></div>
-      <div id="selectedRecord" class="glass-card d-none mt-3">
+      <div id="selectedRecord" class="border p-3 d-none">
         <h5 id="selectedName"></h5>
         <p id="selectedContact"></p>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="markPresent">
-          <label class="form-check-label" for="markPresent">Mark as Present</label>
-        </div>
+        <input type="checkbox" id="markPresent"> <label for="markPresent">Mark as Present</label>
         <p id="attendanceAlreadyMarked" class="text-warning mt-2"></p>
-        <button class="btn btn-success mt-3" id="submitAttendance">Take Attendance</button>
+        <button class="btn btn-primary mt-2" id="submitAttendance">Take Attendance</button>
       </div>
     </div>
-    <div class="section-card">
-  <h3 class="section-title">📣 Roll Call Attendance</h3>
-  <div id="rollCallCard" class="glass-card text-center">
-    <h4 id="rollCallName">Loading...</h4>
-    <p>
-      <input class="form-check-input" type="checkbox" id="rollCallPresent">
-      <label for="rollCallPresent" class="form-check-label ms-2">Mark Present</label>
-    </p>
-    <p id="rollCallAlreadyMarked" class="text-warning mt-2"></p>
-    <button class="btn btn-primary" id="nextRollCall">Next Name</button>
-  </div>
-</div>
 
-
-    <div class="section-card text-center">
-      <h3 class="section-title">📥 Download Attendance</h3>
-      <p> Choose a date to download attendance taken on that day</p>
-      <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#downloadModal">Download CSV</button>
-    </div>
-  </div>
-
-  
-<!-- Download Attendance Modal -->
-<div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="modal-title">Download Attendance Records</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Roll Call -->
+    <div class="mb-4">
+      <h4>Roll Call Attendance</h4>
+      <div class="border p-3">
+        <h5 id="rollCallName">Loading...</h5>
+        <input type="checkbox" id="rollCallPresent"> <label for="rollCallPresent">Mark Present</label>
+        <p id="rollCallAlreadyMarked" class="text-warning mt-2"></p>
+        <button class="btn btn-primary mt-2" id="nextRollCall">Next Name</button>
       </div>
-      <select id="dateDropdown" class="form-select mb-3"></select>
-      <button class="btn btn-primary w-100" id="downloadCsvBtn">Download CSV</button>
+    </div>
+
+    <!-- Download Attendance -->
+    <div class="mb-4">
+      <h4>Download Attendance</h4>
+      <select id="dateDropdown" class="form-select mb-2"></select>
+      <button class="btn btn-info" id="downloadCsvBtn">Download CSV</button>
     </div>
   </div>
-</div>
 
-
-<!-- Create Modal -->
-<div class="modal fade" id="createModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content p-4">
-      <h4>Create New Teen Record</h4>
-      <form method="POST" action="/teens_church/insert">
-        <input name="first_name" class="form-control" placeholder="First Name" required>
-        <input name="last_name" class="form-control" placeholder="Last Name" required>
-        <input name="age" type="number" class="form-control" placeholder="Age" required>
-        <select name="gender" class="form-select" required>
-          <option value="">Select Gender</option>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
-        <input name="birthday" class="form-control" placeholder="Birthday" required>
-        <input name="contact_number" class="form-control" placeholder="Contact Number" required>
-        <select name="age_group" class="form-select" required>
-          <option>Teenager</option>
-          <option>YAYA</option>
-          <option>Adult</option>
-        </select>
-        <input name="department" class="form-control" placeholder="Department" required>
-        <select name="relationship_status" class="form-select" required>
-          <option>Single</option>
-          <option>Not single</option>
-        </select>
-        <input name="email" class="form-control" placeholder="Email" required>
-        <input name="address" class="form-control" placeholder="Address" required>
-        <div class="form-check mt-2">
-          <input class="form-check-input" type="checkbox" name="consent" value="Yes" required>
-          <label class="form-check-label">Consent to UK GDPR</label>
-        </div>
-        <button class="btn btn-success mt-3" type="submit">Save</button>
-      </form>
+  <!-- Create Modal -->
+  <div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content p-4">
+        <h4>Create New Teen Record</h4>
+        <form method="POST" action="/teens_church/insert">
+          <input name="first_name" class="form-control" placeholder="First Name" required>
+          <input name="last_name" class="form-control" placeholder="Last Name" required>
+          <input name="age" type="number" class="form-control" placeholder="Age" required>
+          <select name="gender" class="form-select" required>
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+          <input name="birthday" class="form-control" placeholder="Birthday" required>
+          <input name="contact_number" class="form-control" placeholder="Contact Number" required>
+          <select name="age_group" class="form-select" required>
+            <option>Teenager</option>
+            <option>YAYA</option>
+            <option>Adult</option>
+          </select>
+          <input name="department" class="form-control" placeholder="Department" required>
+          <select name="relationship_status" class="form-select" required>
+            <option>Single</option>
+            <option>Not single</option>
+          </select>
+          <input name="email" class="form-control" placeholder="Email" required>
+          <input name="address" class="form-control" placeholder="Address" required>
+          <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" name="consent" value="Yes" required>
+            <label class="form-check-label">Consent to UK GDPR</label>
+          </div>
+          <button class="btn btn-success mt-3" type="submit">Save</button>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Update Modal -->
-<div class="modal fade" id="updateModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content p-4">
-      <h4>Update Record</h4>
-      <form method="POST" action="/teens_church/update" id="updateForm">
-        <label>First Name:</label> <input name="first_name" class="form-control" required>
-        <label>Last Name:</label><input name="last_name" class="form-control" required>
-        <label>Age:</label><input name="age" type="number" class="form-control" required>
-        <label>Gender:</label><select name="gender" class="form-select" required>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
-        <label>Birthday:</label><input name="birthday" class="form-control" required>
-        <label>Contact Number:</label><input name="contact_number" class="form-control" required>
-        <label>Age Group:</label><select name="age_group" class="form-select" required>
-          <option>Teenager</option>
-          <option>YAYA</option>
-          <option>Adult</option>
-        </select>
-        <label>Department:</label><input name="department" class="form-control" required>
-        <label>Relationship Status:</label><select name="relationship_status" class="form-select" required>
-          <option>Single</option>
-          <option>Not single</option>
-        </select>
-        <label>Email:</label><input name="email" class="form-control" required>
-        <label>Address:</label><input name="address" class="form-control" required>
-        <label>Consent:</label><input name="consent" class="form-control" required>
-        <button class="btn btn-primary mt-3" type="submit">Update</button>
-      </form>
-    </div>
-  </div>
-</div>
-
-<footer class="text-center py-3">
-  <p class="mb-0">&copy; 2025 AGT Records Management</p>
-  <p>Contact Admin: xyd@gmail.com</p>
-</footer>
-
-<!-- AJAX SEARCH -->
 <script>
-let rollCallIndex = 0;
-let rollCallList = [];
-
 function checkIfAlreadyPresent(name) {
   return fetch('/teens_check_attendance', {
     method: 'POST',
@@ -333,6 +254,8 @@ function checkIfAlreadyPresent(name) {
   }).then(res => res.json());
 }
 
+// --------- ROLL CALL ---------
+let rollCallList = [], rollCallIndex = 0;
 function loadRollCallList() {
   fetch('/teens_roll_call_names')
     .then(res => res.json())
@@ -342,55 +265,45 @@ function loadRollCallList() {
       showRollCallName();
     });
 }
-
 function showRollCallName() {
-  const display = document.getElementById('rollCallName');
-  const checkbox = document.getElementById('rollCallPresent');
-  const alertMsg = document.getElementById('rollCallAlreadyMarked');
+  const current = rollCallList[rollCallIndex];
+  const nameEl = document.getElementById('rollCallName');
+  const checkEl = document.getElementById('rollCallPresent');
+  const noteEl = document.getElementById('rollCallAlreadyMarked');
 
-  if (rollCallIndex >= rollCallList.length) {
-    display.innerText = "🎉 Roll call complete!";
-    checkbox.style.display = 'none';
-    document.getElementById('nextRollCall').disabled = true;
-    alertMsg.innerText = '';
+  if (!current) {
+    nameEl.innerText = '🎉 Roll call complete!';
+    checkEl.disabled = true;
     return;
   }
-
-  const current = rollCallList[rollCallIndex];
-  display.innerText = current.name;
-  checkbox.checked = false;
-  checkbox.disabled = false;
-  alertMsg.innerText = '';
-
+  nameEl.innerText = current.name;
+  checkEl.checked = false;
+  checkEl.disabled = false;
+  noteEl.innerText = '';
   checkIfAlreadyPresent(current.name).then(result => {
     if (result.present) {
-      checkbox.checked = true;
-      checkbox.disabled = true;
-      alertMsg.innerText = `✅ Already marked present on ${result.date}`;
+      checkEl.checked = true;
+      checkEl.disabled = true;
+      noteEl.innerText = `✅ Already marked present on ${result.date}`;
     }
   });
 }
-
-document.getElementById('nextRollCall').addEventListener('click', function () {
-  const checkbox = document.getElementById('rollCallPresent');
-
-  if (rollCallIndex < rollCallList.length && checkbox.checked) {
+document.getElementById('nextRollCall').onclick = () => {
+  if (!document.getElementById('rollCallPresent').disabled && document.getElementById('rollCallPresent').checked) {
     const teen = rollCallList[rollCallIndex];
     fetch('/teens_record_attendance', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: teen.name, contact: teen.contact })
     });
   }
-
   rollCallIndex++;
   showRollCallName();
-});
+};
 
+// --------- ATTENDANCE SEARCH ---------
 document.getElementById('attendanceSearchInput').addEventListener('input', function () {
   const keyword = this.value;
   if (keyword.length < 2) return;
-
   fetch('/teens_church/search', {
     method: 'POST',
     headers: {
@@ -401,86 +314,85 @@ document.getElementById('attendanceSearchInput').addEventListener('input', funct
   })
   .then(res => res.json())
   .then(data => {
-    const searchResults = document.getElementById('attendanceSearchResults');
-    const selectedCard = document.getElementById('selectedRecord');
-    searchResults.innerHTML = '';
-    selectedCard.classList.add('d-none');
-
+    const output = document.getElementById('attendanceSearchResults');
+    output.innerHTML = '';
     data.forEach(record => {
       const div = document.createElement('div');
-      div.className = 'search-result-item';
       div.innerText = `${record.first_name} ${record.last_name}`;
-      div.onclick = function () {
-        const fullName = `${record.first_name} ${record.last_name}`;
-        selectedTeen = record;
-        document.getElementById('selectedName').innerText = fullName;
+      div.classList.add('border', 'p-2', 'mb-1');
+      div.onclick = () => {
+        document.getElementById('selectedName').innerText = `${record.first_name} ${record.last_name}`;
         document.getElementById('selectedContact').innerText = `Contact: ${record.contact_number}`;
-        selectedCard.classList.remove('d-none');
-
-        checkIfAlreadyPresent(fullName).then(result => {
-          const checkbox = document.getElementById('markPresent');
+        document.getElementById('selectedRecord').classList.remove('d-none');
+        checkIfAlreadyPresent(`${record.first_name} ${record.last_name}`).then(result => {
+          const cb = document.getElementById('markPresent');
           const msg = document.getElementById('attendanceAlreadyMarked');
-          checkbox.checked = false;
-          checkbox.disabled = false;
-          msg.innerText = '';
-
+          cb.checked = false; cb.disabled = false; msg.innerText = '';
           if (result.present) {
-            checkbox.checked = true;
-            checkbox.disabled = true;
+            cb.checked = true;
+            cb.disabled = true;
             msg.innerText = `✅ Already marked present on ${result.date}`;
           }
         });
       };
-      searchResults.appendChild(div);
+      output.appendChild(div);
     });
   });
 });
 
-document.getElementById('submitAttendance').addEventListener('click', function () {
-  const checkbox = document.getElementById('markPresent');
-  if (!selectedTeen || !checkbox.checked || checkbox.disabled) {
-    alert("Please select a person and tick the attendance box.");
-    return;
-  }
-
+document.getElementById('submitAttendance').onclick = function () {
+  const cb = document.getElementById('markPresent');
+  if (!cb.checked || cb.disabled) return;
+  const name = document.getElementById('selectedName').innerText;
+  const contact = document.getElementById('selectedContact').innerText.split(': ')[1];
   fetch('/teens_record_attendance', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, contact })
+  })
+  .then(res => res.json())
+  .then(data => alert(data.message || data.error));
+};
+
+// --------- SEARCH TEENS ---------
+document.getElementById('searchInput').addEventListener('input', function () {
+  const keyword = this.value;
+  if (keyword.length < 2) return;
+  fetch('/teens_church/search', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: `${selectedTeen.first_name} ${selectedTeen.last_name}`,
-      contact: selectedTeen.contact_number
-    })
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: new URLSearchParams({ keyword })
   })
   .then(res => res.json())
   .then(data => {
-    alert(data.message || data.error);
-    document.getElementById('selectedRecord').classList.add('d-none');
-    checkbox.checked = false;
-    document.getElementById('attendanceSearchInput').value = '';
-    document.getElementById('attendanceSearchResults').innerHTML = '';
+    const output = document.getElementById('searchResults');
+    output.innerHTML = '';
+    data.forEach(record => {
+      const div = document.createElement('div');
+      div.className = 'border p-2 mb-1';
+      div.innerText = `${record.first_name} ${record.last_name}`;
+      output.appendChild(div);
+    });
   });
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadRollCallList();
-
+// --------- DOWNLOAD CSV ---------
+document.addEventListener('DOMContentLoaded', () => {
   fetch('/teens_get_dates')
     .then(res => res.json())
     .then(data => {
       const dropdown = document.getElementById('dateDropdown');
-      dropdown.innerHTML = '';
       data.forEach(date => {
-        const option = document.createElement('option');
-        option.value = date;
-        option.textContent = date;
-        dropdown.appendChild(option);
+        const opt = document.createElement('option');
+        opt.value = date; opt.textContent = date;
+        dropdown.appendChild(opt);
       });
     });
 
-  document.getElementById('downloadCsvBtn').addEventListener('click', () => {
+  document.getElementById('downloadCsvBtn').onclick = () => {
     const date = document.getElementById('dateDropdown').value;
-    if (!date) return;
-
     fetch(`/teens_download_attendance_csv?date=${date}`)
       .then(res => res.blob())
       .then(blob => {
@@ -492,10 +404,11 @@ document.addEventListener("DOMContentLoaded", () => {
         a.click();
         a.remove();
       });
-  });
+  };
+
+  loadRollCallList();
 });
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
