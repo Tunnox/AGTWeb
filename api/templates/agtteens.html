@@ -200,6 +200,7 @@
           <input class="form-check-input" type="checkbox" id="markPresent">
           <label class="form-check-label" for="markPresent">Mark as Present</label>
         </div>
+        <p id="attendanceAlreadyMarked" class="text-warning mt-2"></p>
         <button class="btn btn-success mt-3" id="submitAttendance">Take Attendance</button>
       </div>
     </div>
@@ -211,57 +212,10 @@
       <input class="form-check-input" type="checkbox" id="rollCallPresent">
       <label for="rollCallPresent" class="form-check-label ms-2">Mark Present</label>
     </p>
+    <p id="rollCallAlreadyMarked" class="text-warning mt-2"></p>
     <button class="btn btn-primary" id="nextRollCall">Next Name</button>
   </div>
 </div>
-<script>
-let rollCallIndex = 0;
-let rollCallList = [];
-
-function loadRollCallList() {
-  fetch('/teens_roll_call_names')
-    .then(res => res.json())
-    .then(data => {
-      rollCallList = data;
-      rollCallIndex = 0;
-      showRollCallName();
-    });
-}
-
-function showRollCallName() {
-  const display = document.getElementById('rollCallName');
-  const checkbox = document.getElementById('rollCallPresent');
-
-  if (rollCallIndex >= rollCallList.length) {
-    display.innerText = "🎉 Roll call complete!";
-    checkbox.style.display = 'none';
-    document.getElementById('nextRollCall').disabled = true;
-    return;
-  }
-
-  const current = rollCallList[rollCallIndex];
-  display.innerText = current.name;
-  checkbox.checked = false;
-}
-
-document.getElementById('nextRollCall').addEventListener('click', function () {
-  const checkbox = document.getElementById('rollCallPresent');
-
-  if (rollCallIndex < rollCallList.length && checkbox.checked) {
-    const teen = rollCallList[rollCallIndex];
-    fetch('/teens_record_attendance', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: teen.name, contact: teen.contact })
-    });
-  }
-
-  rollCallIndex++;
-  showRollCallName();
-});
-
-document.addEventListener('DOMContentLoaded', loadRollCallList);
-</script>
 
 
     <div class="section-card text-center">
@@ -368,72 +322,72 @@ document.addEventListener('DOMContentLoaded', loadRollCallList);
 
 <!-- AJAX SEARCH -->
 <script>
-document.getElementById('searchInput').addEventListener('input', function () {
-  const keyword = this.value;
-  if (keyword.length < 2) return;
+let rollCallIndex = 0;
+let rollCallList = [];
 
-  fetch('/teens_church/search', {
+function checkIfAlreadyPresent(name) {
+  return fetch('/teens_check_attendance', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'X-Requested-With': 'XMLHttpRequest'
-    },
-    body: new URLSearchParams({ keyword: keyword })
-  })
-  .then(res => res.json())
-  .then(data => {
-    const output = document.getElementById('searchResults');
-    output.innerHTML = '';
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name })
+  }).then(res => res.json());
+}
 
-    data.forEach(record => {
-      const div = document.createElement('div');
-      div.className = 'search-result-item';
-      div.innerText = `${record.first_name} ${record.last_name}`;
-      div.dataset.details = JSON.stringify(record);
-      div.onclick = function () {
-        const r = JSON.parse(this.dataset.details);
-        document.getElementById('recordDetails').innerHTML = `
-          <strong>Name:</strong> ${r.first_name} ${r.last_name}<br>
-          <strong>Age:</strong> ${r.age}<br>
-          <strong>Gender:</strong> ${r.gender}<br>
-          <strong>Birthday:</strong> ${r.birthday}<br>
-          <strong>Contact:</strong> ${r.contact_number}<br>
-          <strong>Age Group:</strong> ${r.age_group}<br>
-          <strong>Department:</strong> ${r.department}<br>
-          <strong>Relationship Status:</strong> ${r.relationship_status}<br>
-          <strong>Email:</strong> ${r.email}<br>
-          <strong>Address:</strong> ${r.address}<br>
-          <strong>Consent:</strong> ${r.consent}
-        `;
-        document.getElementById('details-card').classList.remove('d-none');
-
-        for (const key in r) {
-          const field = document.querySelector(`#updateForm [name="${key}"]`);
-          if (field) field.value = r[key];
-        }
-      };
-      output.appendChild(div);
+function loadRollCallList() {
+  fetch('/teens_roll_call_names')
+    .then(res => res.json())
+    .then(data => {
+      rollCallList = data;
+      rollCallIndex = 0;
+      showRollCallName();
     });
+}
+
+function showRollCallName() {
+  const display = document.getElementById('rollCallName');
+  const checkbox = document.getElementById('rollCallPresent');
+  const alertMsg = document.getElementById('rollCallAlreadyMarked');
+
+  if (rollCallIndex >= rollCallList.length) {
+    display.innerText = "🎉 Roll call complete!";
+    checkbox.style.display = 'none';
+    document.getElementById('nextRollCall').disabled = true;
+    alertMsg.innerText = '';
+    return;
+  }
+
+  const current = rollCallList[rollCallIndex];
+  display.innerText = current.name;
+  checkbox.checked = false;
+  checkbox.disabled = false;
+  alertMsg.innerText = '';
+
+  checkIfAlreadyPresent(current.name).then(result => {
+    if (result.present) {
+      checkbox.checked = true;
+      checkbox.disabled = true;
+      alertMsg.innerText = `✅ Already marked present on ${result.date}`;
+    }
   });
-});
-</script>
-<script>
-    // Optionally close nav when clicking a link
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', () => {
-        document.querySelector('.nav-links').classList.remove('open');
-      });
+}
+
+document.getElementById('nextRollCall').addEventListener('click', function () {
+  const checkbox = document.getElementById('rollCallPresent');
+
+  if (rollCallIndex < rollCallList.length && checkbox.checked) {
+    const teen = rollCallList[rollCallIndex];
+    fetch('/teens_record_attendance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: teen.name, contact: teen.contact })
     });
-  </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  }
 
-<script>
-const attendanceSearchInput = document.getElementById('attendanceSearchInput');
-const searchResults = document.getElementById('attendanceSearchResults');
-const selectedCard = document.getElementById('selectedRecord');
-let selectedTeen = null;
+  rollCallIndex++;
+  showRollCallName();
+});
 
-attendanceSearchInput.addEventListener('input', function () {
+document.getElementById('attendanceSearchInput').addEventListener('input', function () {
   const keyword = this.value;
   if (keyword.length < 2) return;
 
@@ -447,6 +401,8 @@ attendanceSearchInput.addEventListener('input', function () {
   })
   .then(res => res.json())
   .then(data => {
+    const searchResults = document.getElementById('attendanceSearchResults');
+    const selectedCard = document.getElementById('selectedRecord');
     searchResults.innerHTML = '';
     selectedCard.classList.add('d-none');
 
@@ -455,10 +411,25 @@ attendanceSearchInput.addEventListener('input', function () {
       div.className = 'search-result-item';
       div.innerText = `${record.first_name} ${record.last_name}`;
       div.onclick = function () {
+        const fullName = `${record.first_name} ${record.last_name}`;
         selectedTeen = record;
-        document.getElementById('selectedName').innerText = `${record.first_name} ${record.last_name}`;
+        document.getElementById('selectedName').innerText = fullName;
         document.getElementById('selectedContact').innerText = `Contact: ${record.contact_number}`;
         selectedCard.classList.remove('d-none');
+
+        checkIfAlreadyPresent(fullName).then(result => {
+          const checkbox = document.getElementById('markPresent');
+          const msg = document.getElementById('attendanceAlreadyMarked');
+          checkbox.checked = false;
+          checkbox.disabled = false;
+          msg.innerText = '';
+
+          if (result.present) {
+            checkbox.checked = true;
+            checkbox.disabled = true;
+            msg.innerText = `✅ Already marked present on ${result.date}`;
+          }
+        });
       };
       searchResults.appendChild(div);
     });
@@ -466,7 +437,8 @@ attendanceSearchInput.addEventListener('input', function () {
 });
 
 document.getElementById('submitAttendance').addEventListener('click', function () {
-  if (!selectedTeen || !document.getElementById('markPresent').checked) {
+  const checkbox = document.getElementById('markPresent');
+  if (!selectedTeen || !checkbox.checked || checkbox.disabled) {
     alert("Please select a person and tick the attendance box.");
     return;
   }
@@ -482,14 +454,16 @@ document.getElementById('submitAttendance').addEventListener('click', function (
   .then(res => res.json())
   .then(data => {
     alert(data.message || data.error);
-    selectedCard.classList.add('d-none');
-    document.getElementById('markPresent').checked = false;
-    attendanceSearchInput.value = '';
-    searchResults.innerHTML = '';
+    document.getElementById('selectedRecord').classList.add('d-none');
+    checkbox.checked = false;
+    document.getElementById('attendanceSearchInput').value = '';
+    document.getElementById('attendanceSearchResults').innerHTML = '';
   });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadRollCallList();
+
   fetch('/teens_get_dates')
     .then(res => res.json())
     .then(data => {
@@ -520,8 +494,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 });
-
 </script>
+
 </body>
 
 </html>
