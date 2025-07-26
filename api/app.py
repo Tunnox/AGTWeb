@@ -634,6 +634,33 @@ def download_attendance_csv():
             'Content-Disposition': f'attachment; filename="AGT_Attendance_{date}.csv"'
         }
     )
+
+@app.route('/get_children_by_age_group')
+def get_children_by_age_group():
+    group = request.args.get('group')
+    if not group:
+        return jsonify([])
+
+    age_range = {
+        '0-5': (0, 5),
+        '6-8': (6, 8),
+        '9-12': (9, 12)
+    }.get(group)
+
+    if not age_range:
+        return jsonify([])
+
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT CONCAT(first_name, ' ', last_name) AS name, contact_number
+        FROM public."AGT_CHILDREN_DATA_RECORDS"
+        WHERE age BETWEEN %s AND %s
+        ORDER BY first_name, last_name
+    """, age_range)
+    results = [{"name": r[0], "contact": r[1]} for r in cursor.fetchall()]
+    cursor.close()
+    return jsonify(results)
+
 #__________________________________________________________________________________________________________________________________
 #__________________________________________________________________________________________________________________________________
 # Profile feature routes for user registration, login, and record view/edit
