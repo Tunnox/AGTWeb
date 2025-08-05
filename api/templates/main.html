@@ -305,8 +305,19 @@ header::after {
 </section>
 
 <style>
+  /* WIDE and TALL Search Bar */
+  #attendanceSearchInput {
+    height: 55px;
+    font-size: 1.2rem;
+    padding: 12px 20px;
+    border-radius: 10px;
+    max-width: 100%;
+  }
+
+  /* Search Result Items */
   #attendanceSearchResults .search-result-item {
-    padding: 10px 15px;
+    padding: 12px 18px;
+    font-size: 1.1rem;
     border-radius: 8px;
     background: #f8f9fa;
     transition: all 0.2s ease;
@@ -319,6 +330,19 @@ header::after {
     transform: scale(1.02);
   }
 
+  /* Larger Checkbox */
+  .form-check-input {
+    width: 1.5em;
+    height: 1.5em;
+    margin-top: 0.3em;
+  }
+
+  .form-check-label {
+    font-size: 1.1rem;
+    margin-left: 0.5em;
+  }
+
+  /* Fade-in effect for selected card */
   .glass-card {
     animation: fadeIn 0.3s ease;
   }
@@ -328,6 +352,7 @@ header::after {
     to { opacity: 1; transform: translateY(0); }
   }
 </style>
+
 
 <script>
 const attendanceSearchInput = document.getElementById('attendanceSearchInput');
@@ -360,6 +385,8 @@ attendanceSearchInput.addEventListener('input', async function () {
   document.getElementById('selectedName').innerText = fullName;
   document.getElementById('selectedContact').innerText = `📞 Contact: ${record.contact_number || 'N/A'}`;
   selectedCard.classList.remove('d-none');
+
+  searchResults.innerHTML = ''; // 💥 Hides the drop-down results
 
   // Reset the checkbox and alert
   const checkbox = document.getElementById('markPresent');
@@ -658,6 +685,7 @@ document.getElementById('submitAttendance').addEventListener('click', async () =
   </script>
 </body>
 </html>
+
 
 
 
