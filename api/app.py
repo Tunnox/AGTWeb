@@ -950,22 +950,79 @@ def update_user_details():
 @app.route('/search_all_members', methods=['GET'])
 def search_all_members():
     keyword = request.args.get('keyword', '')
+    like_param = f"%{keyword}%"
     cur = connection.cursor()
+
     try:
         query = """
-            SELECT 'adult' AS category, first_name, last_name, age_group, department, contact_number FROM "public"."AGT_ADULT_DATA_RECORDS"
-            WHERE first_name || ' ' || last_name ILIKE %s
+            SELECT 'adult' AS category,
+                   first_name,
+                   last_name,
+                   age_group,
+                   department,
+                   contact_number
+            FROM "public"."AGT_ADULT_DATA_RECORDS"
+            WHERE first_name ILIKE %s
+               OR last_name ILIKE %s
+               OR age::TEXT ILIKE %s
+               OR gender ILIKE %s
+               OR birthday ILIKE %s
+               OR contact_number::TEXT ILIKE %s
+               OR age_group ILIKE %s
+               OR department ILIKE %s
+               OR relationship_status ILIKE %s
+               OR email ILIKE %s
+               OR address ILIKE %s
+               OR consent ILIKE %s
+
             UNION
-            SELECT 'teen' AS category, first_name, last_name, age_group, department, contact_number FROM "public"."AGT_TEENS_DATA_RECORDS"
-            WHERE first_name || ' ' || last_name ILIKE %s
+
+            SELECT 'teen' AS category,
+                   first_name,
+                   last_name,
+                   age_group,
+                   department,
+                   contact_number
+            FROM "public"."AGT_TEENS_DATA_RECORDS"
+            WHERE first_name ILIKE %s
+               OR last_name ILIKE %s
+               OR age::TEXT ILIKE %s
+               OR gender ILIKE %s
+               OR birthday ILIKE %s
+               OR contact_number::TEXT ILIKE %s
+               OR age_group ILIKE %s
+               OR department ILIKE %s
+               OR relationship_status ILIKE %s
+               OR email ILIKE %s
+               OR address ILIKE %s
+               OR consent ILIKE %s
+
             UNION
-            SELECT 'child' AS category, first_name, last_name, age_group, '' AS department, contact_number FROM "public"."AGT_CHILDREN_DATA_RECORDS"
-            WHERE first_name || ' ' || last_name ILIKE %s
-            LIMIT 10;
+
+            SELECT 'child' AS category,
+                   first_name,
+                   last_name,
+                   age_group,
+                   '' AS department,
+                   contact_number
+            FROM "public"."AGT_CHILDREN_DATA_RECORDS"
+            WHERE first_name ILIKE %s
+               OR last_name ILIKE %s
+               OR age::TEXT ILIKE %s
+               OR gender ILIKE %s
+               OR birthday ILIKE %s
+               OR contact_number::TEXT ILIKE %s
+               OR age_group ILIKE %s
+               OR consent ILIKE %s
+            LIMIT 20;
         """
-        like_param = f"%{keyword}%"
-        cur.execute(query, (like_param, like_param, like_param))
+
+        # 12 + 12 + 8 = 32 params
+        params = [like_param] * 32
+        cur.execute(query, params)
         rows = cur.fetchall()
+        cur.close()
+
         return jsonify([
             {
                 "category": row[0],
@@ -980,6 +1037,7 @@ def search_all_members():
         return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
+
 
 @app.route('/record_general_attendance', methods=['POST'])
 def record_general_attendance():
@@ -1000,8 +1058,31 @@ def record_general_attendance():
         connection.rollback()
         return jsonify({"error": str(e)}), 500
 
+@app.route('/teens_check_attendance', methods=['POST'])
+def check_attendance():
+    data = request.get_json()
+    name = data.get('name')
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    
+    try:
+        cur = connection.cursor()
+        cur.execute("""
+            SELECT "Date" FROM public."AGT_Attendacne"
+            WHERE "Name" = %s AND DATE("Date") = %s
+        """, (name, today))
+        row = cur.fetchone()
+        cur.close()
+
+        if row:
+            return jsonify({"present": True, "date": row[0]})
+        else:
+            return jsonify({"present": False})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
