@@ -280,34 +280,39 @@ header::after {
     <p>We are a vibrant church community based in Sheffield, dedicated to worship, outreach, and transformation through God’s grace.</p>
   </section>
 
+  <!-- Attendacne-->
   <section id="general-attendance" style="max-width:600px; margin:auto; padding:30px;">
   <h2 style="text-align:center;">📝 General Attendance</h2>
 
-  <!-- Search Field -->
+  <!-- Search Input -->
   <input type="text" id="searchMember" class="form-control mb-2" placeholder="Search name..." autocomplete="off">
 
-  <!-- Suggestions Dropdown -->
+  <!-- Autocomplete suggestions -->
   <div id="searchSuggestions" class="mb-3"></div>
 
-  <!-- Hidden until name selected -->
+  <!-- Details shown only after selecting name -->
   <div id="selectedInfo" class="card p-3 d-none">
-    <h5 id="fullName" style="font-weight:bold;"></h5>
+    <h5 id="fullName" class="fw-bold"></h5>
     <p id="ageGroup"></p>
     <p id="department"></p>
     <p id="contact"></p>
+    <p id="attendanceWarning" class="text-danger fw-bold"></p>
+
     <div class="form-check">
       <input type="checkbox" class="form-check-input" id="markAttendance">
       <label class="form-check-label" for="markAttendance">Mark as Present</label>
     </div>
-    <button class="btn btn-success mt-3" id="submitGeneralAttendance">Submit Attendance</button>
+
+    <button class="btn btn-success mt-2" id="submitGeneralAttendance">Submit Attendance</button>
   </div>
 
-  <!-- Success Modal -->
-  <div class="modal fade" id="successModal" tabindex="-1">
+  <!-- Modal for Success/Error -->
+  <div class="modal fade" id="feedbackModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-center p-4">
-        <h5 class="modal-title">✅ Success</h5>
-        <p>Attendance recorded successfully!</p>
+        <h5 class="modal-title" id="feedbackTitle"></h5>
+        <p id="feedbackMessage"></p>
+        <button class="btn btn-secondary mt-2" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -315,6 +320,10 @@ header::after {
 
 <script>
 let selectedPerson = null;
+
+const checkbox = document.getElementById('markAttendance');
+const warning = document.getElementById('attendanceWarning');
+const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
 
 document.getElementById('searchMember').addEventListener('input', function () {
   const query = this.value;
@@ -340,9 +349,27 @@ document.getElementById('searchMember').addEventListener('input', function () {
           document.getElementById('department').textContent = person.department ? `Department: ${person.department}` : '';
           document.getElementById('contact').textContent = `Contact: ${person.contact_number}`;
           document.getElementById('selectedInfo').classList.remove('d-none');
-
-          suggestionBox.innerHTML = '';
           document.getElementById('searchMember').value = fullName;
+          suggestionBox.innerHTML = '';
+
+          // Check if attendance already taken
+          fetch('/teens_check_attendance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: fullName })
+          })
+          .then(res => res.json())
+          .then(result => {
+            if (result.present) {
+              warning.textContent = `⚠️ Attendance already taken for this name on ${result.date}`;
+              checkbox.disabled = true;
+              checkbox.checked = true;
+            } else {
+              warning.textContent = '';
+              checkbox.disabled = false;
+              checkbox.checked = false;
+            }
+          });
         };
         suggestionBox.appendChild(div);
       });
@@ -350,12 +377,9 @@ document.getElementById('searchMember').addEventListener('input', function () {
 });
 
 document.getElementById('submitGeneralAttendance').addEventListener('click', () => {
-  const checkbox = document.getElementById('markAttendance');
-  const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
-
-  if (!selectedPerson || !checkbox.checked) {
-    document.getElementById('feedbackTitle').textContent = "⚠️ Incomplete";
-    document.getElementById('feedbackMessage').textContent = "Please select a person and tick the attendance box.";
+  if (!selectedPerson || checkbox.disabled || !checkbox.checked) {
+    document.getElementById('feedbackTitle').textContent = "⚠️ Not Allowed";
+    document.getElementById('feedbackMessage').textContent = "Either no name selected or attendance already taken.";
     modal.show();
     return;
   }
@@ -373,27 +397,26 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
     if (data.message) {
       document.getElementById('feedbackTitle').textContent = "✅ Success";
       document.getElementById('feedbackMessage').textContent = data.message;
-      
-      // Reset form
+
+      // Reset UI
       document.getElementById('selectedInfo').classList.add('d-none');
-      checkbox.checked = false;
       document.getElementById('searchMember').value = '';
+      checkbox.checked = false;
       selectedPerson = null;
     } else {
       document.getElementById('feedbackTitle').textContent = "❌ Error";
-      document.getElementById('feedbackMessage').textContent = data.error || "Something went wrong.";
+      document.getElementById('feedbackMessage').textContent = data.error || "Failed to record attendance.";
     }
     modal.show();
   })
-  .catch(err => {
+  .catch(() => {
     document.getElementById('feedbackTitle').textContent = "❌ Error";
-    document.getElementById('feedbackMessage').textContent = "Network or server error occurred.";
+    document.getElementById('feedbackMessage').textContent = "Network/server error occurred.";
     modal.show();
   });
 });
 </script>
-
-
+<!-- END-->
 
  <section id="youtube" style="padding:60px 20px; text-align:center; background:#f1f3f5;">
   <h2 style="color:#04395E; font-size:28px; margin-bottom:10px;">
@@ -636,6 +659,7 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
   </script>
 </body>
 </html>
+
 
 
 
