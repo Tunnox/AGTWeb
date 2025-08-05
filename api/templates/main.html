@@ -282,11 +282,16 @@ header::after {
 
   <section id="general-attendance" style="max-width:600px; margin:auto; padding:30px;">
   <h2 style="text-align:center;">📝 General Attendance</h2>
-  <input type="text" id="searchMember" class="form-control mb-2" placeholder="Search name..." autocomplete="off">
-  <div id="searchSuggestions" class="mb-2"></div>
 
+  <!-- Search Field -->
+  <input type="text" id="searchMember" class="form-control mb-2" placeholder="Search name..." autocomplete="off">
+
+  <!-- Suggestions Dropdown -->
+  <div id="searchSuggestions" class="mb-3"></div>
+
+  <!-- Hidden until name selected -->
   <div id="selectedInfo" class="card p-3 d-none">
-    <h5 id="fullName"></h5>
+    <h5 id="fullName" style="font-weight:bold;"></h5>
     <p id="ageGroup"></p>
     <p id="department"></p>
     <p id="contact"></p>
@@ -294,7 +299,7 @@ header::after {
       <input type="checkbox" class="form-check-input" id="markAttendance">
       <label class="form-check-label" for="markAttendance">Mark as Present</label>
     </div>
-    <button class="btn btn-success mt-2" id="submitGeneralAttendance">Submit</button>
+    <button class="btn btn-success mt-3" id="submitGeneralAttendance">Submit Attendance</button>
   </div>
 
   <!-- Success Modal -->
@@ -311,6 +316,7 @@ header::after {
 <script>
 let selectedPerson = null;
 
+// Handle search input
 document.getElementById('searchMember').addEventListener('input', function () {
   const query = this.value;
   if (query.length < 2) return;
@@ -329,11 +335,13 @@ document.getElementById('searchMember').addEventListener('input', function () {
         div.style = "background:#f1f1f1; padding:8px; border-radius:5px; cursor:pointer; margin-bottom:5px;";
         div.onclick = () => {
           selectedPerson = person;
+
           document.getElementById('fullName').textContent = fullName;
           document.getElementById('ageGroup').textContent = `Age Group: ${person.age_group}`;
           document.getElementById('department').textContent = person.department ? `Department: ${person.department}` : '';
           document.getElementById('contact').textContent = `Contact: ${person.contact_number}`;
           document.getElementById('selectedInfo').classList.remove('d-none');
+          
           suggestionBox.innerHTML = '';
           document.getElementById('searchMember').value = fullName;
         };
@@ -342,9 +350,10 @@ document.getElementById('searchMember').addEventListener('input', function () {
     });
 });
 
+// Submit attendance
 document.getElementById('submitGeneralAttendance').addEventListener('click', () => {
   if (!selectedPerson || !document.getElementById('markAttendance').checked) {
-    alert("Select a person and check the box to mark attendance.");
+    alert("Please select a person and check the box to mark attendance.");
     return;
   }
 
@@ -361,9 +370,9 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
     if (data.message) {
       const modal = new bootstrap.Modal(document.getElementById('successModal'));
       modal.show();
-      setTimeout(() => {
-        modal.hide();
-      }, 2000);
+      setTimeout(() => modal.hide(), 2000);
+
+      // Reset UI
       document.getElementById('selectedInfo').classList.add('d-none');
       document.getElementById('markAttendance').checked = false;
       document.getElementById('searchMember').value = '';
@@ -615,4 +624,5 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
   </script>
 </body>
 </html>
+
 
