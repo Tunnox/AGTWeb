@@ -282,165 +282,104 @@ header::after {
 
   <!-- Attendacne-->
   <!-- General Attendance Section -->
-<section id="general-attendance" class="container py-4">
-  <h2 class="text-center mb-4">Take Attendance</h2>
-
-  <!-- Search Input -->
-  <input type="text" id="searchMember" class="form-control mb-2" placeholder="Search by any detail..." autocomplete="off">
-
-  <!-- Autocomplete Dropdown -->
-  <ul id="searchSuggestions" class="list-group mb-3" style="cursor:pointer; max-height:200px; overflow-y:auto;"></ul>
-
-  <!-- Selected Person Info Card -->
-  <div id="selectedInfo" class="card p-3 d-none">
-    <h5 id="fullName" class="fw-bold mb-2"></h5>
-    <p id="ageGroup" class="mb-1"></p>
-    <p id="department" class="mb-1"></p>
-    <p id="contact" class="mb-1"></p>
-    <p id="attendanceWarning" class="text-danger fw-bold"></p>
-
-    <!-- Attendance Checkbox -->
-    <div class="form-check mb-2">
-      <input type="checkbox" class="form-check-input" id="markAttendance">
-      <label class="form-check-label" for="markAttendance">Mark as Present</label>
+<div class="section-card">
+  <h3 class="section-title">📝 Take Attendance</h3>
+  <input type="text" id="attendanceSearchInput" class="form-control mb-2" placeholder="Search by name...">
+  <div id="attendanceSearchResults" class="mt-2"></div>
+  
+  <div id="selectedRecord" class="glass-card d-none mt-3">
+    <h5 id="selectedName"></h5>
+    <p id="selectedContact"></p>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="markPresent">
+      <label class="form-check-label" for="markPresent">Mark as Present</label>
     </div>
-
-    <!-- Submit Button -->
-    <button class="btn btn-success w-100" id="submitGeneralAttendance">Submit Attendance</button>
+    <p id="attendanceAlreadyMarked" class="text-warning mt-2"></p>
+    <button class="btn btn-success mt-3" id="submitAttendance">Take Attendance</button>
   </div>
-
-  <!-- Feedback Modal -->
-  <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-4">
-        <h5 class="modal-title" id="feedbackTitle"></h5>
-        <p id="feedbackMessage" class="mb-3"></p>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</section>
-
+</div>
 
 <script>
-let selectedPerson = null;
+const attendanceSearchInput = document.getElementById('attendanceSearchInput');
+const searchResults = document.getElementById('attendanceSearchResults');
+const selectedCard = document.getElementById('selectedRecord');
+let selectedUser = null;
 
-const checkbox = document.getElementById('markAttendance');
-const warning = document.getElementById('attendanceWarning');
-const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
-const suggestions = document.getElementById('searchSuggestions');
-const searchInput = document.getElementById('searchMember');
+attendanceSearchInput.addEventListener('input', async function () {
+  const keyword = this.value;
+  if (keyword.length < 2) return;
 
-// Typing in the search bar
-searchInput.addEventListener('input', function () {
-  const query = this.value.trim();
-  if (query.length < 2) {
-    suggestions.innerHTML = '';
-    return;
-  }
+  const res = await fetch(`/search_attendance_records?keyword=${encodeURIComponent(keyword)}`);
+  const data = await res.json();
 
-  fetch(`/search_all_members?keyword=${encodeURIComponent(query)}`)
-    .then(res => res.json())
-    .then(data => {
-      suggestions.innerHTML = '';
-      if (!Array.isArray(data)) return;
+  searchResults.innerHTML = '';
+  selectedCard.classList.add('d-none');
 
-      if (data.length === 0) {
-        const li = document.createElement('li');
-        li.textContent = 'No matches found.';
-        li.className = 'list-group-item text-muted';
-        suggestions.appendChild(li);
-        return;
+  data.forEach(record => {
+    const fullName = `${record.first_name} ${record.last_name}`;
+    const div = document.createElement('div');
+    div.className = 'search-result-item';
+    div.innerText = fullName;
+    div.onclick = async () => {
+      selectedUser = {
+        name: fullName,
+        contact: record.contact_number
+      };
+
+      document.getElementById('selectedName').innerText = fullName;
+      document.getElementById('selectedContact').innerText = `Contact: ${record.contact_number || 'N/A'}`;
+      selectedCard.classList.remove('d-none');
+
+      // Check if already marked
+      const check = await fetch('/record_attendance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: selectedUser.name,
+          contact: selectedUser.contact,
+          check_only: true
+        })
+      }).then(r => r.json());
+
+      const checkbox = document.getElementById('markPresent');
+      const msg = document.getElementById('attendanceAlreadyMarked');
+      checkbox.checked = false;
+      checkbox.disabled = false;
+      msg.innerText = '';
+
+      if (check.present) {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+        msg.innerText = check.message;
       }
-
-      data.forEach(person => {
-        const fullName = `${person.first_name} ${person.last_name}`;
-        const li = document.createElement('li');
-        li.textContent = fullName;
-        li.className = 'list-group-item list-group-item-action';
-        li.onclick = () => selectPerson(person);
-        suggestions.appendChild(li);
-      });
-    })
-    .catch(error => {
-      console.error('Search failed:', error);
-    });
+    };
+    searchResults.appendChild(div);
+  });
 });
 
-function selectPerson(person) {
-  selectedPerson = person;
-  const fullName = `${person.first_name} ${person.last_name}`;
-
-  document.getElementById('fullName').textContent = fullName;
-  document.getElementById('ageGroup').textContent = `Age Group: ${person.age_group}`;
-  document.getElementById('department').textContent = person.department ? `Department: ${person.department}` : '';
-  document.getElementById('contact').textContent = `Contact: ${person.contact_number}`;
-  document.getElementById('selectedInfo').classList.remove('d-none');
-  searchInput.value = fullName;
-  suggestions.innerHTML = '';
-
-  // Check attendance
-  fetch('/teens_check_attendance', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: fullName })
-  })
-  .then(res => res.json())
-  .then(result => {
-    if (result.present) {
-      warning.textContent = `⚠️ Attendance already taken for this name on ${result.date}`;
-      checkbox.disabled = true;
-      checkbox.checked = true;
-    } else {
-      warning.textContent = '';
-      checkbox.disabled = false;
-      checkbox.checked = false;
-    }
-  })
-  .catch(error => {
-    console.error('Attendance check failed:', error);
-  });
-}
-
-document.getElementById('submitGeneralAttendance').addEventListener('click', () => {
-  if (!selectedPerson || checkbox.disabled || !checkbox.checked) {
-    document.getElementById('feedbackTitle').textContent = "⚠️ Not Allowed";
-    document.getElementById('feedbackMessage').textContent = "Either no name selected or attendance already taken.";
-    modal.show();
+document.getElementById('submitAttendance').addEventListener('click', async () => {
+  if (!selectedUser || !document.getElementById('markPresent').checked) {
+    alert("Please select a person and tick the attendance box.");
     return;
   }
 
-  fetch('/record_general_attendance', {
+  const res = await fetch('/record_attendance', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      name: `${selectedPerson.first_name} ${selectedPerson.last_name}`,
-      contact: selectedPerson.contact_number
+      name: selectedUser.name,
+      contact: selectedUser.contact
     })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.message) {
-      document.getElementById('feedbackTitle').textContent = "✅ Success";
-      document.getElementById('feedbackMessage').textContent = data.message;
-
-      document.getElementById('selectedInfo').classList.add('d-none');
-      searchInput.value = '';
-      checkbox.checked = false;
-      selectedPerson = null;
-    } else {
-      document.getElementById('feedbackTitle').textContent = "❌ Error";
-      document.getElementById('feedbackMessage').textContent = data.error || "Failed to record attendance.";
-    }
-    modal.show();
-  })
-  .catch(() => {
-    document.getElementById('feedbackTitle').textContent = "❌ Error";
-    document.getElementById('feedbackMessage').textContent = "Network/server error occurred.";
-    modal.show();
   });
+
+  const data = await res.json();
+  alert(data.message || data.error);
+  selectedCard.classList.add('d-none');
+  attendanceSearchInput.value = '';
+  searchResults.innerHTML = '';
 });
 </script>
+
 
 <!-- END-->
 
@@ -685,6 +624,7 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
   </script>
 </body>
 </html>
+
 
 
 
