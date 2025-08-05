@@ -305,11 +305,12 @@ const searchResults = document.getElementById('attendanceSearchResults');
 const selectedCard = document.getElementById('selectedRecord');
 let selectedUser = null;
 
+// Updated search input event
 attendanceSearchInput.addEventListener('input', async function () {
   const keyword = this.value;
   if (keyword.length < 2) return;
 
-  const res = await fetch(`/search_attendance_records?keyword=${encodeURIComponent(keyword)}`);
+  const res = await fetch(`/attendance/search_user?keyword=${encodeURIComponent(keyword)}`);
   const data = await res.json();
 
   searchResults.innerHTML = '';
@@ -331,13 +332,12 @@ attendanceSearchInput.addEventListener('input', async function () {
       selectedCard.classList.remove('d-none');
 
       // Check if already marked
-      const check = await fetch('/record_attendance', {
+      const check = await fetch('/attendance/record_entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: selectedUser.name,
-          contact: selectedUser.contact,
-          check_only: true
+          contact: selectedUser.contact
         })
       }).then(r => r.json());
 
@@ -357,13 +357,14 @@ attendanceSearchInput.addEventListener('input', async function () {
   });
 });
 
+// Updated submission event
 document.getElementById('submitAttendance').addEventListener('click', async () => {
   if (!selectedUser || !document.getElementById('markPresent').checked) {
     alert("Please select a person and tick the attendance box.");
     return;
   }
 
-  const res = await fetch('/record_attendance', {
+  const res = await fetch('/attendance/record_entry', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -624,6 +625,7 @@ document.getElementById('submitAttendance').addEventListener('click', async () =
   </script>
 </body>
 </html>
+
 
 
 
