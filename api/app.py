@@ -948,143 +948,72 @@ def update_user_details():
         cur.close()
 #____________________________________________________________________________________________________________________
 #General Attendacne taker ___________________________________________________________________________________________
-@app.route('/search_all_members', methods=['GET'])
-def search_all_members():
+@app.route('/search_attendance_records', methods=['GET'])
+def search_attendance_records():
     keyword = request.args.get('keyword', '')
-    like_param = f"%{keyword}%"
     cur = connection.cursor()
-
     try:
         query = """
-            SELECT 'adult' AS category,
-                   first_name,
-                   last_name,
-                   age_group,
-                   department,
-                   contact_number
-            FROM "public"."AGT_ADULT_DATA_RECORDS"
-            WHERE first_name ILIKE %s
-               OR last_name ILIKE %s
-               OR age::TEXT ILIKE %s
-               OR gender ILIKE %s
-               OR birthday ILIKE %s
-               OR contact_number::TEXT ILIKE %s
-               OR age_group ILIKE %s
-               OR department ILIKE %s
-               OR relationship_status ILIKE %s
-               OR email ILIKE %s
-               OR address ILIKE %s
-               OR consent ILIKE %s
-
-            UNION
-
-            SELECT 'teen' AS category,
-                   first_name,
-                   last_name,
-                   age_group,
-                   department,
-                   contact_number
-            FROM "public"."AGT_TEENS_DATA_RECORDS"
-            WHERE first_name ILIKE %s
-               OR last_name ILIKE %s
-               OR age::TEXT ILIKE %s
-               OR gender ILIKE %s
-               OR birthday ILIKE %s
-               OR contact_number::TEXT ILIKE %s
-               OR age_group ILIKE %s
-               OR department ILIKE %s
-               OR relationship_status ILIKE %s
-               OR email ILIKE %s
-               OR address ILIKE %s
-               OR consent ILIKE %s
-
-            UNION
-
-            SELECT 'child' AS category,
-                   first_name,
-                   last_name,
-                   age_group,
-                   '' AS department,
-                   contact_number
-            FROM "public"."AGT_CHILDREN_DATA_RECORDS"
-            WHERE first_name ILIKE %s
-               OR last_name ILIKE %s
-               OR age::TEXT ILIKE %s
-               OR gender ILIKE %s
-               OR contact_number::TEXT ILIKE %s
-               OR age_group ILIKE %s
-               OR consent ILIKE %s
-               OR birthday ILIKE %s
-
+            SELECT first_name, last_name, contact_number FROM (
+                SELECT "first_name", "last_name", "contact_number" FROM "public"."AGT_TEENS_DATA_RECORDS"
+                WHERE "first_name" ILIKE %s OR "last_name" ILIKE %s OR "email" ILIKE %s
+                UNION
+                SELECT "first_name", "last_name", "contact_number" FROM "public"."AGT_ADULT_DATA_RECORDS"
+                WHERE "first_name" ILIKE %s OR "last_name" ILIKE %s OR "email" ILIKE %s
+                UNION
+                SELECT "first_name", "last_name", "contact_number" FROM "public"."AGT_CHILDREN_DATA_RECORDS"
+                WHERE "first_name" ILIKE %s OR "last_name" ILIKE %s
+            ) AS combined
             LIMIT 10;
         """
-
-        # 12 adults + 12 teens + 8 children = 32 placeholders
-        params = [like_param] * 32
+        params = tuple([f"%{keyword}%"] * 8)
         cur.execute(query, params)
-        rows = cur.fetchall()
+        results = cur.fetchall()
+        return jsonify([{"first_name": r[0], "last_name": r[1], "contact_number": r[2]} for r in results])
+    except Exception as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
         cur.close()
 
-        return jsonify([
-            {
-                "category": row[0],
-                "first_name": row[1],
-                "last_name": row[2],
-                "age_group": row[3],
-                "department": row[4],
-                "contact_number": row[5]
-            } for row in rows
-        ])
+@app.route('/record_attendance', methods=['POST'])
+def record_attendance():
+    data = request.get_json()
+    name = data.get('name')
+    contact = data.get('contact')
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    cur = connection.cursor()
+    try:
+        # Check if already marked today
+        cur.execute("""
+            SELECT "Date" FROM public."AGT_Attendacne"
+            WHERE "Name" = %s AND "Contact" = %s AND DATE("Date") = %s
+        """, (name, contact, today))
+        existing = cur.fetchone()
+
+        if existing:
+            return jsonify({"message": f"Already marked present on {existing[0].strftime('%Y-%m-%d %H:%M:%S')}", "present": True}), 200
+
+        # Insert attendance
+        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        cur.execute("""
+            INSERT INTO public."AGT_Attendacne" ("Name", "Date", "Contact")
+            VALUES (%s, %s, %s);
+        """, (name, now, contact))
+        connection.commit()
+        return jsonify({"message": "Attendance recorded successfully!", "present": False}), 200
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
     finally:
         cur.close()
 
 
-
-@app.route('/record_general_attendance', methods=['POST'])
-def record_general_attendance():
-    data = request.get_json()
-    full_name = data.get('name')
-    contact = data.get('contact')
-    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    try:
-        cur = connection.cursor()
-        cur.execute("""
-            INSERT INTO public."AGT_Attendacne" ("Name", "Date", "Contact")
-            VALUES (%s, %s, %s);
-        """, (full_name, now, contact))
-        connection.commit()
-        cur.close()
-        return jsonify({"message": "Attendance successfully recorded!"})
-    except Exception as e:
-        connection.rollback()
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/teens_check_attendance', methods=['POST'])
-def check_attendance():
-    data = request.get_json()
-    name = data.get('name')
-    today = datetime.datetime.now().strftime('%Y-%m-%d')
-    
-    try:
-        cur = connection.cursor()
-        cur.execute("""
-            SELECT "Date" FROM public."AGT_Attendacne"
-            WHERE "Name" = %s AND DATE("Date") = %s
-        """, (name, today))
-        row = cur.fetchone()
-        cur.close()
-
-        if row:
-            return jsonify({"present": True, "date": row[0]})
-        else:
-            return jsonify({"present": False})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
