@@ -938,6 +938,7 @@ def update_user_details():
             SET {set_clause}
             WHERE "email" = %s
         """, values)
+        
         connection.commit()
         return jsonify({'message': 'User record updated successfully'}), 200
     except Exception as e:
@@ -1010,14 +1011,15 @@ def search_all_members():
                OR last_name ILIKE %s
                OR age::TEXT ILIKE %s
                OR gender ILIKE %s
-               OR birthday ILIKE %s
                OR contact_number::TEXT ILIKE %s
                OR age_group ILIKE %s
                OR consent ILIKE %s
-            LIMIT 20;
+               OR birthday ILIKE %s
+
+            LIMIT 10;
         """
 
-        # 12 + 12 + 8 = 32 params
+        # 12 adults + 12 teens + 8 children = 32 placeholders
         params = [like_param] * 32
         cur.execute(query, params)
         rows = cur.fetchall()
@@ -1037,6 +1039,7 @@ def search_all_members():
         return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
+
 
 
 @app.route('/record_general_attendance', methods=['POST'])
@@ -1082,6 +1085,7 @@ def check_attendance():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
