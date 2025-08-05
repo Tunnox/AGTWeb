@@ -948,8 +948,8 @@ def update_user_details():
         cur.close()
 #____________________________________________________________________________________________________________________
 #General Attendacne taker ___________________________________________________________________________________________
-@app.route('/search_attendance_records', methods=['GET'])
-def search_attendance_records():
+@app.route('/attendance/search_user', methods=['GET'])
+def attendance_search_user():
     keyword = request.args.get('keyword', '')
     cur = connection.cursor()
     try:
@@ -976,8 +976,9 @@ def search_attendance_records():
     finally:
         cur.close()
 
-@app.route('/record_attendance', methods=['POST'])
-def record_attendance():
+
+@app.route('/attendance/record_entry', methods=['POST'])
+def attendance_record_entry():
     data = request.get_json()
     name = data.get('name')
     contact = data.get('contact')
@@ -993,9 +994,11 @@ def record_attendance():
         existing = cur.fetchone()
 
         if existing:
-            return jsonify({"message": f"Already marked present on {existing[0].strftime('%Y-%m-%d %H:%M:%S')}", "present": True}), 200
+            return jsonify({
+                "message": f"Already marked present on {existing[0].strftime('%Y-%m-%d %H:%M:%S')}",
+                "present": True
+            }), 200
 
-        # Insert attendance
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         cur.execute("""
             INSERT INTO public."AGT_Attendacne" ("Name", "Date", "Contact")
@@ -1011,8 +1014,10 @@ def record_attendance():
         cur.close()
 
 
+
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
