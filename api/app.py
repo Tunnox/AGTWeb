@@ -945,6 +945,62 @@ def update_user_details():
         return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
+#____________________________________________________________________________________________________________________
+#General Attendacne taker ___________________________________________________________________________________________
+@app.route('/search_all_members', methods=['GET'])
+def search_all_members():
+    keyword = request.args.get('keyword', '')
+    cur = connection.cursor()
+    try:
+        query = """
+            SELECT 'adult' AS category, first_name, last_name, age_group, department, contact_number FROM "public"."AGT_ADULT_DATA_RECORDS"
+            WHERE first_name ILIKE %s OR last_name ILIKE %s
+            UNION
+            SELECT 'teen' AS category, first_name, last_name, age_group, department, contact_number FROM "public"."AGT_TEENS_DATA_RECORDS"
+            WHERE first_name ILIKE %s OR last_name ILIKE %s
+            UNION
+            SELECT 'child' AS category, first_name, last_name, age_group, '' AS department, contact_number FROM "public"."AGT_CHILDREN_DATA_RECORDS"
+            WHERE first_name ILIKE %s OR last_name ILIKE %s
+            LIMIT 10;
+        """
+        params = tuple([f"%{keyword}%"] * 6)
+        cur.execute(query, params)
+        rows = cur.fetchall()
+        return jsonify([
+            {
+                "category": row[0],
+                "first_name": row[1],
+                "last_name": row[2],
+                "age_group": row[3],
+                "department": row[4],
+                "contact_number": row[5]
+            } for row in rows
+        ])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cur.close()
+
+
+@app.route('/record_general_attendance', methods=['POST'])
+def record_general_attendance():
+    data = request.get_json()
+    full_name = data.get('name')
+    contact = data.get('contact')
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    try:
+        cur = connection.cursor()
+        cur.execute("""
+            INSERT INTO public."AGT_Attendacne" ("Name", "Date", "Contact")
+            VALUES (%s, %s, %s);
+        """, (full_name, now, contact))
+        connection.commit()
+        cur.close()
+        return jsonify({"message": "Attendance successfully recorded!"})
+    except Exception as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
+
