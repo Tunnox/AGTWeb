@@ -282,37 +282,31 @@ header::after {
 
   <!-- Attendacne-->
   <!-- General Attendance Section -->
-<section id="Take_attendance" class="py-5 bg-light">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="section-title display-6 fw-semibold">📋 Take Attendance</h2>
-      <p class="text-muted mb-1">
-        Please register your details and consent to AGT storing and processing your information in accordance with GDPR.
-      </p>
-      <p class="text-muted">Contact <strong>Admin</strong> to register your details.</p>
+<section id="Take_attendacne" class="py-5">
+  <h2 class="section-title mb-4 text-center">Take Attendance</h2>
+    <p>Please register your details and consent to AGT storing and processing your information in accordance with GDPR</p>
+    <p style="text-align:center;">Contact <strong>Admin</strong> to register your details.</p>
+  <div class="section-card p-4 shadow rounded bg-white" style="max-width: 600px; margin: auto;">
+    <input type="text" id="attendanceSearchInput" class="form-control mb-3 shadow-sm" placeholder="🔍 Search by name...">
+    <div id="attendanceSearchResults" class="d-flex flex-column gap-2"></div>
+
+    <div id="selectedRecord" class="glass-card d-none mt-4 p-4 rounded shadow" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); border: 1px solid #ddd;">
+  <h5 id="selectedName" class="mb-1 fw-bold"></h5>
+  <p id="selectedContact" class="mb-3 text-muted"></p>
+
+  <!-- Alert shown only if already marked -->
+  <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-3" role="alert"></div>
+
+  <!-- Mark + Submit only visible when appropriate -->
+  <div id="attendanceActions" class="d-none">
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="markPresent">
+      <label class="form-check-label" for="markPresent">Mark as Present</label>
     </div>
-
-    <div class="section-card mx-auto p-4 shadow-sm rounded-4 bg-white" style="max-width: 600px;">
-      <input type="text" id="attendanceSearchInput" class="form-control mb-4 shadow-sm" placeholder="🔍 Search by name...">
-
-      <div id="attendanceSearchResults" class="d-flex flex-column gap-2"></div>
-
-      <div id="selectedRecord" class="glass-card d-none mt-4 p-4 rounded-4 shadow-sm border">
-        <h5 id="selectedName" class="mb-1 fw-bold fs-5"></h5>
-        <p id="selectedContact" class="mb-3 text-muted small"></p>
-
-        <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-3" role="alert"></div>
-
-        <div id="attendanceActions" class="d-none">
-          <div class="form-check form-switch mb-4">
-            <input class="form-check-input" type="checkbox" id="markPresent">
-            <label class="form-check-label fw-medium" for="markPresent">Mark as Present</label>
-          </div>
-          <button class="btn btn-success btn-lg w-100" id="submitAttendance">✅ Submit Attendance</button>
-        </div>
-      </div>
-    </div>
+    <button class="btn btn-success btn-lg w-200" id="submitAttendance">Submit Attendance</button>
   </div>
+    </div>
+
 </section>
 
 <style>
@@ -724,6 +718,7 @@ document.getElementById('submitAttendance').addEventListener('click', async () =
   </script>
 </body>
 </html>
+
 
 
 
