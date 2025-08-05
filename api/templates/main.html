@@ -289,19 +289,23 @@ header::after {
     <div id="attendanceSearchResults" class="d-flex flex-column gap-2"></div>
 
     <div id="selectedRecord" class="glass-card d-none mt-4 p-4 rounded shadow" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); border: 1px solid #ddd;">
-      <h5 id="selectedName" class="mb-1 fw-bold"></h5>
-      <p id="selectedContact" class="mb-3 text-muted"></p>
+  <h5 id="selectedName" class="mb-1 fw-bold"></h5>
+  <p id="selectedContact" class="mb-3 text-muted"></p>
 
-      <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-3" role="alert"></div>
+  <!-- Alert shown only if already marked -->
+  <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-3" role="alert"></div>
 
-      <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" id="markPresent">
-        <label class="form-check-label" for="markPresent">Mark as Present</label>
-      </div>
-
-      <button class="btn btn-success w-100" id="submitAttendance">✅ Submit Attendance</button>
+  <!-- Mark + Submit only visible when appropriate -->
+  <div id="attendanceActions" class="d-none">
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="markPresent">
+      <label class="form-check-label" for="markPresent">Mark as Present</label>
     </div>
+
+    <button class="btn btn-success w-100" id="submitAttendance">✅ Submit Attendance</button>
   </div>
+</div>
+
 </section>
 
 <style>
@@ -385,18 +389,20 @@ attendanceSearchInput.addEventListener('input', async function () {
   document.getElementById('selectedName').innerText = fullName;
   document.getElementById('selectedContact').innerText = `📞 Contact: ${record.contact_number || 'N/A'}`;
   selectedCard.classList.remove('d-none');
+  searchResults.innerHTML = ''; // hide search results
 
-  searchResults.innerHTML = ''; // 💥 Hides the drop-down results
-
-  // Reset the checkbox and alert
   const checkbox = document.getElementById('markPresent');
   const alertBox = document.getElementById('attendanceAlreadyMarked');
+  const actionsBox = document.getElementById('attendanceActions');
+
+  // Reset everything
   checkbox.checked = false;
   checkbox.disabled = false;
   alertBox.classList.add('d-none');
   alertBox.innerText = '';
+  actionsBox.classList.remove('d-none'); // Show the tick + button by default
 
-  // Check if already marked
+  // Check attendance status
   const check = await fetch('/attendance/record_entry', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -685,6 +691,7 @@ document.getElementById('submitAttendance').addEventListener('click', async () =
   </script>
 </body>
 </html>
+
 
 
 
