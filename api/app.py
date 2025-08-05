@@ -981,7 +981,6 @@ def search_all_members():
     finally:
         cur.close()
 
-
 @app.route('/record_general_attendance', methods=['POST'])
 def record_general_attendance():
     data = request.get_json()
@@ -1003,4 +1002,5 @@ def record_general_attendance():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
