@@ -352,36 +352,40 @@ attendanceSearchInput.addEventListener('input', async function () {
     div.className = 'search-result-item';
     div.innerText = fullName;
     div.onclick = async () => {
-      selectedUser = {
-        name: fullName,
-        contact: record.contact_number
-      };
+  selectedUser = {
+    name: fullName,
+    contact: record.contact_number
+  };
 
-      document.getElementById('selectedName').innerText = fullName;
-      document.getElementById('selectedContact').innerText = `📞 Contact: ${record.contact_number || 'N/A'}`;
-      selectedCard.classList.remove('d-none');
+  document.getElementById('selectedName').innerText = fullName;
+  document.getElementById('selectedContact').innerText = `📞 Contact: ${record.contact_number || 'N/A'}`;
+  selectedCard.classList.remove('d-none');
 
-      const check = await fetch('/attendance/record_entry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: selectedUser.name,
-          contact: selectedUser.contact
-        })
-      }).then(r => r.json());
+  // Reset the checkbox and alert
+  const checkbox = document.getElementById('markPresent');
+  const alertBox = document.getElementById('attendanceAlreadyMarked');
+  checkbox.checked = false;
+  checkbox.disabled = false;
+  alertBox.classList.add('d-none');
+  alertBox.innerText = '';
 
-      const checkbox = document.getElementById('markPresent');
-      attendanceAlert.classList.add('d-none');
-      checkbox.checked = false;
-      checkbox.disabled = false;
+  // Check if already marked
+  const check = await fetch('/attendance/record_entry', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: selectedUser.name,
+      contact: selectedUser.contact
+    })
+  }).then(r => r.json());
 
-      if (check.present) {
-        checkbox.checked = true;
-        checkbox.disabled = true;
-        attendanceAlert.innerText = check.message;
-        attendanceAlert.classList.remove('d-none');
-      }
-    };
+  if (check.present) {
+    checkbox.checked = true;
+    checkbox.disabled = true;
+    alertBox.innerText = check.message || `Already marked present.`;
+    alertBox.classList.remove('d-none');
+  }
+};
     searchResults.appendChild(div);
   });
 });
@@ -654,6 +658,7 @@ document.getElementById('submitAttendance').addEventListener('click', async () =
   </script>
 </body>
 </html>
+
 
 
 
