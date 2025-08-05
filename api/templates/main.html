@@ -284,13 +284,13 @@ header::after {
   <section id="general-attendance" style="max-width:600px; margin:auto; padding:30px;">
   <h2 style="text-align:center;">📝 General Attendance</h2>
 
-  <!-- Search Input -->
-  <input type="text" id="searchMember" class="form-control mb-2" placeholder="Search name..." autocomplete="off">
+  <!-- Search input -->
+  <input type="text" id="searchMember" class="form-control mb-2" placeholder="Search full name..." autocomplete="off">
 
-  <!-- Autocomplete suggestions -->
-  <div id="searchSuggestions" class="mb-3"></div>
+  <!-- Autocomplete dropdown -->
+  <ul id="searchSuggestions" class="list-group mb-3" style="cursor:pointer;"></ul>
 
-  <!-- Details shown only after selecting name -->
+  <!-- Selected person info -->
   <div id="selectedInfo" class="card p-3 d-none">
     <h5 id="fullName" class="fw-bold"></h5>
     <p id="ageGroup"></p>
@@ -302,11 +302,10 @@ header::after {
       <input type="checkbox" class="form-check-input" id="markAttendance">
       <label class="form-check-label" for="markAttendance">Mark as Present</label>
     </div>
-
     <button class="btn btn-success mt-2" id="submitGeneralAttendance">Submit Attendance</button>
   </div>
 
-  <!-- Modal for Success/Error -->
+  <!-- Feedback Modal -->
   <div class="modal fade" id="feedbackModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-center p-4">
@@ -318,63 +317,72 @@ header::after {
   </div>
 </section>
 
+
 <script>
 let selectedPerson = null;
 
 const checkbox = document.getElementById('markAttendance');
 const warning = document.getElementById('attendanceWarning');
 const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+const suggestions = document.getElementById('searchSuggestions');
+const searchInput = document.getElementById('searchMember');
 
-document.getElementById('searchMember').addEventListener('input', function () {
-  const query = this.value;
-  if (query.length < 2) return;
+// Typing in the search bar
+searchInput.addEventListener('input', function () {
+  const query = this.value.trim();
+  if (query.length < 2) {
+    suggestions.innerHTML = '';
+    return;
+  }
 
   fetch(`/search_all_members?keyword=${encodeURIComponent(query)}`)
     .then(res => res.json())
     .then(data => {
-      const suggestionBox = document.getElementById('searchSuggestions');
-      suggestionBox.innerHTML = '';
+      suggestions.innerHTML = '';
+      if (!Array.isArray(data)) return;
 
       data.forEach(person => {
         const fullName = `${person.first_name} ${person.last_name}`;
-        const div = document.createElement('div');
-        div.textContent = fullName;
-        div.className = 'search-result-item';
-        div.style = "background:#f1f1f1; padding:8px; border-radius:5px; cursor:pointer; margin-bottom:5px;";
-        div.onclick = () => {
-          selectedPerson = person;
-
-          document.getElementById('fullName').textContent = fullName;
-          document.getElementById('ageGroup').textContent = `Age Group: ${person.age_group}`;
-          document.getElementById('department').textContent = person.department ? `Department: ${person.department}` : '';
-          document.getElementById('contact').textContent = `Contact: ${person.contact_number}`;
-          document.getElementById('selectedInfo').classList.remove('d-none');
-          document.getElementById('searchMember').value = fullName;
-          suggestionBox.innerHTML = '';
-
-          // Check if attendance already taken
-          fetch('/teens_check_attendance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: fullName })
-          })
-          .then(res => res.json())
-          .then(result => {
-            if (result.present) {
-              warning.textContent = `⚠️ Attendance already taken for this name on ${result.date}`;
-              checkbox.disabled = true;
-              checkbox.checked = true;
-            } else {
-              warning.textContent = '';
-              checkbox.disabled = false;
-              checkbox.checked = false;
-            }
-          });
-        };
-        suggestionBox.appendChild(div);
+        const li = document.createElement('li');
+        li.textContent = fullName;
+        li.className = 'list-group-item list-group-item-action';
+        li.onclick = () => selectPerson(person);
+        suggestions.appendChild(li);
       });
     });
 });
+
+function selectPerson(person) {
+  selectedPerson = person;
+  const fullName = `${person.first_name} ${person.last_name}`;
+
+  document.getElementById('fullName').textContent = fullName;
+  document.getElementById('ageGroup').textContent = `Age Group: ${person.age_group}`;
+  document.getElementById('department').textContent = person.department ? `Department: ${person.department}` : '';
+  document.getElementById('contact').textContent = `Contact: ${person.contact_number}`;
+  document.getElementById('selectedInfo').classList.remove('d-none');
+  searchInput.value = fullName;
+  suggestions.innerHTML = '';
+
+  // Check attendance
+  fetch('/teens_check_attendance', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: fullName })
+  })
+  .then(res => res.json())
+  .then(result => {
+    if (result.present) {
+      warning.textContent = `⚠️ Attendance already taken for this name on ${result.date}`;
+      checkbox.disabled = true;
+      checkbox.checked = true;
+    } else {
+      warning.textContent = '';
+      checkbox.disabled = false;
+      checkbox.checked = false;
+    }
+  });
+}
 
 document.getElementById('submitGeneralAttendance').addEventListener('click', () => {
   if (!selectedPerson || checkbox.disabled || !checkbox.checked) {
@@ -398,9 +406,8 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
       document.getElementById('feedbackTitle').textContent = "✅ Success";
       document.getElementById('feedbackMessage').textContent = data.message;
 
-      // Reset UI
       document.getElementById('selectedInfo').classList.add('d-none');
-      document.getElementById('searchMember').value = '';
+      searchInput.value = '';
       checkbox.checked = false;
       selectedPerson = null;
     } else {
@@ -659,6 +666,7 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
   </script>
 </body>
 </html>
+
 
 
 
