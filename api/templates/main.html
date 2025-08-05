@@ -281,37 +281,41 @@ header::after {
   </section>
 
   <!-- Attendacne-->
-  <section id="general-attendance" style="max-width:600px; margin:auto; padding:30px;">
-  <h2 style="text-align:center;">📝 General Attendance</h2>
+  <!-- General Attendance Section -->
+<section id="general-attendance" class="container py-4">
+  <h2 class="text-center mb-4">📝 General Attendance</h2>
 
-  <!-- Search input -->
-  <input type="text" id="searchMember" class="form-control mb-2" placeholder="Search full name..." autocomplete="off">
+  <!-- Search Input -->
+  <input type="text" id="searchMember" class="form-control mb-2" placeholder="Search by any detail..." autocomplete="off">
 
-  <!-- Autocomplete dropdown -->
-  <ul id="searchSuggestions" class="list-group mb-3" style="cursor:pointer;"></ul>
+  <!-- Autocomplete Dropdown -->
+  <ul id="searchSuggestions" class="list-group mb-3" style="cursor:pointer; max-height:200px; overflow-y:auto;"></ul>
 
-  <!-- Selected person info -->
+  <!-- Selected Person Info Card -->
   <div id="selectedInfo" class="card p-3 d-none">
-    <h5 id="fullName" class="fw-bold"></h5>
-    <p id="ageGroup"></p>
-    <p id="department"></p>
-    <p id="contact"></p>
+    <h5 id="fullName" class="fw-bold mb-2"></h5>
+    <p id="ageGroup" class="mb-1"></p>
+    <p id="department" class="mb-1"></p>
+    <p id="contact" class="mb-1"></p>
     <p id="attendanceWarning" class="text-danger fw-bold"></p>
 
-    <div class="form-check">
+    <!-- Attendance Checkbox -->
+    <div class="form-check mb-2">
       <input type="checkbox" class="form-check-input" id="markAttendance">
       <label class="form-check-label" for="markAttendance">Mark as Present</label>
     </div>
-    <button class="btn btn-success mt-2" id="submitGeneralAttendance">Submit Attendance</button>
+
+    <!-- Submit Button -->
+    <button class="btn btn-success w-100" id="submitGeneralAttendance">Submit Attendance</button>
   </div>
 
   <!-- Feedback Modal -->
-  <div class="modal fade" id="feedbackModal" tabindex="-1">
+  <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-center p-4">
         <h5 class="modal-title" id="feedbackTitle"></h5>
-        <p id="feedbackMessage"></p>
-        <button class="btn btn-secondary mt-2" data-bs-dismiss="modal">Close</button>
+        <p id="feedbackMessage" class="mb-3"></p>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -341,6 +345,14 @@ searchInput.addEventListener('input', function () {
       suggestions.innerHTML = '';
       if (!Array.isArray(data)) return;
 
+      if (data.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'No matches found.';
+        li.className = 'list-group-item text-muted';
+        suggestions.appendChild(li);
+        return;
+      }
+
       data.forEach(person => {
         const fullName = `${person.first_name} ${person.last_name}`;
         const li = document.createElement('li');
@@ -349,6 +361,9 @@ searchInput.addEventListener('input', function () {
         li.onclick = () => selectPerson(person);
         suggestions.appendChild(li);
       });
+    })
+    .catch(error => {
+      console.error('Search failed:', error);
     });
 });
 
@@ -381,6 +396,9 @@ function selectPerson(person) {
       checkbox.disabled = false;
       checkbox.checked = false;
     }
+  })
+  .catch(error => {
+    console.error('Attendance check failed:', error);
   });
 }
 
@@ -423,6 +441,7 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
   });
 });
 </script>
+
 <!-- END-->
 
  <section id="youtube" style="padding:60px 20px; text-align:center; background:#f1f3f5;">
@@ -666,6 +685,7 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
   </script>
 </body>
 </html>
+
 
 
 
