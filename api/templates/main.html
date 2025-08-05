@@ -282,34 +282,62 @@ header::after {
 
   <!-- Attendacne-->
   <!-- General Attendance Section -->
-  <section id="Take_attendacne">
-<div class="section-card">
-  <h3 class="section-title">📝 Take Attendance</h3>
-  <input type="text" id="attendanceSearchInput" class="form-control mb-2" placeholder="Search by name...">
-  <div id="attendanceSearchResults" class="mt-2"></div>
-  
-  <div id="selectedRecord" class="glass-card d-none mt-3">
-    <h5 id="selectedName"></h5>
-    <p id="selectedContact"></p>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="markPresent">
-      <label class="form-check-label" for="markPresent">Mark as Present</label>
+<section id="Take_attendacne" class="py-5">
+  <div class="section-card p-4 shadow rounded bg-white" style="max-width: 600px; margin: auto;">
+    <h3 class="section-title mb-4 text-center">📝 Take Attendance</h3>
+    <input type="text" id="attendanceSearchInput" class="form-control mb-3 shadow-sm" placeholder="🔍 Search by name...">
+    <div id="attendanceSearchResults" class="d-flex flex-column gap-2"></div>
+
+    <div id="selectedRecord" class="glass-card d-none mt-4 p-4 rounded shadow" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); border: 1px solid #ddd;">
+      <h5 id="selectedName" class="mb-1 fw-bold"></h5>
+      <p id="selectedContact" class="mb-3 text-muted"></p>
+
+      <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-3" role="alert"></div>
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="markPresent">
+        <label class="form-check-label" for="markPresent">Mark as Present</label>
+      </div>
+
+      <button class="btn btn-success w-100" id="submitAttendance">✅ Submit Attendance</button>
     </div>
-    <p id="attendanceAlreadyMarked" class="text-warning mt-2"></p>
-    <button class="btn btn-success mt-3" id="submitAttendance">Take Attendance</button>
   </div>
-</div>
-  </section>
+</section>
+
+<style>
+  #attendanceSearchResults .search-result-item {
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  #attendanceSearchResults .search-result-item:hover {
+    background: #e9ecef;
+    transform: scale(1.02);
+  }
+
+  .glass-card {
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
 
 <script>
 const attendanceSearchInput = document.getElementById('attendanceSearchInput');
 const searchResults = document.getElementById('attendanceSearchResults');
 const selectedCard = document.getElementById('selectedRecord');
+const attendanceAlert = document.getElementById('attendanceAlreadyMarked');
 let selectedUser = null;
 
-// Updated search input event
 attendanceSearchInput.addEventListener('input', async function () {
-  const keyword = this.value;
+  const keyword = this.value.trim();
   if (keyword.length < 2) return;
 
   const res = await fetch(`/attendance/search_user?keyword=${encodeURIComponent(keyword)}`);
@@ -330,10 +358,9 @@ attendanceSearchInput.addEventListener('input', async function () {
       };
 
       document.getElementById('selectedName').innerText = fullName;
-      document.getElementById('selectedContact').innerText = `Contact: ${record.contact_number || 'N/A'}`;
+      document.getElementById('selectedContact').innerText = `📞 Contact: ${record.contact_number || 'N/A'}`;
       selectedCard.classList.remove('d-none');
 
-      // Check if already marked
       const check = await fetch('/attendance/record_entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -344,24 +371,24 @@ attendanceSearchInput.addEventListener('input', async function () {
       }).then(r => r.json());
 
       const checkbox = document.getElementById('markPresent');
-      const msg = document.getElementById('attendanceAlreadyMarked');
+      attendanceAlert.classList.add('d-none');
       checkbox.checked = false;
       checkbox.disabled = false;
-      msg.innerText = '';
 
       if (check.present) {
         checkbox.checked = true;
         checkbox.disabled = true;
-        msg.innerText = check.message;
+        attendanceAlert.innerText = check.message;
+        attendanceAlert.classList.remove('d-none');
       }
     };
     searchResults.appendChild(div);
   });
 });
 
-// Updated submission event
 document.getElementById('submitAttendance').addEventListener('click', async () => {
-  if (!selectedUser || !document.getElementById('markPresent').checked) {
+  const checkbox = document.getElementById('markPresent');
+  if (!selectedUser || !checkbox.checked) {
     alert("Please select a person and tick the attendance box.");
     return;
   }
@@ -627,6 +654,7 @@ document.getElementById('submitAttendance').addEventListener('click', async () =
   </script>
 </body>
 </html>
+
 
 
 
