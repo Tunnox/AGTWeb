@@ -316,7 +316,6 @@ header::after {
 <script>
 let selectedPerson = null;
 
-// Handle search input
 document.getElementById('searchMember').addEventListener('input', function () {
   const query = this.value;
   if (query.length < 2) return;
@@ -341,7 +340,7 @@ document.getElementById('searchMember').addEventListener('input', function () {
           document.getElementById('department').textContent = person.department ? `Department: ${person.department}` : '';
           document.getElementById('contact').textContent = `Contact: ${person.contact_number}`;
           document.getElementById('selectedInfo').classList.remove('d-none');
-          
+
           suggestionBox.innerHTML = '';
           document.getElementById('searchMember').value = fullName;
         };
@@ -350,10 +349,14 @@ document.getElementById('searchMember').addEventListener('input', function () {
     });
 });
 
-// Submit attendance
 document.getElementById('submitGeneralAttendance').addEventListener('click', () => {
-  if (!selectedPerson || !document.getElementById('markAttendance').checked) {
-    alert("Please select a person and check the box to mark attendance.");
+  const checkbox = document.getElementById('markAttendance');
+  const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+
+  if (!selectedPerson || !checkbox.checked) {
+    document.getElementById('feedbackTitle').textContent = "⚠️ Incomplete";
+    document.getElementById('feedbackMessage').textContent = "Please select a person and tick the attendance box.";
+    modal.show();
     return;
   }
 
@@ -368,19 +371,28 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
   .then(res => res.json())
   .then(data => {
     if (data.message) {
-      const modal = new bootstrap.Modal(document.getElementById('successModal'));
-      modal.show();
-      setTimeout(() => modal.hide(), 2000);
-
-      // Reset UI
+      document.getElementById('feedbackTitle').textContent = "✅ Success";
+      document.getElementById('feedbackMessage').textContent = data.message;
+      
+      // Reset form
       document.getElementById('selectedInfo').classList.add('d-none');
-      document.getElementById('markAttendance').checked = false;
+      checkbox.checked = false;
       document.getElementById('searchMember').value = '';
       selectedPerson = null;
+    } else {
+      document.getElementById('feedbackTitle').textContent = "❌ Error";
+      document.getElementById('feedbackMessage').textContent = data.error || "Something went wrong.";
     }
+    modal.show();
+  })
+  .catch(err => {
+    document.getElementById('feedbackTitle').textContent = "❌ Error";
+    document.getElementById('feedbackMessage').textContent = "Network or server error occurred.";
+    modal.show();
   });
 });
 </script>
+
 
 
  <section id="youtube" style="padding:60px 20px; text-align:center; background:#f1f3f5;">
@@ -624,5 +636,6 @@ document.getElementById('submitGeneralAttendance').addEventListener('click', () 
   </script>
 </body>
 </html>
+
 
 
