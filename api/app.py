@@ -954,17 +954,17 @@ def search_all_members():
     try:
         query = """
             SELECT 'adult' AS category, first_name, last_name, age_group, department, contact_number FROM "public"."AGT_ADULT_DATA_RECORDS"
-            WHERE first_name ILIKE %s OR last_name ILIKE %s
+            WHERE first_name || ' ' || last_name ILIKE %s
             UNION
             SELECT 'teen' AS category, first_name, last_name, age_group, department, contact_number FROM "public"."AGT_TEENS_DATA_RECORDS"
-            WHERE first_name ILIKE %s OR last_name ILIKE %s
+            WHERE first_name || ' ' || last_name ILIKE %s
             UNION
             SELECT 'child' AS category, first_name, last_name, age_group, '' AS department, contact_number FROM "public"."AGT_CHILDREN_DATA_RECORDS"
-            WHERE first_name ILIKE %s OR last_name ILIKE %s
+            WHERE first_name || ' ' || last_name ILIKE %s
             LIMIT 10;
         """
-        params = tuple([f"%{keyword}%"] * 6)
-        cur.execute(query, params)
+        like_param = f"%{keyword}%"
+        cur.execute(query, (like_param, like_param, like_param))
         rows = cur.fetchall()
         return jsonify([
             {
@@ -1002,5 +1002,6 @@ def record_general_attendance():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
