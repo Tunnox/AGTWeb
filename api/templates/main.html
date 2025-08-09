@@ -282,207 +282,198 @@ header::after {
 
   <!-- Attendacne-->
   <!-- General Attendance Section -->
-<section id="takeAttendance" class="py-5 bg-light">
-  <div class="container text-center">
-    <h2 class="fw-bold mb-3">📋 Take Attendance</h2>
-    <p class="text-muted mb-1">
-      Please register your details and consent to AGT storing and processing your information in accordance with GDPR.
-    </p>
-    <p class="mb-4">
-      Contact <strong>Admin</strong> to register your details.
-    </p>
+<section id="Take_attendacne" class="py-5">
+  <h2 class="section-title mb-4 text-center">Take Attendance</h2>
+    <p>Please register your details and consent to AGT storing and processing your information in accordance with GDPR</p>
+    <p style="text-align:center;">Contact <strong>Admin</strong> to register your details.</p>
+  <div class="section-card p-4 shadow rounded bg-white" style="max-width: 600px; margin: auto;">
+    <input type="text" id="attendanceSearchInput" class="form-control mb-3 shadow-sm" placeholder="🔍 Search by name...">
+    <div id="attendanceSearchResults" class="d-flex flex-column gap-2"></div>
 
-    <div class="section-card p-4 shadow-lg rounded-4 bg-white mx-auto" style="max-width: 600px;">
-      <div class="input-group mb-3">
-        <span class="input-group-text bg-white border-end-0">
-          <i class="bi bi-search"></i>
-        </span>
-        <input type="text" id="attendanceSearchInput" class="form-control border-start-0 shadow-sm"
-          placeholder="Search by name..." aria-label="Search by name">
-      </div>
+    <div id="selectedRecord" class="glass-card d-none mt-4 p-4 rounded shadow" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); border: 1px solid #ddd;">
+  <h5 id="selectedName" class="mb-1 fw-bold"></h5>
+  <p id="selectedContact" class="mb-3 text-muted"></p>
 
-      <div id="attendanceSearchResults" class="list-group list-group-flush"></div>
+  <!-- Alert shown only if already marked -->
+  <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-3" role="alert"></div>
 
-      <div id="selectedRecord" class="glass-card d-none mt-4 p-4 rounded-4 shadow-sm">
-        <h5 id="selectedName" class="mb-1 fw-bold text-primary"></h5>
-        <p id="selectedContact" class="mb-3 text-muted"></p>
-
-        <!-- Alert if already marked -->
-        <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-3" role="alert"></div>
-
-        <!-- Attendance action -->
-        <div id="attendanceActions" class="d-none">
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" id="markPresent">
-            <label class="form-check-label" for="markPresent">Mark as Present</label>
-          </div>
-          <button class="btn btn-success btn-lg w-100" id="submitAttendance">
-            ✅ Submit Attendance
-          </button>
-        </div>
-      </div>
+  <!-- Mark + Submit only visible when appropriate -->
+  <div id="attendanceActions" class="d-none">
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="markPresent">
+      <label class="form-check-label" for="markPresent">Mark as Present</label>
     </div>
+    <button class="btn btn-success btn-lg w-200" id="submitAttendance">Submit Attendance</button>
   </div>
+    </div>
+
 </section>
 
 <style>
-  .glass-card {
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(8px);
-    border: 1px solid #e0e0e0;
-    animation: fadeIn 0.3s ease-in-out;
-  }
-
-  #attendanceSearchResults .list-group-item {
-    padding: 14px 20px;
-    font-size: 1rem;
-    border: none;
-    border-bottom: 1px solid #f0f0f0;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  #attendanceSearchResults .list-group-item:hover {
-    background-color: #f8f9fa;
-    transform: translateY(-1px);
-  }
-
   #attendanceSearchInput {
-    font-size: 1rem;
-    border-radius: 0.5rem;
+    width: 100%;
+    font-size: 1.15rem;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    transition: box-shadow 0.2s ease;
+  }
+
+  #attendanceSearchInput:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    border-color: #28a745;
+  }
+
+  #attendanceSearchResults .search-result-item {
+    padding: 14px 20px;
+    font-size: 1.05rem;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  }
+
+  #attendanceSearchResults .search-result-item:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+  }
+
+  .form-check-input {
+    width: 1.4em;
+    height: 1.4em;
+    margin-top: 0.3em;
+    cursor: pointer;
+  }
+
+  .form-check-label {
+    font-size: 1.05rem;
+    margin-left: 0.5em;
+    user-select: none;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid #ddd;
+    animation: fadeIn 0.3s ease;
   }
 
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #submitAttendance {
+    width: 40%;
+    transition: background 0.3s ease;
+  }
+
+  #submitAttendance:hover {
+    background: linear-gradient(135deg, #f8f9fa, #f8f9fa);
+  }
+
+  @media (max-width: 576px) {
+    .section-title {
+      font-size: 1.5rem;
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+
+    #attendanceSearchInput {
+      font-size: 1rem;
     }
   }
 </style>
+
 
 <script>
 const attendanceSearchInput = document.getElementById('attendanceSearchInput');
 const searchResults = document.getElementById('attendanceSearchResults');
 const selectedCard = document.getElementById('selectedRecord');
 const attendanceAlert = document.getElementById('attendanceAlreadyMarked');
-const attendanceActions = document.getElementById('attendanceActions');
-const selectedNameElem = document.getElementById('selectedName');
-const selectedContactElem = document.getElementById('selectedContact');
 let selectedUser = null;
 
-// Search event
 attendanceSearchInput.addEventListener('input', async function () {
   const keyword = this.value.trim();
+  if (keyword.length < 2) return;
 
-  // Clear if too short
-  if (keyword.length < 2) {
-    searchResults.innerHTML = '';
-    return;
-  }
+  const res = await fetch(/attendance/search_user?keyword=${encodeURIComponent(keyword)});
+  const data = await res.json();
 
-  try {
-    const res = await fetch(`/attendance/search_user?keyword=${encodeURIComponent(keyword)}`);
-    const data = await res.json();
+  searchResults.innerHTML = '';
+  selectedCard.classList.add('d-none');
 
-    // Reset UI
-    searchResults.innerHTML = '';
-    selectedCard.classList.add('d-none');
-
-    if (data.length === 0) {
-      const noResult = document.createElement('div');
-      noResult.className = 'list-group-item text-muted';
-      noResult.textContent = 'No results found';
-      searchResults.appendChild(noResult);
-      return;
-    }
-
-    // Populate search results
-    data.forEach(record => {
-      const fullName = `${record.first_name} ${record.last_name}`;
-      const item = document.createElement('button');
-      item.className = 'list-group-item list-group-item-action';
-      item.textContent = fullName;
-
-      item.addEventListener('click', () => selectUser(record, fullName));
-      searchResults.appendChild(item);
-    });
-  } catch (err) {
-    console.error('Search failed:', err);
-  }
-});
-
-// Handle selecting a user
-async function selectUser(record, fullName) {
+  data.forEach(record => {
+    const fullName = ${record.first_name} ${record.last_name};
+    const div = document.createElement('div');
+    div.className = 'search-result-item';
+    div.innerText = fullName;
+    div.onclick = async () => {
   selectedUser = {
     name: fullName,
-    contact: record.contact_number || 'N/A'
+    contact: record.contact_number
   };
 
-  // Update UI
-  selectedNameElem.textContent = fullName;
-  selectedContactElem.textContent = `📞 Contact: ${selectedUser.contact}`;
-  searchResults.innerHTML = '';
+  document.getElementById('selectedName').innerText = fullName;
+  document.getElementById('selectedContact').innerText = 📞 Contact: ${record.contact_number || 'N/A'};
   selectedCard.classList.remove('d-none');
-  attendanceAlert.classList.add('d-none');
-  attendanceActions.classList.remove('d-none');
+  searchResults.innerHTML = ''; // hide search results
 
   const checkbox = document.getElementById('markPresent');
+  const alertBox = document.getElementById('attendanceAlreadyMarked');
+  const actionsBox = document.getElementById('attendanceActions');
+
+  // Reset everything
   checkbox.checked = false;
   checkbox.disabled = false;
+  alertBox.classList.add('d-none');
+  alertBox.innerText = '';
+  actionsBox.classList.remove('d-none'); // Show the tick + button by default
 
-  // Check if already marked present
-  try {
-    const check = await fetch('/attendance/record_entry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(selectedUser)
-    }).then(r => r.json());
+  // Check attendance status
+  const check = await fetch('/attendance/record_entry', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: selectedUser.name,
+      contact: selectedUser.contact
+    })
+  }).then(r => r.json());
 
-    if (check.present) {
-      checkbox.checked = true;
-      checkbox.disabled = true;
-      attendanceAlert.textContent = check.message || `Already marked present.`;
-      attendanceAlert.classList.remove('d-none');
-    }
-  } catch (err) {
-    console.error('Attendance check failed:', err);
+  if (check.present) {
+    checkbox.checked = true;
+    checkbox.disabled = true;
+    alertBox.innerText = check.message || Already marked present.;
+    alertBox.classList.remove('d-none');
   }
-}
+};
+    searchResults.appendChild(div);
+  });
+});
 
-// Handle submitting attendance
 document.getElementById('submitAttendance').addEventListener('click', async () => {
   const checkbox = document.getElementById('markPresent');
-
   if (!selectedUser || !checkbox.checked) {
     alert("Please select a person and tick the attendance box.");
     return;
   }
 
-  try {
-    const res = await fetch('/attendance/record_entry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(selectedUser)
-    });
+  const res = await fetch('/attendance/record_entry', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: selectedUser.name,
+      contact: selectedUser.contact
+    })
+  });
 
-    const data = await res.json();
-    alert(data.message || data.error);
-
-    // Reset UI
-    selectedCard.classList.add('d-none');
-    attendanceSearchInput.value = '';
-    searchResults.innerHTML = '';
-  } catch (err) {
-    console.error('Submit failed:', err);
-    alert('Something went wrong. Please try again.');
-  }
+  const data = await res.json();
+  alert(data.message || data.error);
+  selectedCard.classList.add('d-none');
+  attendanceSearchInput.value = '';
+  searchResults.innerHTML = '';
 });
 </script>
-
 
 <!-- END-->
 
@@ -727,6 +718,7 @@ document.getElementById('submitAttendance').addEventListener('click', async () =
   </script>
 </body>
 </html>
+
 
 
 
