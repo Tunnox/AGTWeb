@@ -282,6 +282,7 @@ header::after {
 
   <!-- Attendacne-->
   <!-- General Attendance Section -->
+<!-- General Attendance Section -->
 <section id="Take_attendacne" class="py-5">
   <h2 class="section-title mb-4 text-center">Take Attendance</h2>
     <p>Please register your details and consent to AGT storing and processing your information in accordance with GDPR</p>
@@ -291,22 +292,24 @@ header::after {
     <div id="attendanceSearchResults" class="d-flex flex-column gap-2"></div>
 
     <div id="selectedRecord" class="glass-card d-none mt-4 p-4 rounded shadow" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); border: 1px solid #ddd;">
-  <h5 id="selectedName" class="mb-1 fw-bold"></h5>
-  <p id="selectedContact" class="mb-3 text-muted"></p>
+      <h5 id="selectedName" class="mb-2 fw-bold"></h5>
+      <p id="selectedContact" class="mb-4 text-muted"></p>
 
-  <!-- Alert shown only if already marked -->
-  <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-3" role="alert"></div>
+      <!-- Alert shown only if already marked -->
+      <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-4" role="alert"></div>
 
-  <!-- Mark + Submit only visible when appropriate -->
-  <div id="attendanceActions" class="d-none">
-    <div class="form-check mb-3">
-      <input class="form-check-input" type="checkbox" id="markPresent">
-      <label class="form-check-label" for="markPresent">Mark as Present</label>
+      <!-- Mark + Submit only visible when appropriate -->
+      <div id="attendanceActions" class="d-none">
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="checkbox" id="markPresent">
+          <label class="form-check-label" for="markPresent">Mark as Present</label>
+        </div>
+        <div class="text-center">
+          <button class="btn btn-success btn-lg px-5" id="submitAttendance">Submit Attendance</button>
+        </div>
+      </div>
     </div>
-    <button class="btn btn-success btn-lg w-200" id="submitAttendance">Submit Attendance</button>
   </div>
-    </div>
-
 </section>
 
 <style>
@@ -366,7 +369,6 @@ header::after {
   }
 
   #submitAttendance {
-    width: 40%;
     transition: background 0.3s ease;
   }
 
@@ -385,7 +387,6 @@ header::after {
   }
 </style>
 
-
 <script>
 const attendanceSearchInput = document.getElementById('attendanceSearchInput');
 const searchResults = document.getElementById('attendanceSearchResults');
@@ -397,56 +398,56 @@ attendanceSearchInput.addEventListener('input', async function () {
   const keyword = this.value.trim();
   if (keyword.length < 2) return;
 
-  const res = await fetch(/attendance/search_user?keyword=${encodeURIComponent(keyword)});
+  const res = await fetch(`/attendance/search_user?keyword=${encodeURIComponent(keyword)}`);
   const data = await res.json();
 
   searchResults.innerHTML = '';
   selectedCard.classList.add('d-none');
 
   data.forEach(record => {
-    const fullName = ${record.first_name} ${record.last_name};
+    const fullName = `${record.first_name} ${record.last_name}`;
     const div = document.createElement('div');
     div.className = 'search-result-item';
     div.innerText = fullName;
     div.onclick = async () => {
-  selectedUser = {
-    name: fullName,
-    contact: record.contact_number
-  };
+      selectedUser = {
+        name: fullName,
+        contact: record.contact_number
+      };
 
-  document.getElementById('selectedName').innerText = fullName;
-  document.getElementById('selectedContact').innerText = 📞 Contact: ${record.contact_number || 'N/A'};
-  selectedCard.classList.remove('d-none');
-  searchResults.innerHTML = ''; // hide search results
+      document.getElementById('selectedName').innerText = fullName;
+      document.getElementById('selectedContact').innerText = `📞 Contact: ${record.contact_number || 'N/A'}`;
+      selectedCard.classList.remove('d-none');
+      searchResults.innerHTML = ''; // hide search results
 
-  const checkbox = document.getElementById('markPresent');
-  const alertBox = document.getElementById('attendanceAlreadyMarked');
-  const actionsBox = document.getElementById('attendanceActions');
+      const checkbox = document.getElementById('markPresent');
+      const alertBox = document.getElementById('attendanceAlreadyMarked');
+      const actionsBox = document.getElementById('attendanceActions');
 
-  // Reset everything
-  checkbox.checked = false;
-  checkbox.disabled = false;
-  alertBox.classList.add('d-none');
-  alertBox.innerText = '';
-  actionsBox.classList.remove('d-none'); // Show the tick + button by default
+      // Reset everything
+      checkbox.checked = false;
+      checkbox.disabled = false;
+      alertBox.classList.add('d-none');
+      alertBox.innerText = '';
+      actionsBox.classList.remove('d-none'); // Show the tick + button by default
 
-  // Check attendance status
-  const check = await fetch('/attendance/record_entry', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: selectedUser.name,
-      contact: selectedUser.contact
-    })
-  }).then(r => r.json());
+      // Check attendance status
+      const check = await fetch('/attendance/record_entry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: selectedUser.name,
+          contact: selectedUser.contact
+        })
+      }).then(r => r.json());
 
-  if (check.present) {
-    checkbox.checked = true;
-    checkbox.disabled = true;
-    alertBox.innerText = check.message || Already marked present.;
-    alertBox.classList.remove('d-none');
-  }
-};
+      if (check.present) {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+        alertBox.innerText = check.message || "Already marked present.";
+        alertBox.classList.remove('d-none');
+      }
+    };
     searchResults.appendChild(div);
   });
 });
@@ -718,6 +719,7 @@ document.getElementById('submitAttendance').addEventListener('click', async () =
   </script>
 </body>
 </html>
+
 
 
 
