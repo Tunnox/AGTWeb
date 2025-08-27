@@ -60,31 +60,17 @@
       margin-bottom: 30px;
     }
 
-    .form-control {
+    .form-control, .form-select {
       background: rgba(255,255,255,0.15);
       color: #fff;
       border: none;
     }
-
-    .form-select {
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-      border: none;
-    }
-
-    .form-select option {
-    background-color: #2c2c2c;
-    color: #fff;
-    }
-
-    .form-control::placeholder {
-      color: #ddd;
-    }
-
+    .form-control::placeholder { color: #ddd; }
     .form-control:focus, .form-select:focus {
       background: rgba(255,255,255,0.25);
       color: #fff;
     }
+    .form-select option { background-color: #2c2c2c; color: #fff; }
 
     .btn {
       background: var(--accent);
@@ -93,7 +79,6 @@
       color: white;
       transition: transform .2s, box-shadow .2s;
     }
-
     .btn:hover {
       transform: scale(1.05);
       box-shadow: 0 4px 15px rgba(32, 201, 151, 0.5);
@@ -107,96 +92,13 @@
       margin-bottom: 8px;
       cursor: pointer;
     }
-
-    .search-result-item:hover {
-      background: #fff;
-    }
+    .search-result-item:hover { background: #fff; }
 
     .modal-content {
       background: rgba(22, 36, 68, 0.95);
       border-radius: 16px;
       color: #ffffff;
     }
-    /* Navigation */
-    .navbar {
-      background-color: #fff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      padding: 15px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .nav-brand {
-      font-size: 20px;
-      font-weight: bold;
-      color: #04395E;
-    }
-
-    .nav-toggle {
-      display: none;
-      font-size: 24px;
-      cursor: pointer;
-      background: none;
-      border: none;
-      color: #04395E;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 12px;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: #04395E;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .nav-links a:hover {
-      background-color: #20c997;
-      color: white;
-      transform: scale(1.05);
-    }
-
-    @media (max-width: 768px) {
-      .nav-links {
-        flex-direction: column;
-        background-color: #fff;
-        position: absolute;
-        top: 60px;
-        right: 20px;
-        width: 200px;
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        display: none;
-      }
-
-      .nav-links.open {
-        display: flex;
-      }
-
-      .nav-toggle {
-        display: block;
-      }
-    }
-    .nav-tabs .nav-link {
-    color: #fff; /* White text for all tabs */
-    }
-
-    .nav-tabs .nav-link.active {
-    color: #fff; /* Ensure active tab also has white text */
-    background-color: rgba(255, 255, 255, 0.15); /* Optional: a subtle translucent background */
-    border-color: rgba(255, 255, 255, 0.3);      /* Optional: light border for visibility */
-    }
-
   </style>
 </head>
 <body>
@@ -346,15 +248,22 @@
     <div id="attendanceSearchResults" class="mt-2"></div>
 
     <div id="selectedRecord" class="glass-card d-none mt-3">
-      <h5 id="selectedName"></h5>
-      <p id="selectedContact"></p>
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="markPresent">
-        <label class="form-check-label" for="markPresent">Mark as Present</label>
-      </div>
-      <button class="btn mt-3" id="submitAttendance">Take Attendance</button>
-    </div>
+  <h5 id="selectedName"></h5>
+  <p id="selectedContact"></p>
+
+  <label for="serviceSelect" class="form-label">Select Service</label>
+  <select id="serviceSelect" class="form-select">
+    <option value="first service">First Service</option>
+    <option value="second service">Second Service</option>
+  </select>
+
+  <div class="form-check mt-2">
+    <input class="form-check-input" type="checkbox" id="markPresent" checked>
+    <label class="form-check-label" for="markPresent">Mark as Present</label>
   </div>
+
+  <button class="btn mt-3" id="submitAttendance">Take Attendance</button>
+</div>
 </section>
 
 <!-- Download Attendance Modal -->
@@ -372,7 +281,6 @@
   <button class="btn" data-bs-toggle="modal" data-bs-target="#downloadModal">📥 Download Attendance</button>
 </div>
 
-
 <footer class="text-center py-3">
   <p class="mb-0">&copy; 2025 AGT Records Management</p>
   <p>Contact Admin: xyd@gmail.com</p>
@@ -382,8 +290,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
   AOS.init({ duration: 800, once: true });
-
-  document.querySelectorAll('nav .nav-link').forEach(link => {
+    document.querySelectorAll('nav .nav-link').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
       const target = document.querySelector(link.getAttribute('href'));
@@ -405,7 +312,7 @@
     document.getElementById('update_department').value = record.department;
     document.getElementById('update_relationship_status').value = record.relationship_status;
     document.getElementById('update_consent').value = record.consent;
-    document.getElementById('update_id').value = record.id || '';
+    document.getElementById('update_id').value = record.id; // ✅ ensure id flows through
   }
 
   document.getElementById('searchInput').addEventListener('input', function () {
@@ -470,7 +377,8 @@
       });
     });
   </script>
-  <script>
+<script>
+// Attendance section remains same but now pulls id-aware data
 const attendanceSearchInput = document.getElementById('attendanceSearchInput');
 const searchResults = document.getElementById('attendanceSearchResults');
 const selectedCard = document.getElementById('selectedRecord');
@@ -502,35 +410,42 @@ attendanceSearchInput.addEventListener('input', function () {
         document.getElementById('selectedName').innerText = `${record.first_name} ${record.last_name}`;
         document.getElementById('selectedContact').innerText = `Contact: ${record.contact_number}`;
         selectedCard.classList.remove('d-none');
+        // check if this adult is a worker
+        fetch(`/check_worker/${record.id}`)
+            .then(res => res.json())
+            .then(workerData => {
+            if (workerData.is_worker) {
+                alert(`⚠️ You are a worker in ${workerData.department}`);
+                selectedAdult.worker_id = workerData.worker_id; // attach worker_id for attendance insert
+            }
+            });
       };
       searchResults.appendChild(div);
     });
   });
 });
 
-document.getElementById('submitAttendance').addEventListener('click', function () {
-  if (!selectedAdult || !document.getElementById('markPresent').checked) {
-    alert("Please select a person and tick the attendance box.");
-    return;
-  }
+// ... attendance submission stays the same
+document.getElementById('submitAttendance').addEventListener('click', () => {
+  if (!selectedAdult) return;
 
-  fetch('/record_attendance', {
+  const status = document.getElementById('markPresent').checked ? 'present' : 'unapproved absent';
+  const service = document.getElementById('serviceSelect').value;
+
+  fetch('/record_adult_attendance', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      name: `${selectedAdult.first_name} ${selectedAdult.last_name}`,
-      contact: selectedAdult.contact_number
+      user_id: selectedAdult.id,
+      worker_id: selectedAdult.worker_id || null,
+      status: status,
+      service: service
     })
   })
   .then(res => res.json())
-  .then(data => {
-    alert(data.message || data.error);
-    selectedCard.classList.add('d-none');
-    document.getElementById('markPresent').checked = false;
-    attendanceSearchInput.value = '';
-    searchResults.innerHTML = '';
-  });
+  .then(data => alert(data.message || data.error));
 });
+
 
 // Fetch available attendance dates
 document.addEventListener("DOMContentLoaded", () => {
