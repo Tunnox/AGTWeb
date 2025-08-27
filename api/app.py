@@ -1,3 +1,4 @@
+# ================================== Imports ==================================
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 import psycopg2
 from werkzeug.utils import secure_filename
@@ -5,30 +6,51 @@ import os
 import base64
 import requests
 import datetime
-from dotenv import load_dotenv
 import smtplib
+import re
+from dotenv import load_dotenv
 from email.message import EmailMessage
 
 
+# ============================= Flask Setup ===================================
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Replace with your secret key
 load_dotenv()
 
+# ============================= Configurations ================================
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
 GITHUB_USERNAME = os.environ.get('GITHUB_USERNAME')
 GITHUB_REPO = os.environ.get('GITHUB_REPO')
-# Configure your PostgreSQL database connection here
-connection = psycopg2.connect(dbname='AGT', user='postgres', password='pgsqtk116chuk95', host='chukspace.ctiuisa62ks5.eu-north-1.rds.amazonaws.com', port='5432')
 
-#_____________________________AGT LOGIN______________________________________________________________________________________________
-# Adult Data Management Routes
+# PostgreSQL connection
+connection = psycopg2.connect(
+    dbname='AGT',
+    user='postgres',
+    password='pgsqtk116chuk95',
+    host='chukspace.ctiuisa62ks5.eu-north-1.rds.amazonaws.com',
+    port='5432'
+)
+
+# =============================================================================
+# ============================== ROUTES =======================================
+# =============================================================================
+
+# --------------------------- General Pages -----------------------------------
 @app.route('/')
 def index():
+    return render_template('main.html')
+
+@app.route('/main')
+def home_index():
     return render_template('main.html')
 
 @app.route('/admin')
 def admin_page():
     return render_template('admin.html')
+
+@app.route('/units')
+def units():
+    return render_template('units.html')
 
 @app.route('/my_profile')
 def my_profile_page():
@@ -41,7 +63,9 @@ def profile_view():
 @app.route('/login_admin')
 def login_admin():
     return render_template('login.html')
-    
+
+
+# --------------------------- AGT LOGIN ---------------------------------------
 @app.route('/agt_login', methods=['POST'])
 def agt_login():
     data = request.get_json()
@@ -51,11 +75,11 @@ def agt_login():
     cur = connection.cursor()
     try:
         cur.execute(
-            'SELECT * FROM "public"."AGT_USER_LOGIN" WHERE ("USERNAME" = %s OR "EMAIL" = %s) AND "PASSWORD" = %s;', 
+            'SELECT * FROM "public"."AGT_USER_LOGIN" '
+            'WHERE ("USERNAME" = %s OR "EMAIL" = %s) AND "PASSWORD" = %s;',
             (login_username, login_username, login_password)
         )
         user = cur.fetchone()
-        
         if user:
             return jsonify({"message": "Login successful!", "success": True}), 200
         else:
@@ -64,14 +88,9 @@ def agt_login():
         return jsonify({"message": str(e)}), 400
     finally:
         cur.close()
-        
-#_____________________________AGT HOME PAGE_____________________________________________________________________________________________
-@app.route('/main')
-def home_index():
-    return render_template('main.html')
 
 
-#______________________________________________________Attendacne Checker_______________________________________________________________
+# --------------------------- Attendance Check (General) ----------------------
 @app.route('/teens_check_attendance', methods=['POST'])
 def teens_check_attendance():
     data = request.get_json()
@@ -95,7 +114,10 @@ def teens_check_attendance():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-#____________________________AGT ADULT CHURCH______________________________________________________________________________________________
+
+# =============================================================================
+# ======================== ADULT CHURCH ROUTES ================================
+# =============================================================================
 
 @app.route('/adult_church')
 def adult_index():
@@ -106,8 +128,12 @@ def adult_search():
     keyword = request.form['keyword']
     cursor = connection.cursor()
 
+    connection.rollback()
+    
     sql_query = """
-        SELECT * FROM "public"."AGT_ADULT_DATA_RECORDS" 
+        SELECT id, first_name, last_name, age, gender, birthday, contact_number,
+               age_group, department, relationship_status, email, address, consent
+        FROM "public"."agt_user_data_records"
         WHERE "first_name" ILIKE %s 
            OR "last_name" ILIKE %s 
            OR "age"::TEXT ILIKE %s 
@@ -119,7 +145,7 @@ def adult_search():
            OR "relationship_status" ILIKE %s
            OR "email" ILIKE %s
            OR "address" ILIKE %s
-           OR "consent" ILIKE %s
+           OR consent::TEXT ILIKE %s
         LIMIT 10
     """
     cursor.execute(sql_query, [f'%{keyword}%'] * 12)
@@ -129,18 +155,19 @@ def adult_search():
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         records = [
             {
-                "first_name": r[0],
-                "last_name": r[1],
-                "age": r[2],
-                "gender": r[3],
-                "birthday": r[4],
-                "contact_number": r[5],
-                "age_group": r[6],
-                "department": r[7],
-                "relationship_status": r[8],
-                "email": r[9],
-                "address": r[10],
-                "consent": r[11]
+                "id": r[0],
+                "first_name": r[1],
+                "last_name": r[2],
+                "age": r[3],
+                "gender": r[4],
+                "birthday": r[5],
+                "contact_number": r[6],
+                "age_group": r[7],
+                "department": r[8],
+                "relationship_status": r[9],
+                "email": r[10],
+                "address": r[11],
+                "consent": r[12]
             }
             for r in results
         ]
@@ -148,28 +175,27 @@ def adult_search():
 
     return render_template('agtadult.html', results=results)
 
-
 @app.route('/adult_church/update', methods=['POST'])
 def adult_update():
     data = request.form
     cursor = connection.cursor()
-    
-    # SQL query to update the record
+
     sql_update = """
-        UPDATE "public"."AGT_ADULT_DATA_RECORDS"
-        SET "first_name" = %s, "last_name" = %s, "age" = %s, "gender" = %s, "birthday" = %s,
-            "contact_number" = %s, "age_group" = %s, "department" = %s, "relationship_status" = %s, "email" = %s, "address" = %s, "consent" = %s
-        WHERE "first_name" = %s
+        UPDATE "public"."agt_user_data_records"
+        SET first_name = %s, last_name = %s, age = %s, gender = %s, birthday = %s,
+            contact_number = %s, age_group = %s, department = %s,
+            relationship_status = %s, email = %s, address = %s, consent = %s,
+            updated_at = NOW()
+        WHERE id = %s
     """
-    
-    # Execute the update query
+
     cursor.execute(sql_update, (
         data['first_name'], data['last_name'], data['age'], data['gender'], data['birthday'],
-        data['contact_number'], data['age_group'], data['department'], data['relationship_status'], data['email'], data['address'], data['consent'],
-        data['first_name']
+        data['contact_number'], data['age_group'], data['department'], data['relationship_status'],
+        data['email'], data['address'], data['consent'], data['id']
     ))
-    
-    connection.commit()  # Commit the changes
+
+    connection.commit()
     cursor.close()
     flash('Record updated successfully!')
     return redirect(url_for('adult_index'))
@@ -190,39 +216,64 @@ def adult_insert():
         address = request.form['address']
         consent = request.form['consent']
 
-
         cursor = connection.cursor()
-        
         cursor.execute("""
-            INSERT INTO "public"."AGT_ADULT_DATA_RECORDS" ("first_name", "last_name", "age", "gender", "birthday", "contact_number", "age_group", "department", "relationship_status", "email", "address", "consent")
+            INSERT INTO "public"."agt_user_data_records"
+                (first_name, last_name, age, gender, birthday, contact_number,
+                 age_group, department, relationship_status, email, address, consent)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-        """, (first_name, last_name, age, gender, birthday, contact_number, age_group, department, relationship_status, email, address, consent))
-        connection.commit()  # Don't forget to commit the transaction!
+        """, (first_name, last_name, age, gender, birthday, contact_number,
+               age_group, department, relationship_status, email, address, consent))
+        connection.commit()
         cursor.close()
-    
+
     flash('Record inserted successfully!')
     return redirect(url_for('adult_index'))
 
+# ----------------------- Worker Check for Attendance -------------------------
+@app.route('/check_worker/<int:user_id>', methods=['GET'])
+def check_worker(user_id):
+    try:
+        cur = connection.cursor()
+        cur.execute("""
+            SELECT worker_id, department
+            FROM public."agt_workers_voluntires_records"
+            WHERE user_id = %s
+            LIMIT 1;
+        """, (user_id,))
+        worker = cur.fetchone()
+        cur.close()
+
+        if worker:
+            return jsonify({"is_worker": True, "worker_id": worker[0], "department": worker[1]})
+        else:
+            return jsonify({"is_worker": False})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+# ----------------------- Attendance Recording -------------------------------
 @app.route('/record_adult_attendance', methods=['POST'])
 def record_adult_attendance():
     data = request.get_json()
-    name = data.get('name')
-    contact = data.get('contact')
-    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    user_id = data.get('user_id')
+    worker_id = data.get('worker_id')  # optional
+    status = data.get('status', 'present')
+    service = data.get('service', 'first service')
 
     try:
         cur = connection.cursor()
         cur.execute("""
-            INSERT INTO public."AGT_Attendacne" ("Name", "Date", "Contact")
-            VALUES (%s, %s, %s);
-        """, (name, now, contact))
+            INSERT INTO public."agt_attendance_manager"
+                (user_id, worker_id, attendance_date, attendance_time, status, service)
+            VALUES (%s, %s, CURRENT_DATE, CURRENT_TIME, %s, %s);
+        """, (user_id, worker_id, status, service))
+
         connection.commit()
         cur.close()
         return jsonify({"message": "Attendance recorded successfully!"}), 200
     except Exception as e:
         connection.rollback()
         return jsonify({"error": str(e)}), 500
-
 
 @app.route('/get_adult_attendance_dates', methods=['GET'])
 def get_adult_attendance_dates():
@@ -276,8 +327,9 @@ def download_adult_attendance_csv():
         return jsonify({"error": str(e)}), 500
 
 
-
-#_____________________________AGT TEENS CHURCH___________________________________________________________________________________________________
+# =============================================================================
+# ======================== TEENS CHURCH ROUTES ================================
+# =============================================================================
 
 @app.route('/teens_church')
 def teens_index():
@@ -405,7 +457,7 @@ def teens_record_attendance():
     except Exception as e:
         connection.rollback()
         return jsonify({"error": str(e)}), 500
-        
+
 @app.route('/teens_get_dates', methods=['GET'])
 def teens_get_attendance_dates():
     cur = connection.cursor()
@@ -481,7 +533,10 @@ def teens_roll_call_names():
         return jsonify({"error": str(e)}), 500
 
 
-#_______________________AGT CHILDREN CHURCH__________________________________________________________________________________________________________
+# =============================================================================
+# ======================= CHILDREN CHURCH ROUTES ==============================
+# =============================================================================
+
 @app.route('/childrens_church')
 def children_index():
     return render_template('agtchild.html')
@@ -524,7 +579,6 @@ def children_search():
         return jsonify(records)
 
     return render_template('agtchild.html', results=results)
-
 
 @app.route('/childrens_church/update', methods=['POST'])
 def children_update():
@@ -595,7 +649,6 @@ def record_attendance():
         connection.rollback()
         return jsonify({"error": str(e)}), 500
 
-
 @app.route('/get_attendance_dates')
 def get_attendance_dates():
     cur = connection.cursor()
@@ -661,12 +714,12 @@ def get_children_by_age_group():
     cursor.close()
     return jsonify(results)
 
-#__________________________________________________________________________________________________________________________________
-#__________________________________________________________________________________________________________________________________
-# Profile feature routes for user registration, login, and record view/edit
-# Profile feature routes for user registration, login, and record view/edit
 
-#Functions 
+# =============================================================================
+# ========================== PROFILE FEATURES =================================
+# =============================================================================
+
+# ---------- Helpers ----------
 def upload_to_github(file_storage):
     file_storage.stream.seek(0)
     filename = secure_filename(file_storage.filename)
@@ -687,6 +740,19 @@ def upload_to_github(file_storage):
         raise Exception(f"GitHub upload failed: {response.status_code}, {response.json()}")
 
 
+def send_email(to, subject, body):
+    msg = EmailMessage()
+    msg['Subject'] = subject
+    msg['From'] = 'your_email@gmail.com'  # ✅ Replace with your email
+    msg['To'] = to
+    msg.set_content(body)
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login('your_email@gmail.com', 'your_app_password')  # ✅ Use App Password
+        smtp.send_message(msg)
+
+
+# ---------- Profile Routes ----------
 @app.route('/search_user_records', methods=['GET'])
 def search_user_records():
     keyword = request.args.get('keyword', '')
@@ -767,7 +833,6 @@ def register_profile():
         connection.rollback()
         return jsonify({'error': str(e)}), 500
 
-
 @app.route('/login_profile', methods=['POST'])
 def login_profile():
     data = request.get_json()
@@ -820,7 +885,6 @@ def login_profile():
     finally:
         cur.close()
 
-    
 @app.route('/reset_password', methods=['POST'])
 def reset_password():
     data = request.get_json()
@@ -869,18 +933,6 @@ def reset_password():
         return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
-
-#______--------_______________--------
-def send_email(to, subject, body):
-    msg = EmailMessage()
-    msg['Subject'] = subject
-    msg['From'] = 'your_email@gmail.com'  # ✅ Replace with your email
-    msg['To'] = to
-    msg.set_content(body)
-
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login('your_email@gmail.com', 'your_app_password')  # ✅ Use App Password
-        smtp.send_message(msg)
 
 @app.route('/get_user_details', methods=['POST'])
 def get_user_details():
@@ -946,8 +998,12 @@ def update_user_details():
         return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
-#____________________________________________________________________________________________________________________
-#General Attendacne taker ___________________________________________________________________________________________
+
+
+# =============================================================================
+# ======================= GENERAL ATTENDANCE ROUTES ===========================
+# =============================================================================
+
 @app.route('/attendance/search_user', methods=['GET'])
 def attendance_search_user():
     keyword = request.args.get('keyword', '')
@@ -975,7 +1031,6 @@ def attendance_search_user():
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close()
-
 
 @app.route('/attendance/record_entry', methods=['POST'])
 def attendance_record_entry():
@@ -1014,13 +1069,9 @@ def attendance_record_entry():
         cur.close()
 
 
+# =============================================================================
+# =============================== MAIN ========================================
+# =============================================================================
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
-
-
