@@ -10,6 +10,7 @@ import smtplib
 import re
 from dotenv import load_dotenv
 from email.message import EmailMessage
+import random
 
 
 # ============================= Flask Setup ===================================
@@ -743,96 +744,73 @@ def upload_to_github(file_storage):
 def send_email(to, subject, body):
     msg = EmailMessage()
     msg['Subject'] = subject
-    msg['From'] = 'your_email@gmail.com'  # ✅ Replace with your email
+    msg['From'] = 'your_email@gmail.com'
     msg['To'] = to
     msg.set_content(body)
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login('your_email@gmail.com', 'your_app_password')  # ✅ Use App Password
+        smtp.login('your_email@gmail.com', 'your_app_password')
         smtp.send_message(msg)
 
 
-# ---------- Profile Routes ----------
+# --------------------------- Search User Records -----------------------------
 @app.route('/search_user_records', methods=['GET'])
 def search_user_records():
     keyword = request.args.get('keyword', '')
     cur = connection.cursor()
     try:
-        query = """
-            SELECT first_name, last_name, contact_number FROM (
-                SELECT "first_name", "last_name", "contact_number" FROM "public"."AGT_TEENS_DATA_RECORDS"
-                WHERE "first_name" ILIKE %s OR "last_name" ILIKE %s OR "email" ILIKE %s
-                UNION
-                SELECT "first_name", "last_name", "contact_number" FROM "public"."AGT_ADULT_DATA_RECORDS"
-                WHERE "first_name" ILIKE %s OR "last_name" ILIKE %s OR "email" ILIKE %s
-                UNION
-                SELECT "first_name", "last_name", "contact_number" FROM "public"."AGT_CHILDREN_DATA_RECORDS"
-                WHERE "first_name" ILIKE %s OR "last_name" ILIKE %s
-            ) AS combined
-            LIMIT 10;
-        """
-        params = tuple([f"%{keyword}%"] * 8)
-        cur.execute(query, params)
+        cur.execute("""
+            SELECT id, first_name, last_name, contact_number, email
+            FROM public."agt_user_data_records"
+            WHERE first_name ILIKE %s OR last_name ILIKE %s OR email ILIKE %s
+            LIMIT 10
+        """, (f"%{keyword}%", f"%{keyword}%", f"%{keyword}%"))
         results = cur.fetchall()
-        return jsonify([{"first_name": r[0], "last_name": r[1], "contact_number": r[2]} for r in results])
-    except Exception as e:
-        connection.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify([
+            {"id": r[0], "first_name": r[1], "last_name": r[2], "contact_number": r[3], "email": r[4]}
+            for r in results
+        ])
     finally:
         cur.close()
 
+
+# --------------------------- Register Profile --------------------------------
 @app.route('/register_profile', methods=['POST'])
 def register_profile():
     try:
-        data = request.form
-        profile_pic = request.files['profile_picture']
-        username = data.get('username')
-        password = data.get('password')
-        confirm_password = data.get('confirm_password')
-        email = data.get('email') or f"{username}@agt.org"
-        fullname = data.get('fullname')
-        contact_number = data.get('contact_number')
+        user_id = request.form.get('user_id')
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
 
+        if not user_id:
+            return jsonify({'error': 'User ID is required'}), 400
         if password != confirm_password:
             return jsonify({'error': 'Passwords do not match'}), 400
 
+        # Generate unique profile_id
+        profile_id = random.randint(1000000000, 9999999999)
+
         cur = connection.cursor()
 
-        # ✅ Check for existing profile by full name, username, or email
+        # Insert into agt_user_profile
         cur.execute("""
-            SELECT "Full_Name", "Username", "Email" FROM public."AGT_User_Profile"
-            WHERE "Full_Name" = %s OR "Username" = %s OR "Email" = %s
-            LIMIT 1
-        """, (fullname, username, email))
-        existing = cur.fetchone()
+            INSERT INTO public.agt_user_profile (profile_id, user_id, user_name, email, password_hash)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id
+        """, (profile_id, user_id, username, email, password))
 
-        if existing:
-            existing_name, existing_user, existing_email = existing
-            if existing_name == fullname:
-                return jsonify({'error': 'A profile already exists for this user.'}), 409
-            elif existing_user == username:
-                return jsonify({'error': 'Username is already taken.'}), 409
-            elif existing_email == email:
-                return jsonify({'error': 'Email is already registered.'}), 409
-
-        # ✅ Upload picture and insert new profile
-        profile_pic.stream.seek(0)
-        url, _ = upload_to_github(profile_pic)
-
-        cur.execute("""
-            INSERT INTO public."AGT_User_Profile" 
-            ("Email", "Username", "Password", "Full_Name", "Contact_Number", "Profile_Picture")
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (email, username, password, fullname, contact_number, url))
-
-        connection.commit()
+        new_id = cur.fetchone()[0]
         cur.close()
-        return jsonify({'message': 'Profile created successfully!'}), 201
+
+        return jsonify({'message': 'Profile created successfully', 'id': new_id, 'profile_id': profile_id}), 201
 
     except Exception as e:
-        connection.rollback()
         return jsonify({'error': str(e)}), 500
 
+
+# --------------------------- Login Profile -----------------------------------
 @app.route('/login_profile', methods=['POST'])
 def login_profile():
     data = request.get_json()
@@ -841,156 +819,57 @@ def login_profile():
 
     cur = connection.cursor()
     try:
-        # Step 1: Check user in AGT_User_Profile
         cur.execute("""
-            SELECT "Email", "Username", "Full_Name", "Contact_Number", "Profile_Picture"
-            FROM public."AGT_User_Profile"
-            WHERE ("Username" = %s OR "Email" = %s) AND "Password" = %s;
+            SELECT id, user_id, user_name, email
+            FROM public."agt_user_profile"
+            WHERE (user_name = %s OR email = %s) AND password_hash = %s
         """, (identity, identity, password))
-        user = cur.fetchone()
-
-        if not user:
+        profile = cur.fetchone()
+        if not profile:
             return jsonify({'error': 'Invalid login credentials'}), 401
 
-        user_email = user[0]
+        _, user_id, username, email = profile
 
-        # Step 2: Get user category + details from relevant table
-        detail = None
-        category = None
+        # Get user details
+        cur.execute("""SELECT * FROM public."agt_user_data_records" WHERE id = %s""", (user_id,))
+        user_row = cur.fetchone()
+        details = dict(zip([d[0] for d in cur.description], user_row))
 
-        for cat, table in [('teens', 'AGT_TEENS_DATA_RECORDS'), ('adult', 'AGT_ADULT_DATA_RECORDS'), ('children', 'AGT_CHILDREN_DATA_RECORDS')]:
-            cur.execute(f'SELECT * FROM "public"."{table}" WHERE "email" = %s LIMIT 1', (user_email,))
-            row = cur.fetchone()
-            if row:
-                category = cat
-                detail = dict(zip([desc[0] for desc in cur.description], row))
-                break
+        # Worker check
+        cur.execute("""SELECT worker_id FROM public."agt_workers_voluntiers_records" WHERE user_id = %s""", (user_id,))
+        worker = cur.fetchone()
 
         return jsonify({
             'message': 'Login successful',
             'user': {
-                'email': user_email,
-                'username': user[1],
-                'fullname': user[2],
-                'contact_number': user[3],
-                'profile_picture': user[4],
-                'category': category,
-                'details': detail
+                'email': email,
+                'username': username,
+                'details': details,
+                'is_worker': bool(worker)
             }
         }), 200
-
-    except Exception as e:
-        connection.rollback()
-        return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
 
-@app.route('/reset_password', methods=['POST'])
-def reset_password():
-    data = request.get_json()
-    identity = data.get('identity')
-    new_password = data.get('new_password')
 
-    if not identity or not new_password:
-        return jsonify({'error': 'Missing identity or new password'}), 400
-
-    # ✅ Server-side password strength validation
-    if (len(new_password) < 8 or
-        not re.search(r'[A-Z]', new_password) or
-        not re.search(r'[a-z]', new_password) or
-        not re.search(r'[0-9]', new_password) or
-        not re.search(r'[^a-zA-Z0-9]', new_password)):
-        return jsonify({'error': 'Password is too weak. Must include uppercase, lowercase, number, and symbol.'}), 400
-
-    cur = connection.cursor()
-    try:
-        # Check if user exists and update password
-        cur.execute("""
-            UPDATE public."AGT_User_Profile"
-            SET "Password" = %s
-            WHERE "Username" = %s OR "Email" = %s
-            RETURNING "Email", "Full_Name";
-        """, (new_password, identity, identity))
-
-        result = cur.fetchone()
-        if not result:
-            return jsonify({'error': 'User not found'}), 404
-
-        email, full_name = result
-        connection.commit()
-
-        # ✅ Send confirmation email
-        send_email(
-            to=email,
-            subject="Your AGT Profile Password Was Reset",
-            body=f"Hello {full_name},\n\nYour password has been reset successfully.\n\nIf you didn't request this, please contact admin immediately."
-        )
-
-        return jsonify({'message': 'Password reset successful! A confirmation email has been sent.'}), 200
-
-    except Exception as e:
-        connection.rollback()
-        return jsonify({'error': str(e)}), 500
-    finally:
-        cur.close()
-
-@app.route('/get_user_details', methods=['POST'])
-def get_user_details():
-    data = request.get_json()
-    email = data.get('email')
-    cur = connection.cursor()
-    user_data = None
-    try:
-        cur.execute('SELECT * FROM "public"."AGT_TEENS_DATA_RECORDS" WHERE "email" = %s LIMIT 1', (email,))
-        result = cur.fetchone()
-        if result:
-            user_data = {'category': 'teens', 'data': dict(zip([desc[0] for desc in cur.description], result))}
-        else:
-            cur.execute('SELECT * FROM "public"."AGT_ADULT_DATA_RECORDS" WHERE "email" = %s LIMIT 1', (email,))
-            result = cur.fetchone()
-            if result:
-                user_data = {'category': 'adult', 'data': dict(zip([desc[0] for desc in cur.description], result))}
-            else:
-                cur.execute('SELECT * FROM "public"."AGT_CHILDREN_DATA_RECORDS" WHERE "email" = %s LIMIT 1', (email,))
-                result = cur.fetchone()
-                if result:
-                    user_data = {'category': 'children', 'data': dict(zip([desc[0] for desc in cur.description], result))}
-        if user_data:
-            return jsonify(user_data), 200
-        else:
-            return jsonify({'error': 'User data not found in any group'}), 404
-    except Exception as e:
-        connection.rollback()
-        return jsonify({'error': str(e)}), 500
-    finally:
-        cur.close()
-
+# --------------------------- Update User Details -----------------------------
 @app.route('/update_user_details', methods=['POST'])
 def update_user_details():
     data = request.get_json()
     email = data.get('email')
     updates = data.get('updates')
-    table = data.get('category')
-    if not email or not updates or not table:
+    if not email or not updates:
         return jsonify({'error': 'Missing parameters'}), 400
+
     cur = connection.cursor()
     try:
-        valid_tables = {
-            'teens': 'AGT_TEENS_DATA_RECORDS',
-            'adult': 'AGT_ADULT_DATA_RECORDS',
-            'children': 'AGT_CHILDREN_DATA_RECORDS'
-        }
-        table_name = valid_tables.get(table)
-        if not table_name:
-            return jsonify({'error': 'Invalid category'}), 400
-        set_clause = ', '.join(f'"{k}" = %s' for k in updates)
+        set_clause = ', '.join(f"{k} = %s" for k in updates.keys())
         values = list(updates.values()) + [email]
         cur.execute(f"""
-            UPDATE public."{table_name}"
-            SET {set_clause}
-            WHERE "email" = %s
+            UPDATE public."agt_user_data_records"
+            SET {set_clause}, updated = NOW()
+            WHERE email = %s
         """, values)
-        
         connection.commit()
         return jsonify({'message': 'User record updated successfully'}), 200
     except Exception as e:
@@ -1000,71 +879,30 @@ def update_user_details():
         cur.close()
 
 
-# =============================================================================
-# ======================= GENERAL ATTENDANCE ROUTES ===========================
-# =============================================================================
-
-@app.route('/attendance/search_user', methods=['GET'])
-def attendance_search_user():
-    keyword = request.args.get('keyword', '')
-    cur = connection.cursor()
-    try:
-        query = """
-            SELECT first_name, last_name, contact_number FROM (
-                SELECT "first_name", "last_name", "contact_number" FROM "public"."AGT_TEENS_DATA_RECORDS"
-                WHERE "first_name" ILIKE %s OR "last_name" ILIKE %s OR "email" ILIKE %s
-                UNION
-                SELECT "first_name", "last_name", "contact_number" FROM "public"."AGT_ADULT_DATA_RECORDS"
-                WHERE "first_name" ILIKE %s OR "last_name" ILIKE %s OR "email" ILIKE %s
-                UNION
-                SELECT "first_name", "last_name", "contact_number" FROM "public"."AGT_CHILDREN_DATA_RECORDS"
-                WHERE "first_name" ILIKE %s OR "last_name" ILIKE %s
-            ) AS combined
-            LIMIT 10;
-        """
-        params = tuple([f"%{keyword}%"] * 8)
-        cur.execute(query, params)
-        results = cur.fetchall()
-        return jsonify([{"first_name": r[0], "last_name": r[1], "contact_number": r[2]} for r in results])
-    except Exception as e:
-        connection.rollback()
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cur.close()
-
-@app.route('/attendance/record_entry', methods=['POST'])
-def attendance_record_entry():
+# --------------------------- Worker Registration -----------------------------
+@app.route('/register_worker', methods=['POST'])
+def register_worker():
     data = request.get_json()
-    name = data.get('name')
-    contact = data.get('contact')
-    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    user_id = data.get('user_id')
+    role = data.get('role')
+    department = data.get('department')
+    position_type = data.get('position_type')
+
+    if not user_id:
+        return jsonify({'error': 'Missing user_id'}), 400
 
     cur = connection.cursor()
     try:
-        # Check if already marked today
         cur.execute("""
-            SELECT "Date" FROM public."AGT_Attendacne"
-            WHERE "Name" = %s AND "Contact" = %s AND DATE("Date") = %s
-        """, (name, contact, today))
-        existing = cur.fetchone()
-
-        if existing:
-            return jsonify({
-                "message": f"Already marked present on {existing[0].strftime('%Y-%m-%d %H:%M:%S')}",
-                "present": True
-            }), 200
-
-        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        cur.execute("""
-            INSERT INTO public."AGT_Attendacne" ("Name", "Date", "Contact")
-            VALUES (%s, %s, %s);
-        """, (name, now, contact))
+            INSERT INTO public."agt_workers_voluntires_records"
+            (user_id, role, department, position_type, created_at)
+            VALUES (%s, %s, %s, %s, NOW())
+        """, (user_id, role, department, position_type))
         connection.commit()
-        return jsonify({"message": "Attendance recorded successfully!", "present": False}), 200
-
+        return jsonify({'message': 'Worker registered successfully'}), 201
     except Exception as e:
         connection.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
 
