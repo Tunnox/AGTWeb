@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Profile | AGT</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css"/>
   <style>
     :root {
       --bg-light: #f1f3f5;
@@ -17,291 +16,54 @@
       --primary: #20c997;
       --primary-hover: #198754;
     }
-
-    [data-theme="dark"] {
-      background-color: var(--bg-dark);
-      color: var(--text-dark);
-    }
-
-    html, body {
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-
+    [data-theme="dark"] { background-color: var(--bg-dark); color: var(--text-dark); }
     body {
       font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 40px 20px;
+      margin: 0; padding: 40px 20px;
       background: url('https://github.com/Tunnox/Images/blob/main/AGT_profile_page_BG.jpg?raw=true') no-repeat center center fixed;
-      background-size: cover;
-      backdrop-filter: blur(6px);
-      transition: all 0.3s ease;
+      background-size: cover; backdrop-filter: blur(6px);
     }
-
     .navbar {
       background-color: rgba(255, 255, 255, 0.9);
       padding: 10px 16px;
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 999;
+      display: flex; justify-content: space-between; align-items: center;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      color: var(--text-light);
-      flex-wrap: wrap;
     }
-
-    [data-theme="dark"] .navbar {
-      background-color: rgba(33, 37, 41, 0.9);
-      color: var(--text-dark);
-    }
-
-    .nav-brand {
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .menu-toggle {
-      display: none;
-      font-size: 20px;
-      cursor: pointer;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-weight: bold;
-      margin-left: auto;
-      transition: background-color 0.3s ease;
-    }
-    
-    .menu-toggle:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 14px;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: inherit;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      display: block;
-    }
-
-    .nav-links a:hover {
-      background-color: var(--primary);
-      color: white;
-      transform: scale(1.05);
-    }
-
-    .theme-toggle {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-left: 10px;
-    }
-
-    h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-      font-weight: 700;
-      text-align: center;
-    }
-
+    [data-theme="dark"] .navbar { background-color: rgba(33, 37, 41, 0.9); color: var(--text-dark); }
+    .nav-links { display: flex; gap: 14px; }
+    .nav-links a { text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; }
+    .nav-links a:hover { background-color: var(--primary); color: white; }
     .card {
       background: var(--card-bg-light);
-      padding: 30px;
-      border-radius: 20px;
+      padding: 30px; border-radius: 20px;
       box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 720px;
-      margin: auto;
-      transition: all 0.3s ease;
-      box-sizing: border-box;
-      overflow-wrap: break-word;
+      max-width: 720px; margin: auto;
     }
-
-    [data-theme="dark"] .card {
-      background: var(--card-bg-dark);
-    }
-
-    .tabs {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .tab-button {
-      padding: 12px 24px;
-      background: #dee2e6;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 500;
-      color: #495057;
-    }
-
-    .tab-button.active {
-      background: linear-gradient(135deg, #20c997, #17a2b8);
-      color: white;
-    }
-
-    input, button {
-      width: 100%;
-      padding: 14px;
-      margin: 12px 0;
-      border-radius: 10px;
-      border: 1px solid #dee2e6;
-      font-size: 16px;
-      background: #f8f9fa;
-      box-sizing: border-box;
-    }
-
-    button {
-      background-color: var(--primary);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .photo-preview {
-      width: 35vw;
-      height: 35vw;
-      max-width: 140px;
-      max-height: 140px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 12px auto;
-      border: 3px solid var(--primary);
-      display: block;
-    }
-
-    .section { display: none; }
-    .section.active { display: block; }
-
-    #progress-container {
-      margin-top: 20px;
-      background: #e9ecef;
-      border-radius: 8px;
-      overflow: hidden;
-      height: 16px;
-    }
-
-    #progress-bar {
-      height: 100%;
-      background: var(--primary);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
-    #cropper-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.7);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    #cropper-modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 90%;
-      max-height: 90%;
-      overflow: auto;
-    }
-
-    @media (max-width: 768px) {
-      .menu-toggle {
-        display: block;
-      }
-
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        margin-top: 10px;
-      }
-
-      .nav-links.active {
-        display: flex;
-      }
-
-      .theme-toggle {
-        font-size: 12px;
-        padding: 4px 8px;
-      }
-
-      h1 {
-        font-size: 24px;
-      }
-
-      .card {
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-        background-color: #fff;
-        max-width: 400px;
-        width: 100%;
-        box-sizing: border-box;
-      }
-
-      input, button {
-        padding: 12px;
-        font-size: 14px;
-      }
-
-      .tabs {
-        flex-direction: column;
-        gap: 8px;
-        align-items: stretch;
-      }
-
-      .tab-button {
-        width: 100%;
-        text-align: center;
-        box-sizing: border-box;
-      }
-    }
+    [data-theme="dark"] .card { background: var(--card-bg-dark); }
+    .tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+    .tab-button { padding: 12px 24px; border-radius: 20px; cursor: pointer; }
+    .tab-button.active { background: linear-gradient(135deg, #20c997, #17a2b8); color: white; }
+    input, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #dee2e6; }
+    button { background-color: var(--primary); color: white; font-weight: bold; cursor: pointer; }
+    button:hover { background-color: var(--primary-hover); }
+    .section { display:none; }
+    .section.active { display:block; }
   </style>
 </head>
 <body>
   <nav class="navbar">
     <div class="nav-brand">AGT Sheffield</div>
-    <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
-    <div style="display:flex; align-items:center; flex-wrap:wrap;">
-      <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/my_profile">My Profile</a>
-        <a href="https://www.rccgamazinggracesheffield.org/about-us/">About</a>
-        <a href="https://www.rccgamazinggracesheffield.org/contact/">Contact</a>
-        <a href="/login_admin">Admin Center</a>
-      </div>
-      <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/my_profile">My Profile</a>
+      <a href="https://www.rccgamazinggracesheffield.org/about-us/">About</a>
+      <a href="https://www.rccgamazinggracesheffield.org/contact/">Contact</a>
+      <a href="/login_admin">Admin Center</a>
     </div>
   </nav>
 
-  <h1>👤 My Profile</h1>
+  <h1 style="text-align:center;">👤 My Profile</h1>
 
   <div class="card">
     <div class="tabs">
@@ -309,119 +71,63 @@
       <div class="tab-button" data-target="register">Create Profile</div>
     </div>
 
+    <!-- Login -->
     <div class="section active" id="login">
       <form id="login-form">
-      <input type="text" name="identity" placeholder="Email or Username" required />
-      <input type="password" name="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-      <p style="text-align:right;"><a href="#" id="forgot-password-link" style="font-size: 14px; color: var(--primary);">Forgot password?</a></p>
-    </form>
-
-
+        <input type="text" name="identity" placeholder="Email or Username" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
     </div>
 
+    <!-- Register -->
     <div class="section" id="register">
-      <p style="text-align:center;">Contact <strong>Admin</strong> to register your details.</p>
-      <input type="text" id="search-name" placeholder="Search for your name..." style="margin-bottom: 8px;">
-      <div id="search-results" style="margin-bottom:16px; color: #222;"></div>
+      <input type="text" id="search-name" placeholder="Search for your name...">
+      <div id="search-results" style="margin-bottom:16px;"></div>
 
       <form id="register-form" style="display:none;">
+        <input type="hidden" name="user_id" id="user_id">
         <input type="text" id="fullname" class="profile-field" placeholder="Full Name" readonly>
         <input type="text" id="contact_number" class="profile-field" placeholder="Contact Number" readonly>
         <input type="text" name="username" class="profile-field" placeholder="Username" required>
-        <input type="email" name="email" class="profile-field" placeholder="Email address" required>
+        <input type="email" name="email" class="profile-field" placeholder="Email address" readonly>
         <input type="password" name="password" class="profile-field" placeholder="Password" required>
         <input type="password" name="confirm_password" class="profile-field" placeholder="Confirm Password" required>
-        <input type="file" accept="image/*" id="image-input">
-        <img src="" class="photo-preview" id="preview-img" alt="Preview"/>
-        <div id="progress-container"><div id="progress-bar"></div></div>
         <button type="submit">Create Profile</button>
       </form>
     </div>
   </div>
 
-  <div id="cropper-modal">
-    <div id="cropper-modal-content">
-      <h3>Crop your photo</h3>
-      <img id="cropper-image" style="max-width:100%; max-height:60vh;">
-      <button onclick="applyCrop()">Done</button>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+  <!-- Scripts -->
   <script>
-    const tabButtons = document.querySelectorAll('.tab-button');
+    // Tabs
+    const tabs = document.querySelectorAll('.tab-button');
     const sections = document.querySelectorAll('.section');
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabButtons.forEach(b => b.classList.remove('active'));
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
         sections.forEach(s => s.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.target).classList.add('active');
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.target).classList.add('active');
       });
     });
 
-    function setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-    }
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      setTheme(current === 'dark' ? 'light' : 'dark');
-    }
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
-
-    const fields = document.querySelectorAll('.profile-field');
-    const bar = document.getElementById('progress-bar');
-    fields.forEach(field => {
-      field.addEventListener('input', () => {
-        const filled = Array.from(fields).filter(f => f.value.trim() !== '').length;
-        const percent = Math.round((filled / fields.length) * 100);
-        bar.style.width = percent + '%';
-      });
-    });
-
-    let cropper;
-    const input = document.getElementById('image-input');
-    const modal = document.getElementById('cropper-modal');
-    const cropperImg = document.getElementById('cropper-image');
-    const preview = document.getElementById('preview-img');
-    input.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        cropperImg.src = reader.result;
-        modal.style.display = 'flex';
-        if (cropper) cropper.destroy();
-        cropper = new Cropper(cropperImg, { aspectRatio: 1, viewMode: 1 });
-      };
-      reader.readAsDataURL(file);
-    });
-    window.applyCrop = function() {
-      const canvas = cropper.getCroppedCanvas({ width: 200, height: 200 });
-      preview.src = canvas.toDataURL();
-      modal.style.display = 'none';
-    };
-
+    // ========== Search & Autofill ==========
     const searchBox = document.getElementById('search-name');
     const resultsBox = document.getElementById('search-results');
     const fullNameField = document.getElementById('fullname');
     const contactField = document.getElementById('contact_number');
     const registerForm = document.getElementById('register-form');
+    const userIdField = document.getElementById('user_id');
+
     searchBox.addEventListener('input', async () => {
       const keyword = searchBox.value;
-      if (keyword.length < 2) {
-        resultsBox.innerHTML = '';
-        return;
-      }
+      if (keyword.length < 2) { resultsBox.innerHTML = ''; return; }
       const res = await fetch(`/search_user_records?keyword=${encodeURIComponent(keyword)}`);
       const results = await res.json();
       resultsBox.innerHTML = '';
       results.forEach(person => {
-        const fullName = `${person.first_name} ${person.last_name}`.replace(/\s+/g, ' ').trim();
+        const fullName = `${person.first_name} ${person.last_name}`;
         const div = document.createElement('div');
         div.textContent = fullName;
         div.style = 'padding:6px 10px; cursor:pointer; background:#f8f9fa; margin-bottom:4px; border-radius:6px;';
@@ -429,76 +135,45 @@
           searchBox.value = fullName;
           fullNameField.value = fullName;
           contactField.value = person.contact_number || 'N/A';
+          document.querySelector('input[name="email"]').value = person.email;
+          userIdField.value = person.id;
           registerForm.style.display = 'block';
           resultsBox.innerHTML = '';
         };
         resultsBox.appendChild(div);
       });
     });
-  </script>
-  <!-- User Modal -->
-<div id="user-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
-  <div class="modal-content" style="background:white; padding:20px; border-radius:12px; max-width:400px; width:90%; text-align:center;">
-    <h2>User Profile</h2>
-    <img id="modal-profile-pic" src="" class="photo-preview" />
-    <div id="modal-details" style="text-align:left; margin-top:16px;"></div>
-    <button id="edit-btn">Edit</button>
-    <button id="save-btn" style="display:none;">Save</button>
-    <button onclick="document.getElementById('user-modal').style.display='none'">Close</button>
-  </div>
-</div>
 
-<!-- Invalid Login Modal -->
-<div id="invalid-login-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
-  <div style="background:white; padding:24px; border-radius:12px; max-width:320px; width:90%; text-align:center;">
-    <h3>Invalid Login</h3>
-    <p>Email or password is incorrect.</p>
-    <button onclick="document.getElementById('invalid-login-modal').style.display='none'">Close</button>
-  </div>
-</div>
- <script>
-document.getElementById('login-form').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const form = e.target;
-  const identity = form.identity.value.trim();
-  const password = form.password.value;
-
-  try {
-    const res = await fetch('/login_profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identity, password })
+    // ========== Register ==========
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(registerForm);
+      const res = await fetch('/register_profile', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        registerForm.reset();
+        registerForm.style.display = 'none';
+      } else {
+        alert(data.error || 'Error creating profile');
+      }
     });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || 'Login failed');
-      return;
-    }
-
-    const user = data.user;
-
-    // Save user data to localStorage for profile_view.html
-    localStorage.setItem('loggedInUser', JSON.stringify({
-      email: user.email,
-      username: user.username,
-      profile_picture: user.profile_picture,
-      category: user.category,
-      details: user.details
-    }));
-
-    // Redirect to profile view page
-    window.location.href = '/profile_view';
-  } catch (err) {
-    alert('An error occurred during login.');
-    console.error(err);
-  }
-});
-</script>
-
-
-
+    // ========== Login ==========
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const identity = this.identity.value.trim();
+      const password = this.password.value;
+      const res = await fetch('/login_profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identity, password })
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || 'Login failed'); return; }
+      localStorage.setItem('loggedInUser', JSON.stringify(data.user));
+      window.location.href = '/profile_view';
+    });
+  </script>
 </body>
 </html>
