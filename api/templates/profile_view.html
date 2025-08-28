@@ -167,112 +167,87 @@
 </head>
 <body>
   <div class="card">
-    <h2>User Profile</h2>
-    <img id="profile-pic" class="photo-preview" src="" alt="Profile Picture">
-    <div class="details" id="user-details"></div>
-    <div>
-      <button class="back-btn" onclick="window.location.href='/my_profile'">← Back to Login</button>
-      <button class="edit-btn" onclick="openEditModal()">✎ Edit</button>
-    </div>
+  <h2>User Profile</h2>
+  <img id="profile-pic" class="photo-preview" src="" alt="Profile Picture">
+  <div class="details" id="user-details"></div>
+  <div id="worker-section" style="margin-top:20px;"></div>
+  <div>
+    <button class="back-btn" onclick="window.location.href='/my_profile'">← Back to Login</button>
+    <button class="edit-btn" onclick="openEditModal()">✎ Edit</button>
   </div>
+</div>
 
-  <!-- Edit Modal -->
-  <div id="edit-modal">
-    <div class="modal-content">
-      <h3>Edit Details</h3>
-      <form id="edit-form"></form>
+<!-- Worker Modal -->
+<div id="worker-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:2000;">
+  <div class="modal-content">
+    <h3>Register as Worker</h3>
+    <form id="worker-form">
+      <input type="hidden" name="user_id" id="worker-user-id">
+      <input type="text" name="role" placeholder="Role" required>
+      <input type="text" name="department" placeholder="Department" required>
+      <input type="text" name="position_type" placeholder="Position Type" required>
       <div class="modal-actions">
-        <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
-        <button class="save-btn" onclick="submitEdits(event)">Save</button>
+        <button type="button" class="cancel-btn" onclick="closeWorkerModal()">Cancel</button>
+        <button type="submit" class="save-btn">Save</button>
       </div>
-    </div>
+    </form>
   </div>
+</div>
 
-  <script>
-    const user = JSON.parse(localStorage.getItem('loggedInUser')) || {
-      profile_picture: 'https://via.placeholder.com/120',
-      email: 'unknown@example.com',
-      category: 'user',
-      details: {
-        Name: 'John Doe',
-        Email: 'john@example.com',
-        Phone: '+1234567890',
-        Address: '123 Main Street',
-        Membership: 'Active'
-      }
-    };
+<script>
+  const user = JSON.parse(localStorage.getItem('loggedInUser'));
 
-    document.getElementById('profile-pic').src = user.profile_picture;
-
-    const detailsDiv = document.getElementById('user-details');
-    const editForm = document.getElementById('edit-form');
-
-    function displayDetails(details) {
-      detailsDiv.innerHTML = '';
-      for (const [key, value] of Object.entries(details)) {
-        const row = document.createElement('div');
-        row.innerHTML = `<strong>${key}</strong>: ${value}`;
-        detailsDiv.appendChild(row);
-      }
+  document.getElementById('profile-pic').src = user.profile_picture || 'https://via.placeholder.com/120';
+  const detailsDiv = document.getElementById('user-details');
+  function displayDetails(details) {
+    detailsDiv.innerHTML = '';
+    for (const [key, value] of Object.entries(details)) {
+      const row = document.createElement('div');
+      row.innerHTML = `<strong>${key}</strong>: ${value}`;
+      detailsDiv.appendChild(row);
     }
+  }
+  displayDetails(user.details);
 
-    function openEditModal() {
-      editForm.innerHTML = '';
-      for (const [key, value] of Object.entries(user.details)) {
-        const input = document.createElement('input');
-        input.name = key;
-        input.value = value;
-        input.placeholder = key;
-        editForm.appendChild(input);
-      }
-      document.getElementById('edit-modal').style.display = 'flex';
+  // Worker Check
+  const workerSection = document.getElementById('worker-section');
+  if (!user.is_worker) {
+    workerSection.innerHTML = `
+      <p style="color:red;">This user is not yet registered as a worker.</p>
+      <button onclick="openWorkerModal()">Register as Worker</button>
+    `;
+    document.getElementById('worker-user-id').value = user.details.id;
+  }
+
+  function openWorkerModal() {
+    document.getElementById('worker-modal').style.display = 'flex';
+  }
+  function closeWorkerModal() {
+    document.getElementById('worker-modal').style.display = 'none';
+  }
+
+  // Handle Worker Registration
+  document.getElementById('worker-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const body = {};
+    formData.forEach((v,k)=>body[k]=v);
+    const res = await fetch('/register_worker', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if(res.ok){
+      alert(data.message);
+      closeWorkerModal();
+      workerSection.innerHTML = `<p style="color:green;">Now registered as worker ✅</p>`;
+    } else {
+      alert(data.error);
     }
+  });
+</script>
 
-    function closeEditModal() {
-      document.getElementById('edit-modal').style.display = 'none';
-    }
-
-    async function submitEdits(e) {
-      e.preventDefault();
-      const formData = new FormData(editForm);
-      const updates = {};
-      formData.forEach((val, key) => updates[key] = val);
-
-      const res = await fetch('/update_user_details', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: user.email,
-          updates,
-          category: user.category || 'user'
-        })
-      });
-
-      const result = await res.json();
-      alert(result.message || result.error);
-      if (res.ok) {
-        user.details = updates;
-        localStorage.setItem('loggedInUser', JSON.stringify(user));
-        displayDetails(updates);
-        closeEditModal();
-      }
-    }
-
-    // Initial Render
-    displayDetails(user.details);
-
-    // Auto logout/redirect after 3 minutes
-    let timeout;
-    function resetTimer() {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => window.location.href = '/my_profile', 180000);
-    }
-
-    ['mousemove', 'keydown', 'click'].forEach(evt =>
-      document.addEventListener(evt, resetTimer)
-    );
-    resetTimer();
-  </script>
 </body>
 </html>
 
