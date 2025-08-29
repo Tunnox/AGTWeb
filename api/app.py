@@ -78,7 +78,7 @@ def agt_login():
     cur = connection.cursor()
     try:
         cur.execute(
-            'SELECT * FROM "public"."AGT_USER_LOGIN" '
+            'SELECT * FROM public.agt_user_data_records '
             'WHERE ("USERNAME" = %s OR "EMAIL" = %s) AND "PASSWORD" = %s;',
             (login_username, login_username, login_password)
         )
@@ -1024,3 +1024,4 @@ def register_worker():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
