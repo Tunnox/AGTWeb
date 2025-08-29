@@ -20,10 +20,6 @@
       --text: #f8f9fa;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
@@ -45,39 +41,19 @@
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       padding: 30px;
-      max-width: 480px;
+      max-width: 600px;
       width: 100%;
       text-align: center;
       margin-top: 40px;
       animation: fadeIn 0.4s ease;
     }
 
-    h2 {
-      margin-bottom: 12px;
-    }
+    h2 { margin-bottom: 12px; }
+    h3 { margin-top: 20px; margin-bottom: 10px; color: var(--primary-hover); }
 
-    .photo-preview {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid var(--primary);
-      margin-bottom: 16px;
-    }
-
-    .details {
-      text-align: left;
-      margin-top: 20px;
-    }
-
-    .details div {
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-
-    .details strong {
-      color: var(--primary);
-    }
+    .details { text-align: left; margin-top: 10px; }
+    .details div { margin-bottom: 8px; font-size: 15px; }
+    .details strong { color: var(--primary); }
 
     .back-btn, .edit-btn {
       margin-top: 20px;
@@ -91,17 +67,11 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
-    .edit-btn {
-      margin-left: 10px;
-    }
-
-    .back-btn:hover, .edit-btn:hover {
-      background-color: var(--primary-hover);
-    }
+    .edit-btn { margin-left: 10px; }
+    .back-btn:hover, .edit-btn:hover { background-color: var(--primary-hover); }
 
     /* Modal Styles */
-    #edit-modal {
+    .modal {
       display: none;
       position: fixed;
       top: 0; left: 0;
@@ -117,29 +87,15 @@
       padding: 24px;
       border-radius: 16px;
       width: 90%;
-      max-width: 400px;
+      max-width: 500px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       text-align: left;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
-    .modal-content h3 {
-      margin-top: 0;
-    }
-
-    .modal-content input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    .modal-actions {
-      text-align: right;
-      margin-top: 10px;
-    }
-
+    .modal-content h3 { margin-top: 0; }
+    .modal-actions { text-align: right; margin-top: 10px; }
     .modal-actions button {
       padding: 10px 16px;
       margin-left: 10px;
@@ -148,15 +104,17 @@
       font-weight: bold;
       cursor: pointer;
     }
+    .save-btn { background-color: var(--primary); color: white; }
+    .cancel-btn { background-color: #dee2e6; color: #333; }
 
-    .save-btn {
-      background-color: var(--primary);
-      color: white;
-    }
-
-    .cancel-btn {
-      background-color: #dee2e6;
-      color: #333;
+    /* Form Styling */
+    .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+    .form-group label { font-weight: 600; margin-bottom: 5px; }
+    .form-group input, .form-group textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
     }
 
     @keyframes fadeIn {
@@ -167,58 +125,258 @@
 </head>
 <body>
   <div class="card">
-  <h2>User Profile</h2>
-  <img id="profile-pic" class="photo-preview" src="" alt="Profile Picture">
-  <div class="details" id="user-details"></div>
-  <div id="worker-section" style="margin-top:20px;"></div>
-  <div>
-    <button class="back-btn" onclick="window.location.href='/my_profile'">← Back to Login</button>
-    <button class="edit-btn" onclick="openEditModal()">✎ Edit</button>
-  </div>
-</div>
+    <h2 id="full-name"></h2>
+    <div id="contact-info" class="details"></div>
+    <h3>Other Details</h3>
+    <div class="details" id="other-details"></div>
 
-<!-- Worker Modal -->
-<div id="worker-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:2000;">
-  <div class="modal-content">
-    <h3>Register as Worker</h3>
-    <form id="worker-form">
-      <input type="hidden" name="user_id" id="worker-user-id">
-      <input type="text" name="role" placeholder="Role" required>
-      <input type="text" name="department" placeholder="Department" required>
-      <input type="text" name="position_type" placeholder="Position Type" required>
-      <div class="modal-actions">
-        <button type="button" class="cancel-btn" onclick="closeWorkerModal()">Cancel</button>
-        <button type="submit" class="save-btn">Save</button>
-      </div>
-    </form>
+    <div id="worker-section" style="margin-top:20px;"></div>
+
+    <div>
+      <button class="back-btn" onclick="window.location.href='/my_profile'">← Back to Login</button>
+      <button class="edit-btn" onclick="openEditModal()">✎ Edit</button>
+    </div>
   </div>
-</div>
+
+  <!-- Edit Modal -->
+  <div id="edit-modal" class="modal">
+    <div class="modal-content">
+      <h3>Edit User Details</h3>
+      <form id="edit-form"></form>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class="save-btn" form="edit-form">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Worker Modal -->
+  <div id="worker-modal" class="modal">
+    <div class="modal-content">
+      <h3>Register as Worker</h3>
+      <form id="worker-form">
+        <input type="hidden" name="user_id" id="worker-user-id">
+
+        <div class="form-group">
+          <label for="date_of_birth">Date of Birth</label>
+          <input type="date" id="date_of_birth" name="date_of_birth" required>
+        </div>
+        <div class="form-group">
+          <label for="emergency_contact_name">Emergency Contact Name</label>
+          <input type="text" id="emergency_contact_name" name="emergency_contact_name" required>
+        </div>
+        <div class="form-group">
+          <label for="emergency_contact_number">Emergency Contact Number</label>
+          <input type="text" id="emergency_contact_number" name="emergency_contact_number" required>
+        </div>
+        <div class="form-group">
+          <label for="emergency_contact_relationship">Emergency Contact Relationship</label>
+          <input type="text" id="emergency_contact_relationship" name="emergency_contact_relationship" required>
+        </div>
+        <div class="form-group">
+          <label for="role">Role</label>
+          <input type="text" id="role" name="role" required>
+        </div>
+        <div class="form-group">
+          <label for="position_type">Position Type</label>
+          <select id="position_type" name="position_type" required>
+            <option value="Worker">Worker</option>
+            <option value="Volunteer">Volunteer</option>
+            <option value="Adhoc">Adhoc</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="department">Department</label>
+          <select id="department" name="department" required>
+            <option value="Choir">Choir</option>
+            <option value="Ushering">Ushering</option>
+            <option value="Technical">Technical</option>
+            <option value="Security">Security</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="start_date">Start Date</label>
+          <input type="date" id="start_date" name="start_date" required>
+        </div>
+        <div class="form-group">
+          <label for="dbs_check_date">DBS Check Date</label>
+          <input type="date" id="dbs_check_date" name="dbs_check_date">
+        </div>
+        <div class="form-group">
+          <label for="dbs_certificate_number">DBS Certificate Number</label>
+          <input type="text" id="dbs_certificate_number" name="dbs_certificate_number">
+        </div>
+        <div class="form-group">
+          <label for="safeguarding_training_date">Safeguarding Training Date</label>
+          <input type="date" id="safeguarding_training_date" name="safeguarding_training_date">
+        </div>
+        <div class="form-group">
+          <label for="medical_conditions">Medical Conditions</label>
+          <textarea id="medical_conditions" name="medical_conditions"></textarea>
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="consent" name="consent"> Consent</label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="cancel-btn" onclick="closeWorkerModal()">Cancel</button>
+          <button type="submit" class="save-btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
 <script>
   const user = JSON.parse(localStorage.getItem('loggedInUser'));
 
-  document.getElementById('profile-pic').src = user.profile_picture || 'https://via.placeholder.com/120';
-  const detailsDiv = document.getElementById('user-details');
-  function displayDetails(details) {
-    detailsDiv.innerHTML = '';
-    for (const [key, value] of Object.entries(details)) {
-      const row = document.createElement('div');
+  // Display header and details
+  const fullName = `${user.details.first_name} ${user.details.last_name}`;
+  document.getElementById("full-name").innerText = fullName;
+
+  document.getElementById("contact-info").innerHTML = `
+    <div><strong>Email:</strong> ${user.details.email}</div>
+    <div><strong>Contact Number:</strong> ${user.details.contact_number}</div>
+  `;
+
+  const otherDiv = document.getElementById("other-details");
+  const excluded = ["id", "created_at", "updated_at", "first_name", "last_name", "email", "contact_number"];
+  for (const [key, value] of Object.entries(user.details)) {
+    if (!excluded.includes(key)) {
+      const row = document.createElement("div");
       row.innerHTML = `<strong>${key}</strong>: ${value}`;
-      detailsDiv.appendChild(row);
+      otherDiv.appendChild(row);
     }
   }
-  displayDetails(user.details);
 
-  // Worker Check
+  // Worker Section
   const workerSection = document.getElementById('worker-section');
-  if (!user.is_worker) {
+    if (!user.worker) {
     workerSection.innerHTML = `
+      <h3>Worker Details</h3>
       <p style="color:red;">This user is not yet registered as a worker.</p>
       <button onclick="openWorkerModal()">Register as Worker</button>
     `;
     document.getElementById('worker-user-id').value = user.details.id;
+  } else if (user.worker_approval_status === "pending_approval") {
+    workerSection.innerHTML = `
+      <h3>Worker Details</h3>
+      <p style="color:orange;">
+        You have registered for the position of <strong>${user.worker.role}</strong>
+        in the <strong>${user.worker.department}</strong> department
+        as a <strong>${user.worker.position_type}</strong>.<br><br>
+        Your form has been sent for approval. Once approved, your worker details will be displayed here, 
+        and you can modify where needed.
+      </p>
+    `;
+  } else if (user.worker_approval_status === "approved") {
+    workerSection.innerHTML = `
+      <h3>Worker Details</h3>
+      <div class="details" id="worker-details"></div>
+    `;
+    const workerDiv = document.getElementById("worker-details");
+    const excludedWorker = ["id", "worker_id", "user_id", "created_at", "updated_at"];
+    for (const [key, value] of Object.entries(user.worker)) {
+      if (!excludedWorker.includes(key)) {
+        const row = document.createElement("div");
+        row.innerHTML = `<strong>${key}</strong>: ${value}`;
+        workerDiv.appendChild(row);
+      }
+    }
   }
 
+
+  // Edit Modal Logic
+  function openEditModal() {
+    const form = document.getElementById("edit-form");
+    form.innerHTML = "";
+    const excluded = ["id", "created_at", "updated_at"];
+    const fieldLabels = {
+      first_name: "First Name",
+      last_name: "Last Name",
+      age: "Age",
+      gender: "Gender",
+      birthday: "Birthday",
+      contact_number: "Contact Number",
+      age_group: "Age Group",
+      department: "Department",
+      relationship_status: "Relationship Status",
+      email: "Email",
+      address: "Address",
+      consent: "Consent"
+    };
+
+    for (const [key, value] of Object.entries(user.details)) {
+      if (!excluded.includes(key)) {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("form-group");
+
+        const label = document.createElement("label");
+        label.setAttribute("for", key);
+        label.textContent = fieldLabels[key] || key;
+
+        let input;
+        if (key === "consent") {
+          input = document.createElement("input");
+          input.type = "checkbox";
+          input.id = key;
+          input.name = key;
+          input.checked = value === true || value === "true";
+        } else if (key === "birthday") {
+          input = document.createElement("input");
+          input.type = "date";
+          input.id = key;
+          input.name = key;
+          input.value = value || "";
+        } else if (key === "age") {
+          input = document.createElement("input");
+          input.type = "number";
+          input.id = key;
+          input.name = key;
+          input.value = value || 0;
+        } else {
+          input = document.createElement("input");
+          input.type = "text";
+          input.id = key;
+          input.name = key;
+          input.value = value || "";
+        }
+
+        wrapper.appendChild(label);
+        wrapper.appendChild(input);
+        form.appendChild(wrapper);
+      }
+    }
+    document.getElementById("edit-modal").style.display = "flex";
+  }
+  function closeEditModal() {
+    document.getElementById("edit-modal").style.display = "none";
+  }
+
+  document.getElementById("edit-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const updates = {};
+    formData.forEach((v, k) => {
+      if (k === "consent") updates[k] = document.getElementById("consent").checked;
+      else updates[k] = v;
+    });
+
+    const res = await fetch('/update_user_details', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email: user.details.email, updates })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert("User details updated successfully!");
+      location.reload();
+    } else {
+      alert(data.error);
+    }
+  });
+
+  // Worker Modal Logic
   function openWorkerModal() {
     document.getElementById('worker-modal').style.display = 'flex';
   }
@@ -226,28 +384,39 @@
     document.getElementById('worker-modal').style.display = 'none';
   }
 
-  // Handle Worker Registration
   document.getElementById('worker-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const body = {};
     formData.forEach((v,k)=>body[k]=v);
+    body["consent"] = document.getElementById("consent").checked;
+
     const res = await fetch('/register_worker', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify(body)
     });
+
     const data = await res.json();
-    if(res.ok){
+    if (res.ok) {
       alert(data.message);
       closeWorkerModal();
-      workerSection.innerHTML = `<p style="color:green;">Now registered as worker ✅</p>`;
-    } else {
-      alert(data.error);
-    }
-  });
-</script>
 
+      workerSection.innerHTML = `
+        <h3>Worker Details</h3>
+        <p style="color:orange;">
+          You have registered for the position of <strong>${body.role}</strong>
+          in the <strong>${body.department}</strong> department
+          as a <strong>${body.position_type}</strong>.<br><br>
+          Your form has been sent for approval. Once approved, your worker details will be displayed here, 
+          and you can modify where needed.
+        </p>
+      `;
+    }
+    else {
+          alert(data.error);
+        }
+      });
+</script>
 </body>
 </html>
-
