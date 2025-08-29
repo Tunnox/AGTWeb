@@ -14,6 +14,7 @@ import random
 from werkzeug.security import generate_password_hash
 import random, smtplib
 from email.mime.text import MIMEText
+from werkzeug.security import check_password_hash
 
 # ============================= Flask Setup ===================================
 app = Flask(__name__)
@@ -78,19 +79,24 @@ def agt_login():
     cur = connection.cursor()
     try:
         cur.execute(
-            'SELECT * FROM public.agt_user_data_records '
-            'WHERE ("USERNAME" = %s OR "EMAIL" = %s) AND "PASSWORD" = %s;',
-            (login_username, login_username, login_password)
+            '''
+            SELECT id, user_id, worker_id, role, user_name, email, password_hash, created_at, updated_at
+            FROM public.agt_admin
+            WHERE (user_name = %s OR email = %s)
+            ''',
+            (login_username, login_username)
         )
-        user = cur.fetchone()
-        if user:
+        admin = cur.fetchone()
+
+        if admin and check_password_hash(admin[6], login_password):  # password_hash is the 7th column
             return jsonify({"message": "Login successful!", "success": True}), 200
         else:
-            return jsonify({"message": "Invalid credentials, please create an account."}), 401
+            return jsonify({"message": "Invalid credentials, please try again."}), 401
     except Exception as e:
         return jsonify({"message": str(e)}), 400
     finally:
         cur.close()
+
 
 
 # --------------------------- Attendance Check (General) ----------------------
@@ -116,6 +122,119 @@ def teens_check_attendance():
             return jsonify({"present": False})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+# =============================================================================
+# ============================== ROTA ROUTES ==================================
+# =============================================================================
+
+@app.route('/rota/search_user', methods=['POST'])
+def rota_search_user():
+    keyword = request.form.get("keyword", "").strip()
+    if not keyword:
+        return jsonify([])
+
+    cur = connection.cursor()
+    try:
+        cur.execute("""
+            SELECT id, first_name, last_name, department 
+            FROM public.agt_user_data_records
+            WHERE first_name ILIKE %s OR last_name ILIKE %s
+            LIMIT 10
+        """, (f"%{keyword}%", f"%{keyword}%"))
+        results = cur.fetchall()
+        return jsonify([
+            {"id": r[0], "first_name": r[1], "last_name": r[2], "department": r[3]}
+            for r in results
+        ])
+    finally:
+        cur.close()
+
+
+@app.route("/rota/get_worker/<int:user_id>")
+def rota_get_worker(user_id):
+    cur = connection.cursor()
+    try:
+        cur.execute("""
+            SELECT worker_id, role, department
+            FROM public.agt_workers_voluntiers_records
+            WHERE user_id = %s
+        """, (user_id,))
+        worker = cur.fetchone()
+        if worker:
+            return jsonify({
+                "worker_id": worker[0],
+                "role": worker[1],
+                "department": worker[2]
+            })
+        return jsonify({"error": "Worker not found"}), 404
+    finally:
+        cur.close()
+
+
+@app.route("/rota/add", methods=["POST"])
+def rota_add():
+    data = request.get_json()
+    worker_id = data.get("worker_id")
+    service_date = data.get("service_date")
+    service_slot = data.get("service_slot")
+    assignment = data.get("assignment", "")
+
+    # Extract month name (e.g., "January") from service_date
+    month_str = datetime.datetime.strptime(service_date, "%Y-%m-%d").strftime("%B")
+
+    cur = connection.cursor()
+    try:
+        cur.execute("""
+            INSERT INTO public.agt_rota
+            (rota_id, worker_id, month, service_date, service_slot, availability, assignment, 
+             submission_date, submission_status, approval_status, approved_by, remarks, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, 'available', %s,
+                    now(), 'pending', 'pending', 0, '', now(), now())
+            RETURNING id
+        """, (0, worker_id, month_str, service_date, service_slot, assignment))
+        new_id = cur.fetchone()[0]
+        connection.commit()
+        return jsonify({"message": "Rota entry added", "id": new_id})
+    except Exception as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+
+
+@app.route("/rota/calendar", methods=["GET"])
+def rota_calendar():
+    department = request.args.get("department")
+
+    cur = connection.cursor()
+    try:
+        cur.execute("""
+            SELECT r.service_date, r.service_slot, r.assignment,
+                   u.first_name, u.last_name,
+                   w.role, w.department
+            FROM public.agt_rota r
+            JOIN public.agt_workers_voluntiers_records w ON r.worker_id = w.worker_id
+            JOIN public.agt_user_data_records u ON w.user_id = u.id
+            WHERE (%s IS NULL OR w.department = %s)
+            ORDER BY r.service_date
+        """, (department, department))
+        records = cur.fetchall()
+        return jsonify([
+            {
+                "service_date": str(r[0]),
+                "service_slot": r[1],
+                "assignment": r[2],
+                "first_name": r[3],
+                "last_name": r[4],
+                "role": r[5],
+                "department": r[6]
+            }
+            for r in records
+        ])
+    finally:
+        cur.close()
+
 
 
 # =============================================================================
@@ -1024,4 +1143,3 @@ def register_worker():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
