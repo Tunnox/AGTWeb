@@ -11,7 +11,9 @@ import re
 from dotenv import load_dotenv
 from email.message import EmailMessage
 import random
-
+from werkzeug.security import generate_password_hash
+import random, smtplib
+from email.mime.text import MIMEText
 
 # ============================= Flask Setup ===================================
 app = Flask(__name__)
@@ -774,6 +776,9 @@ def search_user_records():
         cur.close()
 
 
+
+
+# --------------------------- Register Profile --------------------------------
 # --------------------------- Register Profile --------------------------------
 @app.route('/register_profile', methods=['POST'])
 def register_profile():
@@ -791,22 +796,32 @@ def register_profile():
 
         # Generate unique profile_id
         profile_id = random.randint(1000000000, 9999999999)
+        
+        # Securely hash password
+        #password_hash = generate_password_hash(password)
 
         cur = connection.cursor()
 
-        # Insert into agt_user_profile
+        # Insert with the raw password (⚠️ not hashed)
         cur.execute("""
-            INSERT INTO public.agt_user_profile (profile_id, user_id, user_name, email, password_hash)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO public.agt_user_profile 
+                (profile_id, user_id, user_name, email, password_hash, worker_id, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, DEFAULT, now(), now())
             RETURNING id
         """, (profile_id, user_id, username, email, password))
 
         new_id = cur.fetchone()[0]
+        connection.commit()   # commit transaction
         cur.close()
 
-        return jsonify({'message': 'Profile created successfully', 'id': new_id, 'profile_id': profile_id}), 201
+        return jsonify({
+            'message': 'Profile created successfully',
+            'id': new_id,
+            'profile_id': profile_id
+        }), 201
 
     except Exception as e:
+        connection.rollback()
         return jsonify({'error': str(e)}), 500
 
 
@@ -836,8 +851,21 @@ def login_profile():
         details = dict(zip([d[0] for d in cur.description], user_row))
 
         # Worker check
-        cur.execute("""SELECT worker_id FROM public."agt_workers_voluntiers_records" WHERE user_id = %s""", (user_id,))
-        worker = cur.fetchone()
+        cur.execute("""SELECT * FROM public."agt_workers_voluntiers_records" WHERE user_id = %s""", (user_id,))
+        worker_row = cur.fetchone()
+        worker_details = None
+        approval_status = None
+
+        if worker_row:
+            worker_details = dict(zip([d[0] for d in cur.description], worker_row))
+
+            # Check approval table
+            cur.execute("""SELECT approval_status FROM public."worker_approval" WHERE worker_id = %s""", (worker_details['worker_id'],))
+            approval = cur.fetchone()
+            if approval:
+                approval_status = approval[0]
+            else:
+                approval_status = None
 
         return jsonify({
             'message': 'Login successful',
@@ -845,9 +873,12 @@ def login_profile():
                 'email': email,
                 'username': username,
                 'details': details,
-                'is_worker': bool(worker)
+                'worker': worker_details,
+                'worker_approval_status': approval_status
             }
         }), 200
+
+
     finally:
         cur.close()
 
@@ -867,7 +898,7 @@ def update_user_details():
         values = list(updates.values()) + [email]
         cur.execute(f"""
             UPDATE public."agt_user_data_records"
-            SET {set_clause}, updated = NOW()
+            SET {set_clause}, updated_at = NOW()
             WHERE email = %s
         """, values)
         connection.commit()
@@ -880,31 +911,111 @@ def update_user_details():
 
 
 # --------------------------- Worker Registration -----------------------------
+
 @app.route('/register_worker', methods=['POST'])
 def register_worker():
     data = request.get_json()
     user_id = data.get('user_id')
+    # --- collect all other fields as before ---
+    date_of_birth = data.get('date_of_birth')
+    emergency_contact_name = data.get('emergency_contact_name')
+    emergency_contact_number = data.get('emergency_contact_number')
+    emergency_contact_relationship = data.get('emergency_contact_relationship')
     role = data.get('role')
-    department = data.get('department')
     position_type = data.get('position_type')
+    department = data.get('department')
+    start_date = data.get('start_date')
+    dbs_check_date = data.get('dbs_check_date')
+    dbs_certificate_number = data.get('dbs_certificate_number')
+    safeguarding_training_date = data.get('safeguarding_training_date')
+    medical_conditions = data.get('medical_conditions')
+    consent = data.get('consent', False)
 
     if not user_id:
         return jsonify({'error': 'Missing user_id'}), 400
 
     cur = connection.cursor()
     try:
+        # Generate unique worker_id
+        while True:
+            worker_id = random.randint(1000, 9999)
+            cur.execute('SELECT 1 FROM public."agt_workers_voluntiers_records" WHERE worker_id = %s', (worker_id,))
+            if not cur.fetchone():
+                break
+
+        # Insert into workers table
         cur.execute("""
-            INSERT INTO public."agt_workers_voluntires_records"
-            (user_id, role, department, position_type, created_at)
-            VALUES (%s, %s, %s, %s, NOW())
-        """, (user_id, role, department, position_type))
+            INSERT INTO public."agt_workers_voluntiers_records"
+            (worker_id, user_id, date_of_birth, emergency_contact_name, emergency_contact_number,
+             emergency_contact_relationship, role, position_type, department, start_date,
+             dbs_check_date, dbs_certificate_number, safeguarding_training_date,
+             medical_conditions, consent, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+        """, (
+            worker_id, user_id, date_of_birth, emergency_contact_name, emergency_contact_number,
+            emergency_contact_relationship, role, position_type, department, start_date,
+            dbs_check_date, dbs_certificate_number, safeguarding_training_date,
+            medical_conditions, consent
+        ))
+
+        # Insert into approval table
+        random_text = f"Approval request {random.randint(100000,999999)}"
+        cur.execute("""
+            INSERT INTO public."worker_approval"
+            (worker_id, date_submitted, approval_status, details, date_approved)
+            VALUES (%s, NOW(), %s, %s, %s)
+        """, (worker_id, "pending_approval", random_text, "awaiting"))
+
         connection.commit()
-        return jsonify({'message': 'Worker registered successfully'}), 201
+
+        # Send notification email
+        try:
+            body = f"""
+            Dear Admin,
+
+            A member has registered to be a worker using the church web app. Please see details
+
+            Role: {role}
+            Position Type: {position_type}
+            Department: {department}
+            Date of Birth: {date_of_birth}
+            Emergency Contact: {emergency_contact_name} ({emergency_contact_relationship}) - {emergency_contact_number}
+            Start Date: {start_date}
+            DBS Check Date: {dbs_check_date}
+            DBS Certificate: {dbs_certificate_number}
+            Safeguarding Training Date: {safeguarding_training_date}
+            Medical Conditions: {medical_conditions}
+            Consent: {consent}
+
+            This is now submitted for approval. To approve this request sign into chukspace.
+
+            Thanks
+            AGT Data Management App
+            """
+
+            msg = MIMEText(body)
+            msg["Subject"] = "New Worker Registration - Pending Approval"
+            msg["From"] = "realgeoemy@gmail.com"
+            msg["To"] = "chukwuemekaumunna@gmail.com"
+
+            with smtplib.SMTP("smtp.gmail.com", 465) as server:
+                server.login("yourchurchapp@gmail.com", "Oluwaseun1.")
+                server.send_message(msg)
+        except Exception as mail_error:
+            print("Email sending failed:", mail_error)
+
+        return jsonify({
+            'message': f'You have registered for the position of {role} in the {department} department as a {position_type}. '
+                       'Your form has been sent for approval. Once approved, your worker details will be displayed here, and you can modify where needed.'
+        }), 201
+
     except Exception as e:
         connection.rollback()
         return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
+
+
 
 
 # =============================================================================
