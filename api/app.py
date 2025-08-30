@@ -15,6 +15,7 @@ from werkzeug.security import generate_password_hash
 import random, smtplib
 from email.mime.text import MIMEText
 from werkzeug.security import check_password_hash
+import psycopg2.extras
 
 # ============================= Flask Setup ===================================
 app = Flask(__name__)
@@ -187,12 +188,21 @@ def rota_add():
     try:
         cur.execute("""
             INSERT INTO public.agt_rota
-            (rota_id, worker_id, month, service_date, service_slot, availability, assignment, 
-             submission_date, submission_status, approval_status, approved_by, remarks, created_at, updated_at)
-            VALUES (%s, %s, %s, %s, %s, 'available', %s,
-                    now(), 'pending', 'pending', 0, '', now(), now())
+            (worker_id, month, service_date, service_slot, availability, assignment, 
+            submission_date, submission_status, approval_status, approval_date, approved_by, remarks, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, 'available', %s,
+                    now(), 'pending', 'pending', now(), %s, %s, now(), now())
             RETURNING id
-        """, (0, worker_id, month_str, service_date, service_slot, assignment))
+        """, (
+            worker_id,
+            month_str,
+            service_date,
+            service_slot,
+            assignment,
+            'Admin',   # approved_by
+            'None'     # remarks
+        ))
+
         new_id = cur.fetchone()[0]
         connection.commit()
         return jsonify({"message": "Rota entry added", "id": new_id})
@@ -235,6 +245,43 @@ def rota_calendar():
     finally:
         cur.close()
 
+@app.route("/rota/save_availability", methods=["POST"])
+def save_rota_availability():
+    data = request.get_json()
+    worker_id = data.get("worker_id")
+    month = data.get("month")
+    availability = data.get("availability")  # list of day strings
+
+    if not worker_id or not month or not availability:
+        return jsonify({"error": "Missing parameters"}), 400
+
+    cur = connection.cursor()
+    try:
+        cur.execute("""
+            INSERT INTO public.agt_rota_availability (worker_id, "Month", availability)
+            VALUES (%s, %s, %s)
+        """, (worker_id, month, ", ".join(availability)))
+
+        connection.commit()
+        return jsonify({"message": "Availability saved successfully"}), 200
+    except Exception as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+
+@app.route("/rota/availabilities/<int:worker_id>")
+def get_availabilities(worker_id):
+    cur = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("""
+        SELECT "Month", availability
+        FROM public.agt_rota_availability
+        WHERE worker_id = %s
+        ORDER BY id DESC
+    """, (worker_id,))
+    rows = cur.fetchall()
+    cur.close()
+    return jsonify([{"month": r["Month"], "availability": r["availability"]} for r in rows])
 
 
 # =============================================================================
@@ -1008,11 +1055,13 @@ def update_user_details():
     data = request.get_json()
     email = data.get('email')
     updates = data.get('updates')
+    worker_updates = data.get('worker_updates')  # NEW
     if not email or not updates:
         return jsonify({'error': 'Missing parameters'}), 400
 
     cur = connection.cursor()
     try:
+        # --- Update User Table ---
         set_clause = ', '.join(f"{k} = %s" for k in updates.keys())
         values = list(updates.values()) + [email]
         cur.execute(f"""
@@ -1020,8 +1069,47 @@ def update_user_details():
             SET {set_clause}, updated_at = NOW()
             WHERE email = %s
         """, values)
+
+        # --- Update Worker Table (if present) ---
+        if worker_updates:
+            set_worker = ', '.join(f"{k} = %s" for k in worker_updates.keys())
+            vals_worker = list(worker_updates.values()) + [updates.get("id")]
+            cur.execute(f"""
+                UPDATE public."agt_workers_voluntiers_records"
+                SET {set_worker}, updated_at = NOW()
+                WHERE user_id = %s
+            """, vals_worker)
+
         connection.commit()
         return jsonify({'message': 'User record updated successfully'}), 200
+    except Exception as e:
+        connection.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cur.close()
+
+@app.route('/update_worker_details', methods=['POST'])
+def update_worker_details():
+    data = request.get_json()
+    worker_id = data.get('worker_id')
+    updates = data.get('updates')
+
+    if not worker_id or not updates:
+        return jsonify({'error': 'Missing parameters'}), 400
+
+    cur = connection.cursor()
+    try:
+        set_clause = ', '.join(f"{k} = %s" for k in updates.keys())
+        values = list(updates.values()) + [worker_id]
+
+        cur.execute(f"""
+            UPDATE public.agt_workers_voluntiers_records
+            SET {set_clause}, updated_at = NOW()
+            WHERE worker_id = %s
+        """, values)
+
+        connection.commit()
+        return jsonify({'message': 'Worker record updated successfully'}), 200
     except Exception as e:
         connection.rollback()
         return jsonify({'error': str(e)}), 500
@@ -1134,6 +1222,52 @@ def register_worker():
     finally:
         cur.close()
 
+@app.route("/get_rota/<int:worker_id>")
+def get_rota(worker_id):
+    cur = connection.cursor()
+    try:
+        cur.execute("""
+            SELECT month, service_date, service_slot, availability, assignment, approval_status
+            FROM public.agt_rota
+            WHERE worker_id = %s
+            ORDER BY service_date
+        """, (worker_id,))
+        rows = cur.fetchall()
+        return jsonify([
+            {
+                "month": r[0], "service_date": str(r[1]), "service_slot": r[2],
+                "availability": r[3], "assignment": r[4], "approval_status": r[5]
+            }
+            for r in rows
+        ])
+    finally:
+        cur.close()
+
+
+@app.route('/delete_record', methods=['POST'])
+def delete_record():
+    data = request.get_json()
+    delete_type = data.get("type")
+    user_id = data.get("user_id")
+    worker_id = data.get("worker_id")
+
+    cur = connection.cursor()
+    try:
+        if delete_type == "workers" and worker_id:
+            cur.execute("DELETE FROM public.agt_workers_voluntiers_records WHERE worker_id = %s", (worker_id,))
+        elif delete_type == "agt" and user_id:
+            cur.execute("DELETE FROM public.agt_user_data_records WHERE id = %s", (user_id,))
+            cur.execute("DELETE FROM public.agt_workers_voluntiers_records WHERE user_id = %s", (user_id,))
+        else:
+            return jsonify({"error": "Invalid request"}), 400
+
+        connection.commit()
+        return jsonify({"message": "Record deleted successfully"})
+    except Exception as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
 
 
 
