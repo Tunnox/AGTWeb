@@ -121,6 +121,82 @@
       from {opacity: 0; transform: translateY(20px);}
       to {opacity: 1; transform: translateY(0);}
     }
+
+    /* Collapsible sections */
+    .collapsible-btn {
+      background: var(--primary);
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      margin-top: 10px;
+      transition: background 0.3s ease;
+    }
+    .collapsible-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .collapsible-content {
+      display: none;
+      margin-top: 12px;
+      padding: 15px;
+      border-radius: 12px;
+      background: var(--bg);
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+    }
+
+    /* Delete Section */
+    .delete-section {
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 12px;
+      background: var(--card);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    .delete-section select, .delete-section button {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .delete-section button {
+      background: crimson;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    .delete-section button:hover {
+      background: darkred;
+    }
+    .warning {
+      color: crimson;
+      font-size: 14px;
+      margin-top: 12px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    /* ROTA Section */
+    .rota-entry {
+      background: var(--card);
+      border: 1px solid #e9ecef;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      font-size: 14px;
+    }
+    .rota-entry strong {
+      color: var(--primary-hover);
+    }
+
   </style>
 </head>
 <body>
@@ -131,12 +207,43 @@
     <div class="details" id="other-details"></div>
 
     <div id="worker-section" style="margin-top:20px;"></div>
+    <div id="rota-section" style="margin-top:20px;"></div>
+
+    <div id="rota-section" style="margin-top:20px;"></div>
+
+    <div class="delete-section">
+      <h3>🗑 Delete Your Record</h3>
+      <p>Select where to delete your record from:</p>
+      <select id="delete-option">
+        <option value="">-- Select Database --</option>
+        <option value="agt">AGT database</option>
+        <option value="workers">AGT Workers database</option>
+      </select>
+      <button onclick="handleDelete()">Delete</button>
+      <div id="delete-warning" class="warning"></div>
+    </div>
+
 
     <div>
       <button class="back-btn" onclick="window.location.href='/my_profile'">← Back to Login</button>
-      <button class="edit-btn" onclick="openEditModal()">✎ Edit</button>
+      <button class="edit-btn" onclick="openEditSelector()">✎ Edit</button>
+    </div>
+    
+  </div>
+
+  <!-- Edit Selector Modal -->
+<div id="edit-selector-modal" class="modal">
+  <div class="modal-content">
+    <h3>Edit Record</h3>
+    <p>Select which record you want to edit:</p>
+    <div class="modal-actions">
+      <button class="save-btn" onclick="openEditUserModal()">AGT Database</button>
+      <button class="save-btn" onclick="openEditWorkerModal()">Worker Database</button>
+      <button class="cancel-btn" onclick="closeEditSelector()">Cancel</button>
     </div>
   </div>
+</div>
+
 
   <!-- Edit Modal -->
   <div id="edit-modal" class="modal">
@@ -149,6 +256,19 @@
       </div>
     </div>
   </div>
+
+  <!-- Worker Edit Modal -->
+<div id="edit-worker-modal" class="modal">
+  <div class="modal-content">
+    <h3>Edit Worker Details</h3>
+    <form id="edit-worker-form"></form>
+    <div class="modal-actions">
+      <button type="button" class="cancel-btn" onclick="closeEditWorkerModal()">Cancel</button>
+      <button type="submit" class="save-btn" form="edit-worker-form">Save</button>
+    </div>
+  </div>
+</div>
+
 
   <!-- Worker Modal -->
   <div id="worker-modal" class="modal">
@@ -231,7 +351,7 @@
 
   // Display header and details
   const fullName = `${user.details.first_name} ${user.details.last_name}`;
-  document.getElementById("full-name").innerText = fullName;
+  document.getElementById("full-name").innerText = ` 👤${fullName}`;
 
   document.getElementById("contact-info").innerHTML = `
     <div><strong>Email:</strong> ${user.details.email}</div>
@@ -268,10 +388,11 @@
         and you can modify where needed.
       </p>
     `;
-  } else if (user.worker_approval_status === "approved") {
+    } else if (user.worker_approval_status === "approved") {
     workerSection.innerHTML = `
       <h3>Worker Details</h3>
-      <div class="details" id="worker-details"></div>
+      <button class="collapsible-btn" onclick="toggleWorkerDetail()">👤 Show Worker Detail</button>
+      <div id="worker-details" class="collapsible-content"></div>
     `;
     const workerDiv = document.getElementById("worker-details");
     const excludedWorker = ["id", "worker_id", "user_id", "created_at", "updated_at"];
@@ -283,6 +404,12 @@
       }
     }
   }
+
+  function toggleWorkerDetail() {
+    const div = document.getElementById("worker-details");
+    div.style.display = div.style.display === "none" ? "block" : "none";
+  }
+
 
 
   // Edit Modal Logic
@@ -417,6 +544,310 @@
           alert(data.error);
         }
       });
+
+      // --------- Selector Modal Logic ---------
+function openEditSelector() {
+  document.getElementById("edit-selector-modal").style.display = "flex";
+}
+function closeEditSelector() {
+  document.getElementById("edit-selector-modal").style.display = "none";
+}
+
+// --------- AGT User Edit (existing) ---------
+function openEditUserModal() {
+  closeEditSelector();
+  openEditModal(); // already defined
+}
+
+// --------- Worker Edit ---------
+function openEditWorkerModal() {
+  closeEditSelector();
+  const form = document.getElementById("edit-worker-form");
+  form.innerHTML = "";
+
+  if (!user.worker) {
+    form.innerHTML = "<p style='color:red'>You are not a worker.</p>";
+    return;
+  }
+
+  const workerFields = {
+    date_of_birth: "Date of Birth",
+    emergency_contact_name: "Emergency Contact Name",
+    emergency_contact_number: "Emergency Contact Number",
+    emergency_contact_relationship: "Emergency Contact Relationship",
+    role: "Role",
+    position_type: "Position Type",
+    department: "Department",
+    start_date: "Start Date",
+    dbs_check_date: "DBS Check Date",
+    dbs_certificate_number: "DBS Certificate Number",
+    safeguarding_training_date: "Safeguarding Training Date",
+    medical_conditions: "Medical Conditions",
+    consent: "Consent"
+  };
+
+  for (const [key, label] of Object.entries(workerFields)) {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("form-group");
+
+    const lbl = document.createElement("label");
+    lbl.setAttribute("for", key);
+    lbl.textContent = label;
+
+    let input;
+    if (key === "consent") {
+      input = document.createElement("input");
+      input.type = "checkbox";
+      input.id = key;
+      input.name = key;
+      input.checked = user.worker[key] === true || user.worker[key] === "true";
+    } else if (key.includes("date")) {
+      input = document.createElement("input");
+      input.type = "date";
+      input.id = key;
+      input.name = key;
+      input.value = user.worker[key] || "";
+    } else {
+      input = document.createElement("input");
+      input.type = "text";
+      input.id = key;
+      input.name = key;
+      input.value = user.worker[key] || "";
+    }
+
+    wrapper.appendChild(lbl);
+    wrapper.appendChild(input);
+    form.appendChild(wrapper);
+  }
+
+  document.getElementById("edit-worker-modal").style.display = "flex";
+}
+function closeEditWorkerModal() {
+  document.getElementById("edit-worker-modal").style.display = "none";
+}
+
+// --------- Submit Worker Form ---------
+document.getElementById("edit-worker-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const updates = {};
+  formData.forEach((v, k) => {
+    if (k === "consent") updates[k] = document.getElementById("consent").checked;
+    else updates[k] = v;
+  });
+
+  const res = await fetch("/update_worker_details", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ worker_id: user.worker.worker_id, updates })
+  });
+
+  const data = await res.json();
+  if (res.ok) {
+    alert("Worker details updated successfully!");
+    location.reload();
+  } else {
+    alert(data.error);
+  }
+});
+
 </script>
+<script>
+async function handleDelete() {
+  const choice = document.getElementById("delete-option").value;
+  const warningDiv = document.getElementById("delete-warning");
+  warningDiv.innerHTML = "";
+
+  if (choice === "workers") {
+    warningDiv.innerHTML = `
+      Are you sure you want to delete your record from the workers/volunteers database? 
+      This would mean that you are no longer interested in being a worker/volunteer at AGT.<br>
+      <button onclick="confirmDelete('workers')">Yes, please delete my record</button>
+    `;
+  } else if (choice === "agt") {
+    warningDiv.innerHTML = `
+      Are you sure you want to delete your record from the church database? 
+      This will also delete your record from the workers database if you are a worker/volunteer.<br>
+      <button onclick="confirmDelete('agt')">Yes, please delete my record</button>
+    `;
+  }
+}
+
+async function confirmDelete(type) {
+  const endpoint = "/delete_record";
+  const body = { type, user_id: user.details.id, worker_id: user.worker?.worker_id };
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  alert(data.message || data.error);
+  if (res.ok) window.location.href = "/my_profile";
+}
+</script>
+
+<script>
+if (user.worker && user.worker_approval_status === "approved") {
+  const rotaSection = document.getElementById("rota-section");
+  rotaSection.innerHTML = `
+    <h3>📅 ROTA</h3>
+    <button class="collapsible-btn" onclick="toggleAvailability()">Provide Your Availabilities</button>
+    <div id="availability-section" class="collapsible-content"></div>
+    <button class="collapsible-btn" onclick="loadRota()">Show ROTA</button>
+    <div id="rota-details" class="collapsible-content"></div>
+  `;
+}
+
+
+async function loadRota() {
+  const rotaDiv = document.getElementById("rota-details");
+  if (rotaDiv.style.display === "block") {
+    rotaDiv.style.display = "none"; return;
+  }
+  rotaDiv.innerHTML = "⏳ Loading...";
+  const res = await fetch(`/get_rota/${user.worker.worker_id}`);
+  const data = await res.json();
+  rotaDiv.innerHTML = "";
+  data.forEach(r => {
+    const row = document.createElement("div");
+    row.classList.add("rota-entry");
+    row.innerHTML = `
+      <strong>${r.month}</strong> - ${r.service_date}, ${r.service_slot}<br>
+      Availability: ${r.availability} | Assignment: ${r.assignment}<br>
+      Status: <em>${r.approval_status}</em>
+    `;
+    rotaDiv.appendChild(row);
+  });
+  rotaDiv.style.display = "block";
+}
+
+function toggleAvailability() {
+  const section = document.getElementById("availability-section");
+  if (section.style.display === "block") {
+    section.style.display = "none"; 
+    return;
+  }
+
+  // Render calendar UI with month/year selector
+  renderCalendar(new Date().getMonth(), new Date().getFullYear());
+  section.style.display = "block";
+}
+
+function renderCalendar(month, year) {
+  const section = document.getElementById("availability-section");
+
+  const monthNames = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+  ];
+
+  // Month selector
+  let monthOptions = "";
+  monthNames.forEach((m, idx) => {
+    monthOptions += `<option value="${idx}" ${idx === month ? "selected" : ""}>${m}</option>`;
+  });
+
+  // Year selector (current year → +5 future years)
+  const currentYear = new Date().getFullYear();
+  let yearOptions = "";
+  for (let y = currentYear; y <= currentYear + 5; y++) {
+    yearOptions += `<option value="${y}" ${y === year ? "selected" : ""}>${y}</option>`;
+  }
+
+  // Get first day of month + days count
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun, 1=Mon...
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Adjust Sunday=0 to appear last in Mon–Sun grid
+  const startDay = (firstDay === 0 ? 6 : firstDay - 1);
+
+  // Build calendar grid
+  let calendarHtml = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <select id="month-select">${monthOptions}</select>
+      <select id="year-select">${yearOptions}</select>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-weight:bold;margin-bottom:6px;">
+      <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;">
+  `;
+
+  // Empty slots before first day
+  for (let i = 0; i < startDay; i++) {
+    calendarHtml += `<div></div>`;
+  }
+
+  // Days of month
+  for (let d = 1; d <= daysInMonth; d++) {
+    calendarHtml += `
+      <label style="display:flex;flex-direction:column;align-items:center;font-size:12px;">
+        ${d}
+        <input type="checkbox" value="${d}" style="margin-top:4px;">
+      </label>
+    `;
+  }
+  calendarHtml += "</div><br><button class='save-btn' onclick='saveAvailability()'>Save Availability</button>";
+
+  section.innerHTML = calendarHtml;
+
+  // Bind dropdowns to re-render
+  document.getElementById("month-select").addEventListener("change", () => {
+    const newMonth = parseInt(document.getElementById("month-select").value, 10);
+    const newYear = parseInt(document.getElementById("year-select").value, 10);
+    renderCalendar(newMonth, newYear);
+  });
+  document.getElementById("year-select").addEventListener("change", () => {
+    const newMonth = parseInt(document.getElementById("month-select").value, 10);
+    const newYear = parseInt(document.getElementById("year-select").value, 10);
+    renderCalendar(newMonth, newYear);
+  });
+}
+
+async function saveAvailability() {
+  const monthIdx = parseInt(document.getElementById("month-select").value, 10);
+  const year = parseInt(document.getElementById("year-select").value, 10);
+  const monthName = new Date(year, monthIdx).toLocaleString("default", { month: "long" });
+
+  const checkboxes = document.querySelectorAll("#availability-section input[type=checkbox]:checked");
+  if (checkboxes.length === 0) {
+    alert("Please select at least one day");
+    return;
+  }
+
+  const availability = Array.from(checkboxes).map(cb => {
+    let day = parseInt(cb.value, 10);
+    let suffix = "th";
+    if (day % 10 === 1 && day !== 11) suffix = "st";
+    else if (day % 10 === 2 && day !== 12) suffix = "nd";
+    else if (day % 10 === 3 && day !== 13) suffix = "rd";
+    return `${day}${suffix}`;
+  });
+
+  const body = {
+    worker_id: user.worker.worker_id,
+    month: `${monthName} ${year}`,
+    availability: availability
+  };
+
+  const res = await fetch("/rota/save_availability", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(body)
+  });
+
+  const data = await res.json();
+  if (res.ok) {
+    alert("Availability saved successfully!");
+    document.getElementById("availability-section").style.display = "none";
+  } else {
+    alert(data.error);
+  }
+}
+
+
+</script>
+
 </body>
 </html>
