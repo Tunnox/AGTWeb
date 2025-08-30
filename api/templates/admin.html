@@ -101,10 +101,6 @@
     <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
     <div class="nav-links">
       <a href="/">Home</a>
-      <a href="/my_profile">My Profile</a>
-      <a href="https://www.rccgamazinggracesheffield.org/about-us/">About</a>
-      <a href="https://www.rccgamazinggracesheffield.org/contact/">Contact</a>
-      <a href="/login_admin">Admin Center</a>
     </div>
   </nav>
 
@@ -277,7 +273,8 @@
   </div>
 </div>
 
-<!-- ================= ROTA Section ================= -->
+<!-- ================= ROTA Section (REBUILT) ================= -->
+<!-- ================= ROTA Section (REBUILT without modal) ================= -->
 <section id="rota" data-aos="fade-up">
   <div class="glass-card">
     <h3>ROTA Management</h3>
@@ -286,47 +283,56 @@
     <input type="text" id="rotaSearchInput" class="form-control mb-3" placeholder="Search member...">
     <div id="rotaSearchResults"></div>
 
-    <!-- Add Rota Modal -->
-    <div class="modal fade" id="rotaModal" tabindex="-1">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content p-4">
-          <h4>Add Rota Entry</h4>
-          <form id="rotaForm">
-            <input type="hidden" id="rota_worker_id">
-
-            <div class="mb-3">
-              <label>Service Date</label>
-              <input type="date" id="rota_service_date" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-              <label>Service Slot</label>
-              <select id="rota_service_slot" class="form-select">
-                <option value="first service">First Service</option>
-                <option value="second service">Second Service</option>
-                <option value="both">Both</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label>Assignment</label>
-              <input type="text" id="rota_assignment" class="form-control">
-            </div>
-
-            <button type="submit" class="btn">Save</button>
-          </form>
-        </div>
+    <!-- Rota Entry Form (hidden until user is clicked) -->
+    <div id="rotaEntryContainer" class="mt-4 d-none">
+      <div id="rotaUserInfo" class="mb-3"></div>
+      <!-- Worker Availabilities -->
+      <div id="workerAvailabilities" class="mb-3 p-3 rounded" style="background: rgba(255,255,255,0.1); display:none;">
+        <h6>Saved Availabilities</h6>
+        <div id="availabilitiesList">Loading...</div>
       </div>
+      <form id="rotaForm" novalidate>
+        <input type="hidden" id="rota_worker_id">
+
+        <div class="mb-3">
+          <label class="form-label">Service Date</label>
+          <input type="date" id="rota_service_date" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Service Slot</label>
+          <select id="rota_service_slot" class="form-select" required>
+            <option value="first service">First Service</option>
+            <option value="second service">Second Service</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Assignment</label>
+          <input type="text" id="rota_assignment" class="form-control" placeholder="(optional)">
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="button" id="rotaCancelBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="rotaSaveBtn" class="btn">Save</button>
+        </div>
+      </form>
     </div>
 
     <!-- Calendar View -->
     <div class="mt-4">
-      <label>Select Department:</label>
+      <label for="rotaDepartment" class="form-label">Select Department:</label>
       <select id="rotaDepartment" class="form-select w-auto d-inline-block mb-3"></select>
       <div id="rotaCalendar"></div>
     </div>
   </div>
+  <div class="mt-2">
+      <button id="downloadCalendarBtn" class="btn d-none">📷 Download Calendar as JPG</button>
+    </div>
 </section>
+
+
 
 </main>
 
@@ -339,6 +345,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script>AOS.init({ duration: 800, once: true });</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 
   <script>
     // Optionally close nav when clicking a link
@@ -508,68 +516,190 @@
           });
       });
     });
+  </script>
 
+<script>
+(() => {
+  const rotaSearchInput = document.getElementById("rotaSearchInput");
+  const rotaSearchResults = document.getElementById("rotaSearchResults");
+  const rotaEntryContainer = document.getElementById("rotaEntryContainer");
+  const rotaUserInfo = document.getElementById("rotaUserInfo");
+  const rotaForm = document.getElementById("rotaForm");
+  const rotaCancelBtn = document.getElementById("rotaCancelBtn");
 
-    // Search user for rota
-document.getElementById("rotaSearchInput").addEventListener("input", function() {
-  const keyword = this.value.trim();
-  if (keyword.length < 2) return;
+  const rotaWorkerId = document.getElementById("rota_worker_id");
+  const rotaServiceDate = document.getElementById("rota_service_date");
+  const rotaServiceSlot = document.getElementById("rota_service_slot");
+  const rotaAssignment = document.getElementById("rota_assignment");
 
-  fetch("/rota/search_user", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ keyword })
-  })
-  .then(res => res.json())
-  .then(data => {
-    const resultsDiv = document.getElementById("rotaSearchResults");
-    resultsDiv.innerHTML = "";
-    data.forEach(user => {
-      const item = document.createElement("div");
-      item.className = "search-result-item";
-      item.textContent = `${user.first_name} ${user.last_name}`;
-      item.onclick = () => {
-        fetch(`/rota/get_worker/${user.id}`)
-          .then(res => res.json())
-          .then(worker => {
-            if (worker.worker_id) {
-              document.getElementById("rota_worker_id").value = worker.worker_id;
-              new bootstrap.Modal(document.getElementById("rotaModal")).show();
-            } else {
-              alert("This user is not a registered worker/volunteer.");
-            }
-          });
-      };
-      resultsDiv.appendChild(item);
+  // ---------------- Search + click user ----------------
+  rotaSearchInput.addEventListener("input", function () {
+    const keyword = this.value.trim();
+    if (keyword.length < 2) {
+      rotaSearchResults.innerHTML = "";
+      return;
+    }
+
+    fetch("/rota/search_user", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ keyword })
+    })
+      .then(res => res.json())
+      .then(data => {
+        rotaSearchResults.innerHTML = "";
+        data.forEach(user => {
+          const item = document.createElement("div");
+          item.className = "search-result-item";
+          item.textContent = `${user.first_name} ${user.last_name}`;
+          item.addEventListener("click", () => onPickUser(user));
+          rotaSearchResults.appendChild(item);
+        });
+      });
+  });
+
+  function onPickUser(user) {
+  fetch(`/rota/get_worker/${user.id}`)
+    .then(res => {
+      if (!res.ok) throw new Error("not worker");
+      return res.json();
+    })
+    .then(worker => {
+      rotaWorkerId.value = worker.worker_id;
+      rotaUserInfo.innerHTML = `
+        <h5>${user.first_name} ${user.last_name}</h5>
+        <p><strong>Department:</strong> ${worker.department || "N/A"}</p>
+      `;
+
+      // Fetch worker's saved availabilities
+      fetch(`/rota/availabilities/${worker.worker_id}`)
+        .then(res => res.json())
+        .then(avails => {
+          const availDiv = document.getElementById("workerAvailabilities");
+          const listDiv = document.getElementById("availabilitiesList");
+          listDiv.innerHTML = "";
+          if (avails.length === 0) {
+            listDiv.innerHTML = "<em>No availabilities submitted.</em>";
+          } else {
+            avails.forEach(a => {
+              const p = document.createElement("p");
+              p.innerHTML = `<strong>${a.month}</strong>: ${a.availability}`;
+              listDiv.appendChild(p);
+            });
+          }
+          availDiv.style.display = "block";
+        })
+        .catch(() => {
+          document.getElementById("workerAvailabilities").style.display = "none";
+        });
+
+      // Show form
+      rotaEntryContainer.classList.remove("d-none");
+      rotaSearchResults.innerHTML = "";
+      rotaSearchInput.value = "";
+    })
+    .catch(() => {
+      alert("This user is not a registered worker/volunteer.");
     });
+}
+
+
+  // ---------------- Cancel button ----------------
+  rotaCancelBtn.addEventListener("click", () => {
+    rotaForm.reset();
+    rotaEntryContainer.classList.add("d-none");
+  });
+
+  // ---------------- Save rota entry ----------------
+  rotaForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const payload = {
+      worker_id: rotaWorkerId.value,
+      service_date: rotaServiceDate.value,
+      service_slot: rotaServiceSlot.value,
+      assignment: rotaAssignment.value
+    };
+
+    fetch("/rota/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(resp => {
+        if (resp.error) throw new Error(resp.error);
+        alert(resp.message || "Rota entry added.");
+        rotaForm.reset();
+        rotaEntryContainer.classList.add("d-none");
+        loadRotaCalendar();
+      })
+      .catch(err => {
+        alert(err.message || "Failed to add rota entry.");
+      });
+  });
+
+  // ---------------- Calendar ----------------
+  function loadRotaCalendar() {
+    const dept = document.getElementById("rotaDepartment").value || "";
+    fetch(`/rota/calendar?department=${encodeURIComponent(dept)}`)
+      .then(res => res.json())
+      .then(data => {
+        const calendarDiv = document.getElementById("rotaCalendar");
+        calendarDiv.innerHTML = "";
+        let currentDate = "";
+        data.forEach(item => {
+          if (item.service_date !== currentDate) {
+            currentDate = item.service_date;
+            const dateHeader = document.createElement("h5");
+            dateHeader.textContent = `${item.service_date}`;
+            calendarDiv.appendChild(dateHeader);
+          }
+          const entry = document.createElement("p");
+          entry.innerHTML = `<strong>${item.first_name} ${item.last_name}</strong> (${item.role}) - ${item.service_slot} - ${item.assignment}`;
+          calendarDiv.appendChild(entry);
+        });
+        if (data.length === 0) {
+          calendarDiv.innerHTML = "<p>Select a department to view calendar.</p>";
+        }
+      });
+  }
+  window.loadRotaCalendar = loadRotaCalendar;
+
+  document.getElementById("rotaDepartment").addEventListener("change", loadRotaCalendar);
+
+  // Populate department dropdown
+  fetch("/rota/calendar")
+    .then(res => res.json())
+    .then(data => {
+      const depts = [...new Set(data.map(d => d.department).filter(Boolean))];
+      const dropdown = document.getElementById("rotaDepartment");
+      dropdown.innerHTML = `<option value="">Departments</option>`;
+      depts.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d;
+        dropdown.appendChild(opt);
+      });
+      loadRotaCalendar();
+    });
+})();
+
+const downloadBtn = document.getElementById("downloadCalendarBtn");
+const rotaCalendarDiv = document.getElementById("rotaCalendar");
+
+downloadBtn.addEventListener("click", () => {
+  html2canvas(rotaCalendarDiv).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "rota_calendar.jpg";
+    link.href = canvas.toDataURL("image/jpeg");
+    link.click();
   });
 });
 
-// Submit rota form
-document.getElementById("rotaForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const data = {
-    worker_id: document.getElementById("rota_worker_id").value,
-    service_date: document.getElementById("rota_service_date").value,
-    service_slot: document.getElementById("rota_service_slot").value,
-    assignment: document.getElementById("rota_assignment").value
-  };
-  fetch("/rota/add", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })
-  .then(res => res.json())
-  .then(resp => {
-    alert(resp.message);
-    bootstrap.Modal.getInstance(document.getElementById("rotaModal")).show();
-  });
-});
-
-// Load calendar by department
+// Show the button only when calendar is loaded
 function loadRotaCalendar() {
-  const dept = document.getElementById("rotaDepartment").value;
-  fetch(`/rota/calendar?department=${dept}`)
+  const dept = document.getElementById("rotaDepartment").value || "";
+  fetch(`/rota/calendar?department=${encodeURIComponent(dept)}`)
     .then(res => res.json())
     .then(data => {
       const calendarDiv = document.getElementById("rotaCalendar");
@@ -586,25 +716,10 @@ function loadRotaCalendar() {
         entry.innerHTML = `<strong>${item.first_name} ${item.last_name}</strong> (${item.role}) - ${item.service_slot} - ${item.assignment}`;
         calendarDiv.appendChild(entry);
       });
+      downloadBtn.classList.toggle("d-none", data.length === 0);
     });
 }
-document.getElementById("rotaDepartment").addEventListener("change", loadRotaCalendar);
 
-// Populate department dropdown dynamically
-fetch("/rota/calendar")
-  .then(res => res.json())
-  .then(data => {
-    const depts = [...new Set(data.map(d => d.department))];
-    const dropdown = document.getElementById("rotaDepartment");
-    dropdown.innerHTML = `<option value=\"\">All</option>`;
-    depts.forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d;
-      opt.textContent = d;
-      dropdown.appendChild(opt);
-    });
-  });
-
-  </script>
+</script>
 </body>
 </html>
