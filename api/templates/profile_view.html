@@ -9,15 +9,25 @@
     :root {
       --primary: #20c997;
       --primary-hover: #198754;
-      --bg: #f8f9fa;
-      --card: #ffffff;
-      --text: #212529;
+      --accent: #0dcaf0;
+      --bg-light: #f8f9fa;
+      --bg-dark: #12121c;
+      --card-light: #ffffff;
+      --card-dark: #1e1e2f;
+      --text-light: #212529;
+      --text-dark: #f8f9fa;
+    }
+
+    [data-theme="light"] {
+      --bg: var(--bg-light);
+      --card: var(--card-light);
+      --text: var(--text-light);
     }
 
     [data-theme="dark"] {
-      --bg: #1e1e2f;
-      --card: #2a2a3d;
-      --text: #f8f9fa;
+      --bg: var(--bg-dark);
+      --card: var(--card-dark);
+      --text: var(--text-dark);
     }
 
     body {
@@ -28,7 +38,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
+      padding: 20px;
       min-height: 100vh;
       background-image: url('https://github.com/Tunnox/Images/blob/main/AGT_profile_page_BG.jpg?raw=true');
       background-size: cover;
@@ -36,16 +46,71 @@
       backdrop-filter: blur(6px);
     }
 
+    .navbar {
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 15px 20px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      border-radius: 0 0 16px 16px;
+    }
+
+    [data-theme="dark"] .navbar { background-color: rgba(18, 18, 28, 0.85); }
+
+    .nav-brand {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      text-shadow: 0 0 6px rgba(32,201,151,0.6);
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--primary);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      background: rgba(32,201,151,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(32,201,151,0.3);
+      transform: translateY(-2px);
+    }
+
+    .theme-toggle {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+    }
+
     .card {
       background: var(--card);
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border-radius: 24px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.2);
       padding: 30px;
-      max-width: 600px;
+      max-width: 700px;
       width: 100%;
       text-align: center;
-      margin-top: 40px;
-      animation: fadeIn 0.4s ease;
+      margin-top: 30px;
+      animation: fadeInUp 0.6s ease both;
     }
 
     h2 { margin-bottom: 12px; }
@@ -60,15 +125,20 @@
       padding: 12px 20px;
       font-size: 16px;
       border: none;
-      border-radius: 10px;
-      background-color: var(--primary);
+      border-radius: 12px;
+      background: linear-gradient(45deg, var(--primary), var(--accent));
       color: white;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
     }
+
     .edit-btn { margin-left: 10px; }
-    .back-btn:hover, .edit-btn:hover { background-color: var(--primary-hover); }
+
+    .back-btn:hover, .edit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(32,201,151,0.35);
+    }
 
     /* Modal Styles */
     .modal {
@@ -85,59 +155,68 @@
     .modal-content {
       background: var(--card);
       padding: 24px;
-      border-radius: 16px;
+      border-radius: 20px;
       width: 90%;
-      max-width: 500px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      max-width: 520px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
       text-align: left;
       max-height: 90vh;
       overflow-y: auto;
+      animation: fadeInUp 0.4s ease both;
     }
 
     .modal-content h3 { margin-top: 0; }
-    .modal-actions { text-align: right; margin-top: 10px; }
+    .modal-actions { text-align: right; margin-top: 15px; }
     .modal-actions button {
       padding: 10px 16px;
       margin-left: 10px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-weight: bold;
       cursor: pointer;
     }
-    .save-btn { background-color: var(--primary); color: white; }
-    .cancel-btn { background-color: #dee2e6; color: #333; }
+    .save-btn { background: var(--primary); color: white; }
+    .cancel-btn { background: #dee2e6; color: #333; }
 
     /* Form Styling */
     .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
     .form-group label { font-weight: 600; margin-bottom: 5px; }
-    .form-group input, .form-group textarea {
-      padding: 10px;
+    .form-group input, .form-group textarea, .form-group select {
+      padding: 12px;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 8px rgba(13,202,240,0.4);
+      background: #fff;
     }
 
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(20px);}
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(30px);}
       to {opacity: 1; transform: translateY(0);}
     }
 
     /* Collapsible sections */
     .collapsible-btn {
-      background: var(--primary);
+      background: linear-gradient(45deg, var(--primary), var(--accent));
       color: white;
-      padding: 10px 16px;
+      padding: 12px 18px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
       width: 100%;
       text-align: left;
-      margin-top: 10px;
-      transition: background 0.3s ease;
+      margin-top: 15px;
+      transition: all 0.3s ease;
     }
     .collapsible-btn:hover {
-      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(32,201,151,0.3);
     }
 
     .collapsible-content {
@@ -146,23 +225,24 @@
       padding: 15px;
       border-radius: 12px;
       background: var(--bg);
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
     }
 
     /* Delete Section */
     .delete-section {
       margin-top: 25px;
-      padding: 15px;
-      border-radius: 12px;
+      padding: 20px;
+      border-radius: 16px;
       background: var(--card);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      text-align: left;
     }
     .delete-section select, .delete-section button {
-      padding: 10px 14px;
-      border-radius: 8px;
+      padding: 12px 14px;
+      border-radius: 10px;
       border: 1px solid #ccc;
-      margin-top: 10px;
-      font-size: 14px;
+      margin-top: 12px;
+      font-size: 15px;
     }
     .delete-section button {
       background: crimson;
@@ -170,36 +250,35 @@
       border: none;
       cursor: pointer;
       font-weight: 600;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
     }
-    .delete-section button:hover {
-      background: darkred;
-    }
-    .warning {
-      color: crimson;
-      font-size: 14px;
-      margin-top: 12px;
-      font-weight: 600;
-      line-height: 1.5;
-    }
+    .delete-section button:hover { background: darkred; }
+    .warning { color: crimson; font-size: 14px; margin-top: 12px; font-weight: 600; line-height: 1.5; }
 
     /* ROTA Section */
     .rota-entry {
       background: var(--card);
       border: 1px solid #e9ecef;
       border-radius: 12px;
-      padding: 12px;
+      padding: 14px;
       margin-bottom: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       font-size: 14px;
     }
-    .rota-entry strong {
-      color: var(--primary-hover);
-    }
-
+    .rota-entry strong { color: var(--primary-hover); }
   </style>
 </head>
 <body>
+  <nav class="navbar">
+    <div class="nav-brand">AGT Sheffield</div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div class="nav-links">
+        <a href="/">Home</a>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">🌗 Theme</button>
+    </div>
+  </nav>
+
   <div class="card">
     <h2 id="full-name"></h2>
     <div id="contact-info" class="details"></div>
@@ -207,8 +286,6 @@
     <div class="details" id="other-details"></div>
 
     <div id="worker-section" style="margin-top:20px;"></div>
-    <div id="rota-section" style="margin-top:20px;"></div>
-
     <div id="rota-section" style="margin-top:20px;"></div>
 
     <div class="delete-section">
@@ -223,129 +300,29 @@
       <div id="delete-warning" class="warning"></div>
     </div>
 
-
     <div>
       <button class="back-btn" onclick="window.location.href='/my_profile'">← Back to Login</button>
       <button class="edit-btn" onclick="openEditSelector()">✎ Edit</button>
     </div>
-    
   </div>
 
-  <!-- Edit Selector Modal -->
-<div id="edit-selector-modal" class="modal">
-  <div class="modal-content">
-    <h3>Edit Record</h3>
-    <p>Select which record you want to edit:</p>
-    <div class="modal-actions">
-      <button class="save-btn" onclick="openEditUserModal()">AGT Database</button>
-      <button class="save-btn" onclick="openEditWorkerModal()">Worker Database</button>
-      <button class="cancel-btn" onclick="closeEditSelector()">Cancel</button>
-    </div>
-  </div>
-</div>
+  <script>
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
 
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
 
-  <!-- Edit Modal -->
-  <div id="edit-modal" class="modal">
-    <div class="modal-content">
-      <h3>Edit User Details</h3>
-      <form id="edit-form"></form>
-      <div class="modal-actions">
-        <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
-        <button type="submit" class="save-btn" form="edit-form">Save</button>
-      </div>
-    </div>
-  </div>
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+  </script>
 
-  <!-- Worker Edit Modal -->
-<div id="edit-worker-modal" class="modal">
-  <div class="modal-content">
-    <h3>Edit Worker Details</h3>
-    <form id="edit-worker-form"></form>
-    <div class="modal-actions">
-      <button type="button" class="cancel-btn" onclick="closeEditWorkerModal()">Cancel</button>
-      <button type="submit" class="save-btn" form="edit-worker-form">Save</button>
-    </div>
-  </div>
-</div>
-
-
-  <!-- Worker Modal -->
-  <div id="worker-modal" class="modal">
-    <div class="modal-content">
-      <h3>Register as Worker</h3>
-      <form id="worker-form">
-        <input type="hidden" name="user_id" id="worker-user-id">
-
-        <div class="form-group">
-          <label for="date_of_birth">Date of Birth</label>
-          <input type="date" id="date_of_birth" name="date_of_birth" required>
-        </div>
-        <div class="form-group">
-          <label for="emergency_contact_name">Emergency Contact Name</label>
-          <input type="text" id="emergency_contact_name" name="emergency_contact_name" required>
-        </div>
-        <div class="form-group">
-          <label for="emergency_contact_number">Emergency Contact Number</label>
-          <input type="text" id="emergency_contact_number" name="emergency_contact_number" required>
-        </div>
-        <div class="form-group">
-          <label for="emergency_contact_relationship">Emergency Contact Relationship</label>
-          <input type="text" id="emergency_contact_relationship" name="emergency_contact_relationship" required>
-        </div>
-        <div class="form-group">
-          <label for="role">Role</label>
-          <input type="text" id="role" name="role" required>
-        </div>
-        <div class="form-group">
-          <label for="position_type">Position Type</label>
-          <select id="position_type" name="position_type" required>
-            <option value="Worker">Worker</option>
-            <option value="Volunteer">Volunteer</option>
-            <option value="Adhoc">Adhoc</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="department">Department</label>
-          <select id="department" name="department" required>
-            <option value="Choir">Choir</option>
-            <option value="Ushering">Ushering</option>
-            <option value="Technical">Technical</option>
-            <option value="Security">Security</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="start_date">Start Date</label>
-          <input type="date" id="start_date" name="start_date" required>
-        </div>
-        <div class="form-group">
-          <label for="dbs_check_date">DBS Check Date</label>
-          <input type="date" id="dbs_check_date" name="dbs_check_date">
-        </div>
-        <div class="form-group">
-          <label for="dbs_certificate_number">DBS Certificate Number</label>
-          <input type="text" id="dbs_certificate_number" name="dbs_certificate_number">
-        </div>
-        <div class="form-group">
-          <label for="safeguarding_training_date">Safeguarding Training Date</label>
-          <input type="date" id="safeguarding_training_date" name="safeguarding_training_date">
-        </div>
-        <div class="form-group">
-          <label for="medical_conditions">Medical Conditions</label>
-          <textarea id="medical_conditions" name="medical_conditions"></textarea>
-        </div>
-        <div class="form-group">
-          <label><input type="checkbox" id="consent" name="consent"> Consent</label>
-        </div>
-
-        <div class="modal-actions">
-          <button type="button" class="cancel-btn" onclick="closeWorkerModal()">Cancel</button>
-          <button type="submit" class="save-btn">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
+  <!-- Rest of your JS remains unchanged -->
 <script>
   const user = JSON.parse(localStorage.getItem('loggedInUser'));
 
@@ -848,6 +825,5 @@ async function saveAvailability() {
 
 
 </script>
-
 </body>
 </html>
