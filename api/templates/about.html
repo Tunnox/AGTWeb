@@ -24,20 +24,26 @@
     header p { font-size: 18px; }
 
     /* Tabs Navigation */
-    .tabs { display: flex; justify-content: center; gap: 16px; margin: 30px 0; flex-wrap: wrap; }
-    .tab-btn { padding: 12px 20px; border: none; border-radius: 8px; background: #04395E; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .tabs { display: flex; justify-content: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn { flex: 0 0 auto; padding: 10px 18px; border: none; border-radius: 20px; background: #04395E; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap; }
     .tab-btn:hover, .tab-btn.active { background: #20c997; transform: translateY(-2px); }
 
-    /* Tab Content */
-    .tab-content { max-width: 900px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); display: none; animation: fadeIn 0.5s ease; }
-    .tab-content.active { display: block; }
+    /* Swipeable Content */
+    .tab-wrapper { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+    .tab-content { min-width: 100%; scroll-snap-align: start; flex-shrink: 0; max-width: 900px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); opacity: 0; transform: translateX(30px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .tab-content.active { opacity: 1; transform: translateX(0); }
     .tab-content h2 { color: #04395E; margin-bottom: 15px; }
     .tab-content p, .tab-content ul { line-height: 1.6; font-size: 16px; color: #444; margin-bottom: 12px; }
 
-    @keyframes fadeIn { from { opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
-
     /* Footer */
     footer { margin-top: auto; background: #04395E; color: white; text-align: center; padding: 20px; }
+
+    @media (max-width: 768px) {
+      header h1 { font-size: 28px; }
+      header p { font-size: 16px; }
+      .tab-content { padding: 20px; border-radius: 8px; }
+    }
   </style>
 </head>
 <body>
@@ -60,60 +66,62 @@
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab-btn active" data-target="who">What it is</button>
-    <button class="tab-btn" data-target="what">How can you use it</button>
+    <button class="tab-btn" data-target="what">How you can use it</button>
     <button class="tab-btn" data-target="policies">Our Policies</button>
     <button class="tab-btn" data-target="best">Best Practices</button>
     <button class="tab-btn" data-target="security">Data Protection & Security</button>
     <button class="tab-btn" data-target="contact">Contact Us</button>
   </div>
 
-  <!-- Content Sections -->
-  <section id="who" class="tab-content active">
-    <h2>What it is</h2>
-    <p>The AGT Web App is a secure digital platform created for Amazing Grace Tabernacle, Sheffield. It is designed to make it easier to collect, store, and access church records in a structured and responsible way. Through this platform, members and leaders can connect, share information, and manage church activities while ensuring that data is handled with fairness and transparency.</p>
-  </section>
+  <!-- Swipeable Content -->
+  <div class="tab-wrapper">
+    <section id="who" class="tab-content active">
+      <h2>What it is</h2>
+      <p>The AGT Web App is a secure digital platform created for Amazing Grace Tabernacle, Sheffield. It is designed to make it easier to collect, store, and access church records in a structured and responsible way. Through this platform, members and leaders can connect, share information, and manage church activities while ensuring that data is handled with fairness and transparency.</p>
+    </section>
 
-  <section id="what" class="tab-content">
-    <h2>How can you use AGT app</h2>
-    <p>Members can log in to update and manage their own personal information, register attendance at services and events, access sermons and resources, and submit prayer requests or join community groups.</p>
-    <p>Church administrators and leaders can manage membership databases, schedule and track events, oversee donations and giving records, and communicate announcements safely and effectively.</p>
-  </section>
+    <section id="what" class="tab-content">
+      <h2>How can you use AGT app</h2>
+      <p>Members can log in to update and manage their own personal information, register attendance at services and events, access sermons and resources, and submit prayer requests or join community groups.</p>
+      <p>Church administrators and leaders can manage membership databases, schedule and track events, oversee donations and giving records, and communicate announcements safely and effectively.</p>
+    </section>
 
-  <section id="policies" class="tab-content">
-    <h2>Our Policies</h2>
-    <ul>
-      <li><strong>UK GDPR compliance</strong> — ensuring personal data is processed lawfully, fairly, and transparently.</li>
-      <li><strong>Consent and stewardship</strong> — members always know how their information is used, and no data is shared without permission.</li>
-      <li><strong>Role-based access</strong> — only authorized personnel can access sensitive records.</li>
-      <li><strong>Accountability</strong> — all church data is managed under the oversight of the AGT Admin Centre.</li>
-    </ul>
-  </section>
+    <section id="policies" class="tab-content">
+      <h2>Our Policies</h2>
+      <ul>
+        <li><strong>UK GDPR compliance</strong> — ensuring personal data is processed lawfully, fairly, and transparently.</li>
+        <li><strong>Consent and stewardship</strong> — members always know how their information is used, and no data is shared without permission.</li>
+        <li><strong>Role-based access</strong> — only authorized personnel can access sensitive records.</li>
+        <li><strong>Accountability</strong> — all church data is managed under the oversight of the AGT Admin Centre.</li>
+      </ul>
+    </section>
 
-  <section id="best" class="tab-content">
-    <h2>Best Practices</h2>
-    <ul>
-      <li>Using strong, unique passwords.</li>
-      <li>Updating your personal details regularly to keep records accurate.</li>
-      <li>Avoiding sharing login credentials with others.</li>
-      <li>Reporting any suspicious or incorrect data to church administrators immediately.</li>
-      <li>Practicing respect and integrity in communication within community groups.</li>
-    </ul>
-  </section>
+    <section id="best" class="tab-content">
+      <h2>Best Practices</h2>
+      <ul>
+        <li>Using strong, unique passwords.</li>
+        <li>Updating your personal details regularly to keep records accurate.</li>
+        <li>Avoiding sharing login credentials with others.</li>
+        <li>Reporting any suspicious or incorrect data to church administrators immediately.</li>
+        <li>Practicing respect and integrity in communication within community groups.</li>
+      </ul>
+    </section>
 
-  <section id="security" class="tab-content">
-    <h2>Data Protection & Security</h2>
-    <ul>
-      <li>All records are backed up securely and encrypted to prevent loss.</li>
-      <li>Access is controlled through roles (Admin, Leader, Member, Guest).</li>
-      <li>Regular audits and monitoring are carried out to ensure compliance.</li>
-      <li>In case of errors or breaches, procedures are in place for rapid response and correction.</li>
-    </ul>
-  </section>
+    <section id="security" class="tab-content">
+      <h2>Data Protection & Security</h2>
+      <ul>
+        <li>All records are backed up securely and encrypted to prevent loss.</li>
+        <li>Access is controlled through roles (Admin, Leader, Member, Guest).</li>
+        <li>Regular audits and monitoring are carried out to ensure compliance.</li>
+        <li>In case of errors or breaches, procedures are in place for rapid response and correction.</li>
+      </ul>
+    </section>
 
-  <section id="contact" class="tab-content">
-    <h2>Contact Us</h2>
-    <p>Email: info@agt-sheffield.org<br> Phone: +44 123 456 789<br> Address: 120 SYAC Building, Wicker, Sheffield</p>
-  </section>
+    <section id="contact" class="tab-content">
+      <h2>Contact Us</h2>
+      <p>Email: info@agt-sheffield.org<br> Phone: +44 123 456 789<br> Address: 120 SYAC Building, Wicker, Sheffield</p>
+    </section>
+  </div>
 
   <!-- Footer -->
   <footer>
@@ -123,14 +131,32 @@
   <script>
     const tabButtons = document.querySelectorAll(".tab-btn");
     const contents = document.querySelectorAll(".tab-content");
+    const wrapper = document.querySelector(".tab-wrapper");
 
     tabButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         tabButtons.forEach(b => b.classList.remove("active"));
-        contents.forEach(c => c.classList.remove("active"));
-
         btn.classList.add("active");
-        document.getElementById(btn.dataset.target).classList.add("active");
+
+        const target = document.getElementById(btn.dataset.target);
+        wrapper.scrollTo({ left: target.offsetLeft, behavior: "smooth" });
+
+        contents.forEach(c => c.classList.remove("active"));
+        target.classList.add("active");
+      });
+    });
+
+    // Sync active state on scroll (for swipe)
+    wrapper.addEventListener("scroll", () => {
+      let index = Math.round(wrapper.scrollLeft / wrapper.clientWidth);
+      contents.forEach((c, i) => {
+        if (i === index) {
+          c.classList.add("active");
+          tabButtons[i].classList.add("active");
+        } else {
+          c.classList.remove("active");
+          tabButtons[i].classList.remove("active");
+        }
       });
     });
   </script>
