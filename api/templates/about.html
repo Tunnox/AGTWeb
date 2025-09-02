@@ -9,7 +9,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #212529; min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* Navbar (copied from main) */
+    /* Navbar */
     .navbar { background-color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
     .nav-brand { font-size: 20px; font-weight: bold; color: #04395E; }
     .nav-links { display: flex; gap: 12px; }
@@ -32,7 +32,7 @@
     .tab-content { max-width: 900px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); display: none; animation: fadeIn 0.5s ease; }
     .tab-content.active { display: block; }
     .tab-content h2 { color: #04395E; margin-bottom: 15px; }
-    .tab-content p { line-height: 1.6; font-size: 16px; color: #444; }
+    .tab-content p, .tab-content ul { line-height: 1.6; font-size: 16px; color: #444; margin-bottom: 12px; }
 
     @keyframes fadeIn { from { opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
 
@@ -53,7 +53,7 @@
   <header>
     <div class="header-content">
       <h1>About AGT Web Application</h1>
-      <p>Learn more about AGT app; What it is, how it is used, AGT Policies on using the app and much more</p>
+      <p>Learn more about AGT app; What it is, how it is used, AGT Policies, Data Protection, and much more</p>
     </div>
   </header>
 
@@ -63,28 +63,51 @@
     <button class="tab-btn" data-target="what">How can you use it</button>
     <button class="tab-btn" data-target="policies">Our Policies</button>
     <button class="tab-btn" data-target="best">Best Practices</button>
+    <button class="tab-btn" data-target="security">Data Protection & Security</button>
     <button class="tab-btn" data-target="contact">Contact Us</button>
   </div>
 
   <!-- Content Sections -->
   <section id="who" class="tab-content active">
     <h2>What it is</h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Integer luctus, est at rhoncus porta, eros urna vulputate justo, vitae tristique libero neque nec nisi.</p>
+    <p>The AGT Web App is a secure digital platform created for Amazing Grace Tabernacle, Sheffield. It is designed to make it easier to collect, store, and access church records in a structured and responsible way. Through this platform, members and leaders can connect, share information, and manage church activities while ensuring that data is handled with fairness and transparency.</p>
   </section>
 
   <section id="what" class="tab-content">
     <h2>How can you use AGT app</h2>
-    <p>Aliquam erat volutpat. Donec ullamcorper, orci nec tempor bibendum, lorem elit porttitor est, nec dictum nulla lectus in mi. Sed blandit nisl nec tincidunt finibus.</p>
+    <p>Members can log in to update and manage their own personal information, register attendance at services and events, access sermons and resources, and submit prayer requests or join community groups.</p>
+    <p>Church administrators and leaders can manage membership databases, schedule and track events, oversee donations and giving records, and communicate announcements safely and effectively.</p>
   </section>
 
   <section id="policies" class="tab-content">
     <h2>Our Policies</h2>
-    <p>Praesent ac sem nec erat commodo egestas. Proin commodo lorem sed libero bibendum, vel aliquet libero mattis. Donec a neque in nulla fermentum tempus.</p>
+    <ul>
+      <li><strong>UK GDPR compliance</strong> — ensuring personal data is processed lawfully, fairly, and transparently.</li>
+      <li><strong>Consent and stewardship</strong> — members always know how their information is used, and no data is shared without permission.</li>
+      <li><strong>Role-based access</strong> — only authorized personnel can access sensitive records.</li>
+      <li><strong>Accountability</strong> — all church data is managed under the oversight of the AGT Admin Centre.</li>
+    </ul>
   </section>
 
   <section id="best" class="tab-content">
     <h2>Best Practices</h2>
-    <p>Morbi ullamcorper efficitur nisi nec luctus. Vestibulum aliquam felis sit amet eros varius, nec facilisis lorem bibendum. Phasellus a sem nec nunc commodo viverra.</p>
+    <ul>
+      <li>Using strong, unique passwords.</li>
+      <li>Updating your personal details regularly to keep records accurate.</li>
+      <li>Avoiding sharing login credentials with others.</li>
+      <li>Reporting any suspicious or incorrect data to church administrators immediately.</li>
+      <li>Practicing respect and integrity in communication within community groups.</li>
+    </ul>
+  </section>
+
+  <section id="security" class="tab-content">
+    <h2>Data Protection & Security</h2>
+    <ul>
+      <li>All records are backed up securely and encrypted to prevent loss.</li>
+      <li>Access is controlled through roles (Admin, Leader, Member, Guest).</li>
+      <li>Regular audits and monitoring are carried out to ensure compliance.</li>
+      <li>In case of errors or breaches, procedures are in place for rapid response and correction.</li>
+    </ul>
   </section>
 
   <section id="contact" class="tab-content">
@@ -113,7 +136,3 @@
   </script>
 </body>
 </html>
-
-
-
-
