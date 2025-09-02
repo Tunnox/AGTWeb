@@ -148,6 +148,57 @@
       margin: 0 auto;
       line-height: 1.6;
     }
+    /* General Mobile-Friendly Adjustments */
+    img, iframe, video {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    section {
+      padding: 40px 15px; /* less padding on small screens */
+    }
+    
+    h1, h2, h3 {
+      word-wrap: break-word;
+    }
+    
+    /* Responsive Tab Buttons (about.html only) */
+    @media (max-width: 768px) {
+      .tabs {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .tab-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+    
+    /* Responsive Navbar */
+    @media (max-width: 768px) {
+      .nav-links {
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        display: none;
+      }
+      .nav-links.open {
+        display: flex;
+      }
+      .nav-toggle {
+        display: block;
+        font-size: 24px;
+        background: #04395E;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -245,4 +296,5 @@
 
 </body>
 </html>
+
 
