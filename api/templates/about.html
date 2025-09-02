@@ -98,6 +98,31 @@
     /* ensure touch gestures behave and arrows are definitely on top */
     .viewport { touch-action: pan-y; } /* allow vertical scrolling inside slides, lets browser handle vertical pans */
     .arrow { z-index: 999; pointer-events: auto; } /* ensure arrows are above and clickable */
+    /* image styles — scales and stays contained on all devices */
+    .slide-image{
+      display:block;
+      width:100%;
+      max-width:720px;           /* visual max width inside the card */
+      height:auto;
+      max-height:40vmin;         /* ensures image won’t overflow tall mobile screens */
+      object-fit:contain;        /* preserves aspect ratio; use 'cover' for full-bleed crop */
+      margin:0 auto 16px auto;
+      border-radius:10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.06);
+      opacity:0;
+      transform:translateY(6px);
+      transition:opacity .45s ease, transform .45s ease;
+    }
+    
+    /* visible state after lazyload and when slide is active */
+    .slide-image.visible{
+      opacity:1;
+      transform:none;
+    }
+    
+    /* keep H2 readable by screen readers */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
   </style>
 </head>
 <body>
@@ -316,10 +341,46 @@
     });
     ro.observe(viewport);
 
+    // helper: reveal image for current slide
+function revealSlideImage(idx){
+  // all slide images
+  const imgs = Array.from(document.querySelectorAll('.slide-image'));
+  imgs.forEach((img, i) => {
+    if(i === idx){
+      // if not yet loaded, set src from data-src for lazy load
+      if(!img.getAttribute('src') && img.dataset.src){
+        img.setAttribute('src', img.dataset.src);
+      }
+      // small timeout to ensure paint, then add visible for fade-in
+      requestAnimationFrame(()=> img.classList.add('visible'));
+    } else {
+      // hide image on non-active slides
+      img.classList.remove('visible');
+      // optionally you can remove src to free memory on very large galleries
+      // but keeping them helps quick re-visit. Uncomment to remove:
+      // img.removeAttribute('src');
+    }
+  });
+}
+
+// call revealSlideImage inside your go() function after changing slide index:
+function go(i){
+  index = (i + slides.length) % slides.length;
+  track.style.transform = `translateX(-${index*100}%)`;
+  dots.forEach((d,di)=>d.classList.toggle('active', di===index));
+  slides[index].focus({preventScroll:true});
+  viewport.setAttribute('aria-label', `${slides[index].dataset.title} (slide ${index+1} of ${slides.length})`);
+
+  // NEW: reveal the image for this slide (lazy load + fade-in)
+  revealSlideImage(index);
+}
+
+
     // Initial announce
     go(0);
   </script>
 </body>
 </html>
+
 
 
