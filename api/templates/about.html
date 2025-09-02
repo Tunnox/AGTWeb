@@ -95,6 +95,9 @@
       .track{transition:none}
       .arrow.bubbling{animation:none}
     }
+    /* ensure touch gestures behave and arrows are definitely on top */
+    .viewport { touch-action: pan-y; } /* allow vertical scrolling inside slides, lets browser handle vertical pans */
+    .arrow { z-index: 999; pointer-events: auto; } /* ensure arrows are above and clickable */
   </style>
 </head>
 <body>
@@ -258,17 +261,52 @@
     });
 
     // Touch/drag swipe support
-    let startX=null, dx=0;
-    viewport.addEventListener('pointerdown', (e)=>{ startX=e.clientX; dx=0; viewport.setPointerCapture(e.pointerId); });
-    viewport.addEventListener('pointermove', (e)=>{
-      if(startX!==null){ dx = e.clientX - startX; }
-    });
-    viewport.addEventListener('pointerup', ()=>{
-      if(startX!==null){
-        if(Math.abs(dx)>42){ dx>0? prev(): next(); }
-        startX=null; dx=0;
+    // --- swipe / pointer handling (robust, avoids swallowing button clicks) ---
+    let startX = null, dx = 0;
+    let activePointerId = null;
+    
+    viewport.addEventListener('pointerdown', (e) => {
+      // If the user started the pointer on an interactive control, ignore for swipe
+      // (this prevents setPointerCapture from interfering with clicks on arrows, dots, etc.)
+      if (e.target.closest('.arrow') || e.target.closest('.dot') || e.target.closest('button')) return;
+    
+      startX = e.clientX;
+      dx = 0;
+      activePointerId = e.pointerId;
+      try {
+        viewport.setPointerCapture(activePointerId);
+      } catch (err) {
+        // some browsers may throw if capture fails — safely ignore
+        activePointerId = null;
       }
     });
+    
+    viewport.addEventListener('pointermove', (e) => {
+      if (startX !== null) {
+        dx = e.clientX - startX;
+      }
+    });
+    
+    function endPointer(e) {
+      // If pointer was never captured for swipe, just reset
+      if (startX === null) return;
+    
+      // Only consider it a swipe if movement threshold reached
+      if (Math.abs(dx) > 42) {
+        dx > 0 ? prev() : next();
+      }
+      // release capture if we took it
+      if (activePointerId !== null) {
+        try { viewport.releasePointerCapture(activePointerId); } catch (err) {}
+        activePointerId = null;
+      }
+      startX = null;
+      dx = 0;
+    }
+    
+    viewport.addEventListener('pointerup', endPointer);
+    viewport.addEventListener('pointercancel', endPointer);
+
 
     // Resize guard (keeps each slide contained)
     const ro = new ResizeObserver(()=>{
@@ -282,3 +320,4 @@
   </script>
 </body>
 </html>
+
