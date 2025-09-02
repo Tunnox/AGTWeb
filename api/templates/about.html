@@ -305,7 +305,20 @@ html, body {
 
     let index = 0;
 
-    // Build dots
+    
+// --- sizing + transform helpers to ensure each slide fits the viewport ---
+function sizeSlides(){
+  const w = viewport.clientWidth;
+  slides.forEach(s => { s.style.width = w + 'px'; });
+  track.style.width = (w * slides.length) + 'px';
+}
+
+function applyTransform(){
+  const w = viewport.clientWidth;
+  track.style.transform = `translateX(-${index * w}px)`;
+}
+
+// Build dots
     slides.forEach((_, i)=>{
       const d = document.createElement('button');
       d.className = 'dot' + (i===0? ' active':'');
@@ -315,9 +328,16 @@ html, body {
     });
     const dots = Array.from(dotsWrap.children);
 
-    function go(i){
-      index = (i + slides.length) % slides.length;
-      track.style.transform = `translateX(-${index*100}%)`;
+    
+function go(i){
+  index = (i + slides.length) % slides.length;
+  applyTransform();
+  dots.forEach((d,di)=>d.classList.toggle('active', di===index));
+  slides[index].focus({preventScroll:true});
+  viewport.setAttribute('aria-label', `${slides[index].dataset.title} (slide ${index+1} of ${slides.length})`);
+  revealSlideImage(index);
+}
+%)`;
       dots.forEach((d,di)=>d.classList.toggle('active', di===index));
 
       // Move bubbling emphasis mostly towards the direction of travel
@@ -390,13 +410,10 @@ html, body {
 
 
     // Resize guard (keeps each slide contained)
-    const ro = new ResizeObserver(()=>{
-      // Force re-translate to current slide so track width changes don’t misalign
-      track.style.transform = `translateX(-${index*100}%)`;
-    });
-    ro.observe(viewport);
-
-    // helper: reveal image for current slide
+    const ro = new ResizeObserver(()=>{ sizeSlides(); applyTransform(); });
+ro.observe(viewport);
+window.addEventListener('resize', ()=>{ sizeSlides(); applyTransform(); });
+// helper: reveal image for current slide
 function revealSlideImage(idx){
   // all slide images
   const imgs = Array.from(document.querySelectorAll('.slide-image'));
@@ -419,9 +436,7 @@ function revealSlideImage(idx){
 }
 
 // call revealSlideImage inside your go() function after changing slide index:
-function go(i){
-  index = (i + slides.length) % slides.length;
-  track.style.transform = `translateX(-${index*100}%)`;
+%)`;
   dots.forEach((d,di)=>d.classList.toggle('active', di===index));
   slides[index].focus({preventScroll:true});
   viewport.setAttribute('aria-label', `${slides[index].dataset.title} (slide ${index+1} of ${slides.length})`);
@@ -432,6 +447,7 @@ function go(i){
 
 
     // Initial announce
+    sizeSlides();
     go(0);
   </script>
 </body>
