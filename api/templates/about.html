@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | AGT Amazing Grace Tabernacle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #212529; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Navbar (copied from main) */
+    .navbar { background-color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .nav-brand { font-size: 20px; font-weight: bold; color: #04395E; }
+    .nav-links { display: flex; gap: 12px; }
+    .nav-links a { text-decoration: none; color: #04395E; padding: 8px 14px; border-radius: 6px; font-weight: 600; transition: all 0.3s; }
+    .nav-links a:hover { background-color: #20c997; color: white; transform: scale(1.05); }
+
+    /* Hero Section */
+    header { background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center/cover; color: white; text-align: center; padding: 60px 20px; position: relative; }
+    header::after { content:""; position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
+    header .header-content { position: relative; z-index: 2; max-width: 800px; margin: auto; }
+    header h1 { font-size: 36px; margin-bottom: 10px; }
+    header p { font-size: 18px; }
+
+    /* Tabs Navigation */
+    .tabs { display: flex; justify-content: center; gap: 16px; margin: 30px 0; flex-wrap: wrap; }
+    .tab-btn { padding: 12px 20px; border: none; border-radius: 8px; background: #04395E; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .tab-btn:hover, .tab-btn.active { background: #20c997; transform: translateY(-2px); }
+
+    /* Tab Content */
+    .tab-content { max-width: 900px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); display: none; animation: fadeIn 0.5s ease; }
+    .tab-content.active { display: block; }
+    .tab-content h2 { color: #04395E; margin-bottom: 15px; }
+    .tab-content p { line-height: 1.6; font-size: 16px; color: #444; }
+
+    @keyframes fadeIn { from { opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+
+    /* Footer */
+    footer { margin-top: auto; background: #04395E; color: white; text-align: center; padding: 20px; }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">AGT Sheffield</div>
+    <div class="nav-links">
+      <a href="main.html">Home</a>
+      <a href="about.html" class="active">About</a>
+      <a href="/my_profile">My Profile</a>
+      <a href="/login_admin">Admin Center</a>
+      <a href="https://www.rccgamazinggracesheffield.org/">AGT web</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header>
+    <div class="header-content">
+      <h1>About Amazing Grace Tabernacle</h1>
+      <p>Learn more about who we are, what we do, and our mission</p>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-target="who">Who We Are</button>
+    <button class="tab-btn" data-target="what">What We Do</button>
+    <button class="tab-btn" data-target="policies">Our Policies</button>
+    <button class="tab-btn" data-target="best">Best Practices</button>
+    <button class="tab-btn" data-target="contact">Contact Us</button>
+  </div>
+
+  <!-- Content Sections -->
+  <section id="who" class="tab-content active">
+    <h2>Who We Are</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Integer luctus, est at rhoncus porta, eros urna vulputate justo, vitae tristique libero neque nec nisi.</p>
+  </section>
+
+  <section id="what" class="tab-content">
+    <h2>What We Do</h2>
+    <p>Aliquam erat volutpat. Donec ullamcorper, orci nec tempor bibendum, lorem elit porttitor est, nec dictum nulla lectus in mi. Sed blandit nisl nec tincidunt finibus.</p>
+  </section>
+
+  <section id="policies" class="tab-content">
+    <h2>Our Policies</h2>
+    <p>Praesent ac sem nec erat commodo egestas. Proin commodo lorem sed libero bibendum, vel aliquet libero mattis. Donec a neque in nulla fermentum tempus.</p>
+  </section>
+
+  <section id="best" class="tab-content">
+    <h2>Best Practices</h2>
+    <p>Morbi ullamcorper efficitur nisi nec luctus. Vestibulum aliquam felis sit amet eros varius, nec facilisis lorem bibendum. Phasellus a sem nec nunc commodo viverra.</p>
+  </section>
+
+  <section id="contact" class="tab-content">
+    <h2>Contact Us</h2>
+    <p>Email: info@agt-sheffield.org<br> Phone: +44 123 456 789<br> Address: 120 SYAC Building, Wicker, Sheffield</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love
+  </footer>
+
+  <script>
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const contents = document.querySelectorAll(".tab-content");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        contents.forEach(c => c.classList.remove("active"));
+
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.target).classList.add("active");
+      });
+    });
+  </script>
+</body>
+</html>
