@@ -47,23 +47,25 @@
 </head>
 <body>
 
-  <header>
+  <nav class="navbar">
+    <div class="nav-brand">AGT Sheffield</div>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/my_profile">My Profile</a>
+      <a href="/login_admin">Admin Center</a>
+      <a href="https://www.rccgamazinggracesheffield.org/">AGT web</a>
+    </div>
+  </nav>
+  
+<header>
     <div class="header-content">
       <div class="header-text">
         <h2>RCCG Amazing Grace Tabernacle Sheffield</h2>
-        <h3>Web Application</h3>
-        <p>Under development. Not all features are fully implemented. For any feedback, please contact the church admin.</p>
-        <div id="datetime" class="datetime-display"></div>
+        <p>Welcome to our digital platform for worship, community, and service.</p>
       </div>
     </div>
   </header>
-
-  <nav>
-    <a href="/about">About App</a>
-    <a href="/my_profile">My Profile</a>
-    <a href="/login_admin">Admin Center</a>
-    <a href="https://www.rccgamazinggracesheffield.org/">AGT Web</a>
-  </nav>
 
   <section id="intro">
     <h2>Welcome</h2>
@@ -140,6 +142,7 @@
 
 </body>
 </html>
+
 
 
 
