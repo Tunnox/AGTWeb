@@ -49,6 +49,10 @@ def index():
 def home_index():
     return render_template('main.html')
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 @app.route('/admin')
 def admin_page():
     return render_template('admin.html')
@@ -1277,3 +1281,4 @@ def delete_record():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
