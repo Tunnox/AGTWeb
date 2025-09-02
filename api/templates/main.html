@@ -3,69 +3,540 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AGT Sheffield</title>
+  <title>AGT Amazing Grace Tabernacle</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #212529; display: flex; flex-direction: column; min-height: 100vh; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    /* Navbar */
-    .navbar { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 15px 20px; position: sticky; top: 0; z-index: 999; display: flex; justify-content: space-between; align-items: center; }
-    .nav-brand { font-size: 20px; font-weight: bold; color: #04395E; }
-    .nav-toggle { display: none; font-size: 24px; cursor: pointer; background: #04395E; border: none; border-radius: 6px; padding: 8px 12px; color: white; }
-    .nav-links { display: flex; gap: 12px; }
-    .nav-links a { text-decoration: none; color: #04395E; padding: 8px 14px; border-radius: 6px; font-weight: 600; transition: all 0.3s ease; }
-    .nav-links a:hover { background-color: #20c997; color: white; transform: scale(1.05); }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f9fa;
+      color: #212529;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    .navbar {
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 15px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      font-size: 20px;
+      font-weight: bold;
+      color: #04395E;
+    }
+
+    .nav-toggle {
+      display: none;
+      font-size: 24px;
+      cursor: pointer;
+      background-color: #12213d; /* Primary button color */
+      border: none;
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    
+    .nav-toggle:hover {
+      background-color: #12213d; /* Darker green on hover */
+      transform: scale(1.05);
+    }
+
+
+    .nav-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #04395E;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      background-color: #20c997;
+      color: white;
+      transform: scale(1.05);
+    }
 
     @media (max-width: 768px) {
-      .nav-links { flex-direction: column; position: absolute; top: 60px; right: 20px; background: #fff; width: 220px; border-radius: 8px; padding: 10px; display: none; }
-      .nav-links.open { display: flex; }
-      .nav-toggle { display: block; }
+      .nav-links {
+        flex-direction: column;
+        background-color: #fff;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        width: 200px;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: none;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
     }
 
-    /* Hero */
-    header { background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center/cover; color: white; padding: 60px 20px; position: relative; text-align: center; }
-    header::after { content: ''; position: absolute; inset: 0; background-color: rgba(0, 0, 0, 0.6); z-index: 1; }
-    .header-content { position: relative; z-index: 2; max-width: 900px; margin: auto; }
-    .header-text h2 { font-size: 28px; margin-bottom: 10px; }
-    .header-text p { font-size: 16px; }
+    /* Header Styles - Updated for Mobile Friendliness */
+header {
+  background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center center / cover;
+  color: white;
+  padding: 40px 20px; /* reduced from 80px */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
 
-    @media (max-width: 576px) {
-      .header-text h2 { font-size: 22px; }
-      .header-text p { font-size: 14px; }
+header::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-content img {
+  height: 60px; /* reduced from 100px */
+}
+
+.header-text h2 {
+  font-size: 24px; /* smaller heading */
+  margin-bottom: 8px;
+}
+
+.header-text p {
+  font-size: 14px; /* smaller paragraph */
+}
+
+/* Responsive Header for Mobile */
+@media (max-width: 768px) {
+  header {
+    padding: 30px 15px;
+  }
+
+  .header-content img {
+    height: 50px;
+  }
+
+  .header-text h2 {
+    font-size: 20px;
+  }
+
+  .header-text p {
+    font-size: 13px;
+  }
+}
+    section {
+      padding: 60px 20px;
+      text-align: center;
     }
 
-    /* General Sections */
-    section { padding: 50px 20px; text-align: center; }
-    img, iframe, video { max-width: 100%; height: auto; border-radius: 8px; }
+    .gallery {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 20px;
+    }
 
-    /* Footer */
-    footer { background-color: #04395E; color: white; padding: 20px; text-align: center; margin-top: auto; }
+    .gallery img {
+      height: 200px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    iframe {
+      width: 90%;
+      max-width: 800px;
+      height: 450px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    footer {
+      background-color: #04395E;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    a.button-link {
+      background-color: #20c997;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 6px;
+      display: inline-block;
+      transition: background 0.3s ease;
+    }
+
+    a.button-link:hover {
+      background-color: #198754;
+    }
+
+    .datetime-display {
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #17a2b8;
+        background-color: #f1f3f5;
+        padding: 6px 12px;
+        border-radius: 8px;
+        display: inline-block;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+      [data-theme="dark"] .datetime-display {
+        background-color: #2a2a3d;
+        color: #20c997;
+      }
+    /* General Mobile-Friendly Adjustments */
+img, iframe, video {
+  max-width: 100%;
+  height: auto;
+}
+
+section {
+  padding: 40px 15px; /* less padding on small screens */
+}
+
+h1, h2, h3 {
+  word-wrap: break-word;
+}
+
+/* Responsive Tab Buttons (about.html only) */
+@media (max-width: 768px) {
+  .tabs {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tab-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Responsive Navbar */
+@media (max-width: 768px) {
+  .nav-links {
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    display: none;
+  }
+  .nav-links.open {
+    display: flex;
+  }
+  .nav-toggle {
+    display: block;
+    font-size: 24px;
+    background: #04395E;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+}
   </style>
 </head>
 <body>
 
   <nav class="navbar">
     <div class="nav-brand">AGT Sheffield</div>
-    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <button class="nav-toggle" aria-label="Toggle navigation menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
     <div class="nav-links">
       <a href="/">Home</a>
       <a href="/my_profile">My Profile</a>
+      <!--<a href="/units">Departments</a>-->
       <a href="/login_admin">Admin Center</a>
+      <!--<a href="https://www.rccgamazinggracesheffield.org/about-us/">About</a>-->
+      <!--<a href="https://www.rccgamazinggracesheffield.org/contact/">Contact</a>-->
       <a href="https://www.rccgamazinggracesheffield.org/">AGT web</a>
     </div>
   </nav>
+
+  <header>
+  <div class="header-content">
+    <!--<img src="https://github.com/Tunnox/Images/blob/main/newlogo.png?raw=true" alt="Church Logo">-->
+    <div class="header-text">
+      <h2>RCCG Amazing Grace Tabernacle Sheffield</h2>
+      <h3>Web App</h3>
+      <p>Under development. Not all features are fully implemented. For any feedback, please contact the church admin.</p>
+      <div id="datetime" class="datetime-display"></div>
+    </div>
+  </div>
+    <script>
+  function updateDateTime() {
+    const now = new Date();
+    const options = {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    };
+    const formatted = now.toLocaleString('en-US', options);
+    document.getElementById('datetime').textContent = formatted.replace(',', ' ·');
+  }
+
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+</script>
+</header>
   
-<header>
+
+
+  <section id="intro">
+    <h2>Welcome</h2>
+    <p>We are a vibrant church community based in Sheffield, dedicated to worship, outreach, and transformation through God’s grace.</p>
+  </section>
+
+  <!-- Attendacne-->
+  <!-- General Attendance Section -->
+<!-- General Attendance Section -->
+<section id="Take_attendacne" class="py-5">
+  <h2 class="section-title mb-4 text-center">Register Attendance</h2>
+    <p>If you have not registered your details and consent to AGT storing and processing your data following UK GDPR, please speak to Admin</p>
+    <p style="text-align:center;">Contact <strong>Admin</strong> to register your details.</p>
+  <div class="section-card p-4 shadow rounded bg-white" style="max-width: 600px; margin: auto;">
+    <input type="text" id="attendanceSearchInput" class="form-control mb-3 shadow-sm" placeholder="🔍 Search by name...">
+    <div id="attendanceSearchResults" class="d-flex flex-column gap-2"></div>
+
+    <div id="selectedRecord" class="glass-card d-none mt-4 p-4 rounded shadow" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); border: 1px solid #ddd;">
+      <h5 id="selectedName" class="mb-2 fw-bold"></h5>
+      <p id="selectedContact" class="mb-4 text-muted"></p>
+
+      <!-- Alert shown only if already marked -->
+      <div id="attendanceAlreadyMarked" class="alert alert-warning py-2 px-3 d-none mb-4" role="alert"></div>
+
+      <!-- Mark + Submit only visible when appropriate -->
+      <div id="attendanceActions" class="d-none">
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="checkbox" id="markPresent">
+          <label class="form-check-label" for="markPresent">Mark as Present</label>
+        </div>
+        <div class="text-center">
+          <button class="btn btn-success btn-lg px-5" id="submitAttendance">Submit Attendance</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  #attendanceSearchInput {
+    width: 100%;
+    font-size: 1.15rem;<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AGT Sheffield</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f9fa;
+      color: #212529;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center center / cover;
+      color: white;
+      padding: 60px 20px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-text h2 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .header-text p { font-size: 16px; }
+
+    /* Navigation */
+    nav {
+      background: #fff;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      padding: 15px 20px;
+      animation: slideDown 1s ease;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #04395E;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+      background: #20c997;
+      color: #fff;
+      transform: translateY(-3px);
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    section { padding: 60px 20px; text-align: center; }
+
+    footer {
+      background: #04395E;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    footer .social-icons {
+      margin-top: 12px;
+    }
+
+    footer a {
+      color: white;
+      margin: 0 10px;
+      font-size: 22px;
+      transition: color 0.3s;
+    }
+
+    footer a:hover { color: #20c997; }
+
+    .datetime-display {
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #17a2b8;
+      background-color: #f1f3f5;
+      padding: 6px 12px;
+      border-radius: 8px;
+      display: inline-block;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    #intro {
+      text-align: center;
+      padding: 80px 20px;
+      background: linear-gradient(135deg, #fdfcfb, #e2d1c3);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    #intro h2 {
+      font-family: 'Monoton', cursive;
+      font-size: 80px;
+      color: #3a1c71;
+      margin-bottom: 20px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    #intro p {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
     <div class="header-content">
       <div class="header-text">
         <h2>RCCG Amazing Grace Tabernacle Sheffield</h2>
-        <p>Welcome to our digital platform for worship, community, and service.</p>
+        <h3>Web Application</h3>
+        <p>Under development. Not all features are fully implemented. For any feedback, please contact the church admin.</p>
+        <div id="datetime" class="datetime-display"></div>
       </div>
     </div>
   </header>
+
+  <nav>
+    <a href="/about">About App</a>
+    <a href="/my_profile">My Profile</a>
+    <a href="/login_admin">Admin Center</a>
+    <a href="https://www.rccgamazinggracesheffield.org/">AGT Web</a>
+  </nav>
 
   <section id="intro">
     <h2>Welcome</h2>
@@ -147,3 +618,406 @@
 
 
 
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    transition: box-shadow 0.2s ease;
+  }
+
+  #attendanceSearchInput:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    border-color: #28a745;
+  }
+
+  #attendanceSearchResults .search-result-item {
+    padding: 14px 20px;
+    font-size: 1.05rem;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  }
+
+  #attendanceSearchResults .search-result-item:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+  }
+
+  .form-check-input {
+    width: 1.4em;
+    height: 1.4em;
+    margin-top: 0.3em;
+    cursor: pointer;
+  }
+
+  .form-check-label {
+    font-size: 1.05rem;
+    margin-left: 0.5em;
+    user-select: none;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid #ddd;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #submitAttendance {
+    transition: background 0.3s ease;
+  }
+
+  #submitAttendance:hover {
+    background: linear-gradient(135deg, #f8f9fa, #f8f9fa);
+  }
+
+  @media (max-width: 576px) {
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    #attendanceSearchInput {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<script>
+const attendanceSearchInput = document.getElementById('attendanceSearchInput');
+const searchResults = document.getElementById('attendanceSearchResults');
+const selectedCard = document.getElementById('selectedRecord');
+const attendanceAlert = document.getElementById('attendanceAlreadyMarked');
+let selectedUser = null;
+
+attendanceSearchInput.addEventListener('input', async function () {
+  const keyword = this.value.trim();
+  if (keyword.length < 2) return;
+
+  const res = await fetch(`/attendance/search_user?keyword=${encodeURIComponent(keyword)}`);
+  const data = await res.json();
+
+  searchResults.innerHTML = '';
+  selectedCard.classList.add('d-none');
+
+  data.forEach(record => {
+    const fullName = `${record.first_name} ${record.last_name}`;
+    const div = document.createElement('div');
+    div.className = 'search-result-item';
+    div.innerText = fullName;
+    div.onclick = async () => {
+      selectedUser = {
+        name: fullName,
+        contact: record.contact_number
+      };
+
+      document.getElementById('selectedName').innerText = fullName;
+      document.getElementById('selectedContact').innerText = `📞 Contact: ${record.contact_number || 'N/A'}`;
+      selectedCard.classList.remove('d-none');
+      searchResults.innerHTML = ''; // hide search results
+
+      const checkbox = document.getElementById('markPresent');
+      const alertBox = document.getElementById('attendanceAlreadyMarked');
+      const actionsBox = document.getElementById('attendanceActions');
+
+      // Reset everything
+      checkbox.checked = false;
+      checkbox.disabled = false;
+      alertBox.classList.add('d-none');
+      alertBox.innerText = '';
+      actionsBox.classList.remove('d-none'); // Show the tick + button by default
+
+      // Check attendance status
+      const check = await fetch('/attendance/record_entry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: selectedUser.name,
+          contact: selectedUser.contact
+        })
+      }).then(r => r.json());
+
+      if (check.present) {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+        alertBox.innerText = check.message || "Already marked present.";
+        alertBox.classList.remove('d-none');
+      }
+    };
+    searchResults.appendChild(div);
+  });
+});
+
+document.getElementById('submitAttendance').addEventListener('click', async () => {
+  const checkbox = document.getElementById('markPresent');
+  if (!selectedUser || !checkbox.checked) {
+    alert("Please select a person and tick the attendance box.");
+    return;
+  }
+
+  const res = await fetch('/attendance/record_entry', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: selectedUser.name,
+      contact: selectedUser.contact
+    })
+  });
+
+  const data = await res.json();
+  alert(data.message || data.error);
+  selectedCard.classList.add('d-none');
+  attendanceSearchInput.value = '';
+  searchResults.innerHTML = '';
+});
+</script>
+
+<!-- END-->
+
+ <section id="youtube" style="padding:60px 20px; text-align:center; background:#f1f3f5;">
+  <h2 style="color:#04395E; font-size:28px; margin-bottom:10px;">
+    Watch Our Services Live
+  </h2>
+  <div id="live-badge" style="display:none; margin:0 auto 16px;">
+    <span style="
+      background:red; color:white; padding:4px 12px; border-radius:20px;
+      font-weight:bold; font-size:14px; box-shadow:0 0 10px red;
+      animation:pulse 1.5s infinite;">
+      🔴 LIVE NOW
+    </span>
+  </div>
+  <div id="video-container" style="
+      max-width:960px; margin:auto; border-radius:12px;
+      overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,0.1);">
+    <!-- iframe loaded dynamically -->
+  </div>
+  <div style="margin-top:24px;">
+    <a href="https://www.youtube.com/@rccgamazinggracetabernacleshef"
+       id="channel-btn"
+       target="_blank"
+       style="
+         display:inline-block; background:#20c997; color:white;
+         padding:12px 24px; border-radius:8px;
+         font-weight:600; font-size:16px;
+         box-shadow:0 4px 12px rgba(0,0,0,0.15);
+         text-decoration:none;
+         transition:background 0.3s;">
+      🎥 Visit Our YouTube Channel
+    </a>
+  </div>
+  <style>
+    @keyframes pulse {
+      0%   { box-shadow:0 0 10px red; }
+      50%  { box-shadow:0 0 20px rgba(255,0,0,0.8); }
+      100% { box-shadow:0 0 10px red; }
+    }
+    @media (max-width:768px) {
+      iframe { height:300px; }
+    }
+  </style>
+</section>
+
+<script>
+  const API_KEY = 'AIzaSyCUje6cESol5xUVas5fJAJ4f9J1ZdhfZdg';
+  const CHANNEL_ID = 'UCGe7vFfJGv9w8aCBOC9JgbA';
+  const container = document.getElementById('video-container');
+  const badge = document.getElementById('live-badge');
+
+  async function loadVideo() {
+    try {
+      const liveRes = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}` +
+        `&eventType=live&type=video&key=${API_KEY}`
+      ).then(r => r.json());
+
+      let vidId = null;
+
+      if (liveRes.items && liveRes.items.length > 0) {
+        vidId = liveRes.items[0].id.videoId;
+        badge.style.display = 'block';
+      } else {
+        const recent = await fetch(
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}` +
+          `&order=date&type=video&maxResults=1&key=${API_KEY}`
+        ).then(r => r.json());
+
+        if (recent.items && recent.items.length > 0) {
+          vidId = recent.items[0].id.videoId;
+        }
+      }
+
+      if (!vidId) {
+        container.innerHTML = `<p style="color:red; padding:20px;">No live or recent videos found on the channel.</p>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <iframe
+          width="100%" height="540"
+          src="https://www.youtube.com/embed/${vidId}?autoplay=1&mute=1"
+          frameborder="0" allow="autoplay; encrypted-media"
+          allowfullscreen loading="lazy"
+          title="YouTube Video">
+        </iframe>`;
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = `<p style="color:red; padding:20px;">Error loading YouTube video. Please try again later.</p>`;
+    }
+  }
+
+  loadVideo();
+</script>
+
+  <section id="posters" style="padding:60px 20px; background:#f8f9fa;">
+  <h2 style="text-align:center; color:#04395E; font-size:28px; margin-bottom:24px;">
+    📅 Upcoming Events
+  </h2>
+
+  <div class="scroll-gallery">
+    <div class="scroll-wrapper" id="gallery-track">
+      <!-- Poster Images (duplicated for seamless loop) -->
+      <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250703_133334000_iOS.jpg?raw=true" alt="Poster 1">
+      <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250712_075353000_iOS.jpg?raw=true" alt="Poster 2">
+      <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250719_085940000_iOS.jpg?raw=true" alt="Poster 3">
+
+      <!-- Duplicate Set for 360 Loop -->
+      <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250703_133334000_iOS.jpg?raw=true" alt="Poster 1 duplicate">
+      <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250712_075353000_iOS.jpg?raw=true" alt="Poster 2 duplicate">
+      <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250719_085940000_iOS.jpg?raw=true" alt="Poster 3 duplicate">
+    </div>
+  </div>
+
+  <style>
+    .scroll-gallery {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .scroll-wrapper {
+      display: flex;
+      gap: 24px;
+      animation: scrollLoop 10s linear infinite;
+    }
+
+    .scroll-wrapper img {
+      height: 240px;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .scroll-wrapper img:hover {
+      transform: scale(1.06);
+    }
+
+    @keyframes scrollLoop {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @media (max-width: 768px) {
+      .scroll-wrapper img {
+        height: 180px;
+      }
+    }
+  </style>
+</section>
+
+
+  <section id="announcements">
+    <h2>Announcements</h2>
+    <p>Check here for upcoming programs, church-wide news, and more updates weekly.</p>
+  </section>
+
+  <section id="location" style="padding: 60px 20px; background-color: #eef2f5; text-align: center;">
+  <h2 style="font-size: 28px; color: #04395E; margin-bottom: 10px;">Find Us</h2>
+  <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+    RCCG Amazing Grace Tabernacle<br>
+    120 SYAC Building, Wicker, Sheffield, S3 8JD
+  </p>
+
+  <!-- Embedded Map -->
+  <div style="max-width: 960px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <iframe
+      width="100%" height="400"
+      loading="lazy"
+      style="border:0;"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade"
+      src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAGTqfjT333p5iz5e32tMdsNz7P31265Fo&q=RCCG+Amazing+Grace+Tabernacle+SYAC+Building+Sheffield">
+    </iframe>
+  </div>
+
+  <!-- Get Directions Button -->
+  <div style="margin-top: 24px;">
+    <button onclick="getDirections()" style="
+      background-color: #20c997;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: background 0.3s ease;
+    " onmouseover="this.style.backgroundColor='#198754'" onmouseout="this.style.backgroundColor='#20c997'">
+      📍 Locate Me & Get Directions
+    </button>
+  </div>
+
+  <p id="map-status" style="margin-top: 10px; font-size: 14px; color: #666;"></p>
+
+  <script>
+    function getDirections() {
+      const statusEl = document.getElementById('map-status');
+      if (!navigator.geolocation) {
+        statusEl.textContent = "Geolocation is not supported by your browser.";
+        return;
+      }
+
+      statusEl.textContent = "Locating...";
+
+      navigator.geolocation.getCurrentPosition(success => {
+        const userLat = success.coords.latitude;
+        const userLng = success.coords.longitude;
+
+        const destination = encodeURIComponent("RCCG Amazing Grace Tabernacle, 120 SYAC Building, Wicker, Sheffield, S3 8JD");
+        const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${destination}&travelmode=driving`;
+
+        window.open(directionsUrl, '_blank');
+        statusEl.textContent = "";
+      }, () => {
+        statusEl.textContent = "Unable to retrieve your location. Please allow location access.";
+      });
+    }
+  </script>
+</section>
+
+
+  <section id="giving">
+    <h2>Giving & Donations</h2>
+    <p>Your generous giving supports our mission. <a class="button-link" href="#">Click here to give online</a></p>
+    <p> This is still under development. <strong>DO NOT USE</strong> for now</p>
+  </section>
+
+  <footer>
+    &copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love
+  </footer>
+
+  <script>
+    // Optionally close nav when clicking a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>
