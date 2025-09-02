@@ -9,145 +9,40 @@
   <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #212529; display: flex; flex-direction: column; min-height: 100vh; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f8f9fa;
-      color: #212529;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+    /* Navbar */
+    .navbar { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 15px 20px; position: sticky; top: 0; z-index: 999; display: flex; justify-content: space-between; align-items: center; }
+    .nav-brand { font-size: 20px; font-weight: bold; color: #04395E; }
+    .nav-toggle { display: none; font-size: 24px; cursor: pointer; background: #04395E; border: none; border-radius: 6px; padding: 8px 12px; color: white; }
+    .nav-links { display: flex; gap: 12px; }
+    .nav-links a { text-decoration: none; color: #04395E; padding: 8px 14px; border-radius: 6px; font-weight: 600; transition: all 0.3s ease; }
+    .nav-links a:hover { background-color: #20c997; color: white; transform: scale(1.05); }
+
+    @media (max-width: 768px) {
+      .nav-links { flex-direction: column; position: absolute; top: 60px; right: 20px; background: #fff; width: 220px; border-radius: 8px; padding: 10px; display: none; }
+      .nav-links.open { display: flex; }
+      .nav-toggle { display: block; }
     }
 
-    header {
-      background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center center / cover;
-      color: white;
-      padding: 60px 20px;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-
-    header::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0, 0, 0, 0.6);
-      z-index: 1;
-    }
-
-    .header-content {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .header-text h2 {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
+    /* Hero */
+    header { background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center/cover; color: white; padding: 60px 20px; position: relative; text-align: center; }
+    header::after { content: ''; position: absolute; inset: 0; background-color: rgba(0, 0, 0, 0.6); z-index: 1; }
+    .header-content { position: relative; z-index: 2; max-width: 900px; margin: auto; }
+    .header-text h2 { font-size: 28px; margin-bottom: 10px; }
     .header-text p { font-size: 16px; }
 
-    /* Navigation */
-    nav {
-      background: #fff;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      padding: 15px 20px;
-      animation: slideDown 1s ease;
-      position: sticky;
-      top: 0;
-      z-index: 999;
+    @media (max-width: 576px) {
+      .header-text h2 { font-size: 22px; }
+      .header-text p { font-size: 14px; }
     }
 
-    nav a {
-      text-decoration: none;
-      color: #04395E;
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
+    /* General Sections */
+    section { padding: 50px 20px; text-align: center; }
+    img, iframe, video { max-width: 100%; height: auto; border-radius: 8px; }
 
-    nav a:hover {
-      background: #20c997;
-      color: #fff;
-      transform: translateY(-3px);
-    }
-
-    @keyframes slideDown {
-      from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    section { padding: 60px 20px; text-align: center; }
-
-    footer {
-      background: #04395E;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      margin-top: auto;
-    }
-
-    footer .social-icons {
-      margin-top: 12px;
-    }
-
-    footer a {
-      color: white;
-      margin: 0 10px;
-      font-size: 22px;
-      transition: color 0.3s;
-    }
-
-    footer a:hover { color: #20c997; }
-
-    .datetime-display {
-      margin-top: 10px;
-      font-size: 16px;
-      font-weight: 500;
-      color: #17a2b8;
-      background-color: #f1f3f5;
-      padding: 6px 12px;
-      border-radius: 8px;
-      display: inline-block;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    #intro {
-      text-align: center;
-      padding: 80px 20px;
-      background: linear-gradient(135deg, #fdfcfb, #e2d1c3);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    }
-
-    #intro h2 {
-      font-family: 'Monoton', cursive;
-      font-size: 80px;
-      color: #3a1c71;
-      margin-bottom: 20px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-    }
-
-    #intro p {
-      font-family: 'Poppins', sans-serif;
-      font-size: 22px;
-      color: #333;
-      max-width: 800px;
-      margin: 0 auto;
-      line-height: 1.6;
-    }
+    /* Footer */
+    footer { background-color: #04395E; color: white; padding: 20px; text-align: center; margin-top: auto; }
   </style>
 </head>
 <body>
@@ -245,6 +140,7 @@
 
 </body>
 </html>
+
 
 
 
