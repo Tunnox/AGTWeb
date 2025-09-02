@@ -1,165 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About AGT App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About AGT App — Slideshow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #212529; min-height: 100vh; display: flex; flex-direction: column; }
+    :root{
+      --brand:#04395E;
+      --accent:#20c997;
+      --bg:#f8f9fa;
+      --text:#212529;
+      --card:#ffffff;
+      --shadow:0 6px 18px rgba(0,0,0,.08);
+      --radius:14px;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      display:flex;flex-direction:column;
+    }
 
     /* Navbar */
-    .navbar { background-color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .nav-brand { font-size: 20px; font-weight: bold; color: #04395E; }
-    .nav-links { display: flex; gap: 12px; }
-    .nav-links a { text-decoration: none; color: #04395E; padding: 8px 14px; border-radius: 6px; font-weight: 600; transition: all 0.3s; }
-    .nav-links a:hover { background-color: #20c997; color: white; transform: scale(1.05); }
+    .navbar{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:clamp(10px,1.2vw,16px) max(20px,4vw);display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-weight:800;color:var(--brand);letter-spacing:.2px}
+    .nav-links a{display:inline-block;text-decoration:none;color:var(--brand);font-weight:600;padding:.5rem .85rem;border-radius:999px;transition:.25s}
+    .nav-links a:hover{background:var(--accent);color:#fff;transform:translateY(-1px)}
 
-    /* Hero Section */
-    header { background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center/cover; color: white; text-align: center; padding: 60px 20px; position: relative; }
-    header::after { content:""; position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
-    header .header-content { position: relative; z-index: 2; max-width: 800px; margin: auto; }
-    header h1 { font-size: 36px; margin-bottom: 10px; }
-    header p { font-size: 18px; }
+    /* Hero */
+    header{position:relative;isolation:isolate;background:url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') center/cover no-repeat;color:#fff}
+    header::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,.55))}
+    .header-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:clamp(28px,6vw,72px) max(20px,4vw)}
+    header h1{font-size:clamp(1.4rem,3.6vw,2.4rem);margin:0 0 .4rem;font-weight:800}
+    header p{font-size:clamp(.95rem,2.2vw,1.1rem);opacity:.95}
 
-    /* Tabs Navigation */
-    .tabs { display: flex; justify-content: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .tabs::-webkit-scrollbar { display: none; }
-    .tab-btn { flex: 0 0 auto; padding: 10px 18px; border: none; border-radius: 20px; background: #04395E; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap; }
-    .tab-btn:hover, .tab-btn.active { background: #20c997; transform: translateY(-2px); }
+    /* Slideshow Shell */
+    .slideshell{position:relative;max-width:1100px;margin:clamp(12px,2.4vw,24px) auto; 
+      padding:0 max(10px,3.6vw) clamp(10px,2vw,18px);
+    }
 
-    /* Swipeable Content */
-    .tab-wrapper { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
-    .tab-content { min-width: 100%; scroll-snap-align: start; flex-shrink: 0; max-width: 900px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); opacity: 0; transform: translateX(30px); transition: opacity 0.5s ease, transform 0.5s ease; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-    .tab-content.active { opacity: 1; transform: translateX(0); }
-    .tab-content h2 { color: #04395E; margin-bottom: 15px; }
-    .tab-content p, .tab-content ul { line-height: 1.6; font-size: 16px; color: #444; margin-bottom: 12px; max-width: 700px; }
-    .tab-content ul { list-style-position: inside; text-align: left; }
+    .viewport{position:relative;overflow:hidden;border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);height:min(78vh,820px)}
 
-    /* Footer */
-    footer { margin-top: auto; background: #04395E; color: white; text-align: center; padding: 20px; }
+    /* Track + Slides */
+    .track{height:100%;display:flex;transition:transform .5s ease}
+    .slide{flex:0 0 100%;height:100%;display:flex;align-items:center;justify-content:center;padding:clamp(16px,3.5vw,36px)}
 
-    @media (max-width: 768px) {
-      header h1 { font-size: 28px; }
-      header p { font-size: 16px; }
-      .tab-content { padding: 20px; border-radius: 8px; }
+    /* Slide card content: always contained */
+    .card{width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+    .card h2{color:var(--brand);font-size:clamp(1.2rem,3vw,1.8rem)}
+    .card p,.card ul{max-width:70ch;line-height:1.6;color:#444;font-size:clamp(.95rem,2.2vw,1.05rem)}
+
+    /* Make long content scroll _inside_ the slide, never overflow viewport */
+    .scrollbox{max-height:calc(100% - 2.8rem); /* leaves room for heading */
+      overflow:auto; -webkit-overflow-scrolling:touch; padding-right:.25rem}
+    .card ul{margin:0;padding-left:1.2rem;text-align:left}
+    .card li{margin:.4rem 0}
+
+    /* Arrows */
+    .arrow{position:absolute;top:50%;translate:0 -50%;border:0;background:#fff;width:46px;height:46px;border-radius:50%;box-shadow:0 8px 20px rgba(0,0,0,.12);cursor:pointer;display:grid;place-items:center;transition:transform .2s ease;z-index:5}
+    .arrow svg{width:22px;height:22px}
+    .arrow:hover{transform:scale(1.06)}
+    .arrow:active{transform:scale(.98)}
+    .prev{left:clamp(6px,1.6vw,14px)}
+    .next{right:clamp(6px,1.6vw,14px)}
+
+    /* Bubbling animation (gentle pulse + lift) */
+    @keyframes bubble{
+      0%{transform:translateY(0) scale(1); box-shadow:0 8px 18px rgba(0,0,0,.14)}
+      50%{transform:translateY(-6px) scale(1.06); box-shadow:0 14px 24px rgba(0,0,0,.18)}
+      100%{transform:translateY(0) scale(1); box-shadow:0 8px 18px rgba(0,0,0,.14)}
+    }
+    .arrow.bubbling{animation:bubble 1.6s ease-in-out infinite}
+
+    /* Pagination dots */
+    .dots{display:flex;gap:8px;justify-content:center;align-items:center;margin:12px 0 0}
+    .dot{width:8px;height:8px;border-radius:50%;background:#cfd6db;opacity:.8}
+    .dot.active{background:var(--accent);opacity:1;transform:scale(1.25)}
+
+    /* A11y helpers */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+    /* Responsive + safe areas */
+    @media (max-width: 768px){
+      .viewport{height:min(78svh,760px)}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .track{transition:none}
+      .arrow.bubbling{animation:none}
     }
   </style>
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Primary">
     <div class="nav-brand">AGT Sheffield</div>
-    <div class="nav-links">
-      <a href="/">Home</a>
-    </div>
+    <div class="nav-links"><a href="/">Home</a></div>
   </nav>
 
   <!-- Hero -->
-  <header>
-    <div class="header-content">
+  <header role="banner" aria-label="About the AGT App">
+    <div class="header-inner">
       <h1>About AGT Web Application</h1>
-      <p>Learn more about AGT app; What it is, how it is used, AGT Policies, Data Protection, and much more</p>
+      <p>Learn more about the app: what it is, how it’s used, our policies, and data protection.</p>
     </div>
   </header>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab-btn active" data-target="who">What it is</button>
-    <button class="tab-btn" data-target="what">How you can use it</button>
-    <button class="tab-btn" data-target="policies">Our Policies</button>
-    <button class="tab-btn" data-target="best">Best Practices</button>
-    <button class="tab-btn" data-target="security">Data Protection & Security</button>
-    <button class="tab-btn" data-target="contact">Contact Us</button>
-  </div>
+  <!-- Slideshow -->
+  <section class="slideshell" aria-label="About sections slideshow">
+    <div class="viewport" id="viewport" aria-live="polite">
+      <button class="arrow prev bubbling" id="prevBtn" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="arrow next bubbling" id="nextBtn" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
 
-  <!-- Swipeable Content -->
-  <div class="tab-wrapper">
-    <section id="who" class="tab-content active">
-      <h2>What it is</h2>
-      <p>The AGT Web App is a secure digital platform created for Amazing Grace Tabernacle, Sheffield. It is designed to make it easier to collect, store, and access church records in a structured and responsible way. Through this platform, members and leaders can connect, share information, and manage church activities while ensuring that data is handled with fairness and transparency.</p>
-    </section>
+      <div class="track" id="track" role="group">
+        <!-- Slide 1 -->
+        <article class="slide" data-title="What it is" tabindex="-1">
+          <div class="card">
+            <h2>What it is</h2>
+            <div class="scrollbox">
+              <p>The AGT Web App is a secure digital platform created for Amazing Grace Tabernacle, Sheffield. It is designed to make it easier to collect, store, and access church records in a structured and responsible way. Through this platform, members and leaders can connect, share information, and manage church activities while ensuring that data is handled with fairness and transparency.</p>
+            </div>
+          </div>
+        </article>
 
-    <section id="what" class="tab-content">
-      <h2>How can you use AGT app</h2>
-      <p>Members can log in to update and manage their own personal information, register attendance at services and events, access sermons and resources, and submit prayer requests or join community groups.</p>
-      <p>Church administrators and leaders can manage membership databases, schedule and track events, oversee donations and giving records, and communicate announcements safely and effectively.</p>
-    </section>
+        <!-- Slide 2 -->
+        <article class="slide" data-title="How you can use it" tabindex="-1">
+          <div class="card">
+            <h2>How you can use it</h2>
+            <div class="scrollbox">
+              <p>Members can log in to update and manage their own personal information, register attendance at services and events, access sermons and resources, and submit prayer requests or join community groups.</p>
+              <p>Church administrators and leaders can manage membership databases, schedule and track events, oversee donations and giving records, and communicate announcements safely and effectively.</p>
+            </div>
+          </div>
+        </article>
 
-    <section id="policies" class="tab-content">
-      <h2>Our Policies</h2>
-      <ul>
-        <li><strong>UK GDPR compliance</strong> — ensuring personal data is processed lawfully, fairly, and transparently.</li>
-        <li><strong>Consent and stewardship</strong> — members always know how their information is used, and no data is shared without permission.</li>
-        <li><strong>Role-based access</strong> — only authorized personnel can access sensitive records.</li>
-        <li><strong>Accountability</strong> — all church data is managed under the oversight of the AGT Admin Centre.</li>
-      </ul>
-    </section>
+        <!-- Slide 3 -->
+        <article class="slide" data-title="Our Policies" tabindex="-1">
+          <div class="card">
+            <h2>Our Policies</h2>
+            <div class="scrollbox">
+              <ul>
+                <li><strong>UK GDPR compliance</strong> — ensuring personal data is processed lawfully, fairly, and transparently.</li>
+                <li><strong>Consent and stewardship</strong> — members always know how their information is used, and no data is shared without permission.</li>
+                <li><strong>Role-based access</strong> — only authorized personnel can access sensitive records.</li>
+                <li><strong>Accountability</strong> — all church data is managed under the oversight of the AGT Admin Centre.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
 
-    <section id="best" class="tab-content">
-      <h2>Best Practices</h2>
-      <ul>
-        <li>Using strong, unique passwords.</li>
-        <li>Updating your personal details regularly to keep records accurate.</li>
-        <li>Avoiding sharing login credentials with others.</li>
-        <li>Reporting any suspicious or incorrect data to church administrators immediately.</li>
-        <li>Practicing respect and integrity in communication within community groups.</li>
-      </ul>
-    </section>
+        <!-- Slide 4 -->
+        <article class="slide" data-title="Best Practices" tabindex="-1">
+          <div class="card">
+            <h2>Best Practices</h2>
+            <div class="scrollbox">
+              <ul>
+                <li>Use strong, unique passwords.</li>
+                <li>Update your personal details regularly to keep records accurate.</li>
+                <li>Never share your login with others.</li>
+                <li>Report any suspicious or incorrect data to church administrators immediately.</li>
+                <li>Communicate with respect and integrity in community groups.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
 
-    <section id="security" class="tab-content">
-      <h2>Data Protection & Security</h2>
-      <ul>
-        <li>All records are backed up securely and encrypted to prevent loss.</li>
-        <li>Access is controlled through roles (Admin, Leader, Member, Guest).</li>
-        <li>Regular audits and monitoring are carried out to ensure compliance.</li>
-        <li>In case of errors or breaches, procedures are in place for rapid response and correction.</li>
-      </ul>
-    </section>
+        <!-- Slide 5 -->
+        <article class="slide" data-title="Data Protection & Security" tabindex="-1">
+          <div class="card">
+            <h2>Data Protection & Security</h2>
+            <div class="scrollbox">
+              <ul>
+                <li>All records are backed up securely and encrypted to prevent loss.</li>
+                <li>Access is controlled through roles (Admin, Leader, Member, Guest).</li>
+                <li>Regular audits and monitoring are carried out to ensure compliance.</li>
+                <li>Procedures are in place for rapid response and correction in case of errors or breaches.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
 
-    <section id="contact" class="tab-content">
-      <h2>Contact Us</h2>
-      <p>Email: info@agt-sheffield.org<br> Phone: +44 123 456 789<br> Address: 120 SYAC Building, Wicker, Sheffield</p>
-    </section>
-  </div>
+        <!-- Slide 6 -->
+        <article class="slide" data-title="Contact Us" tabindex="-1">
+          <div class="card">
+            <h2>Contact Us</h2>
+            <div class="scrollbox">
+              <p>Email: <a href="mailto:info@agt-sheffield.org">info@agt-sheffield.org</a><br>
+                Phone: +44 123 456 789<br>
+                Address: 120 SYAC Building, Wicker, Sheffield
+              </p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
 
-  <!-- Footer -->
-  <footer>
-    &copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love
-  </footer>
+    <!-- Dots -->
+    <div class="dots" id="dots" aria-label="Slide navigation"></div>
+  </section>
+
+  <footer style="margin-top:auto;background:var(--brand);color:#fff;text-align:center;padding:18px">&copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love</footer>
 
   <script>
-    const tabButtons = document.querySelectorAll(".tab-btn");
-    const contents = document.querySelectorAll(".tab-content");
-    const wrapper = document.querySelector(".tab-wrapper");
+    const track = document.getElementById('track');
+    const viewport = document.getElementById('viewport');
+    const slides = Array.from(track.children);
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dotsWrap = document.getElementById('dots');
 
-    tabButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        tabButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+    let index = 0;
 
-        const target = document.getElementById(btn.dataset.target);
-        wrapper.scrollTo({ left: target.offsetLeft, behavior: "smooth" });
+    // Build dots
+    slides.forEach((_, i)=>{
+      const d = document.createElement('button');
+      d.className = 'dot' + (i===0? ' active':'');
+      d.setAttribute('aria-label', `Go to slide ${i+1}`);
+      d.addEventListener('click', ()=>go(i));
+      dotsWrap.appendChild(d);
+    });
+    const dots = Array.from(dotsWrap.children);
 
-        contents.forEach(c => c.classList.remove("active"));
-        target.classList.add("active");
-      });
+    function go(i){
+      index = (i + slides.length) % slides.length;
+      track.style.transform = `translateX(-${index*100}%)`;
+      dots.forEach((d,di)=>d.classList.toggle('active', di===index));
+
+      // Move bubbling emphasis mostly towards the direction of travel
+      nextBtn.classList.toggle('bubbling', true);
+      prevBtn.classList.toggle('bubbling', true);
+
+      // Update focus target for accessibility
+      slides[index].focus({preventScroll:true});
+      viewport.setAttribute('aria-label', `${slides[index].dataset.title} (slide ${index+1} of ${slides.length})`);
+    }
+
+    function next(){ go(index+1); }
+    function prev(){ go(index-1); }
+
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+
+    // Keyboard support
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='ArrowRight'){ next(); }
+      if(e.key==='ArrowLeft'){ prev(); }
     });
 
-    // Sync active state on scroll (for swipe)
-    wrapper.addEventListener("scroll", () => {
-      let index = Math.round(wrapper.scrollLeft / wrapper.clientWidth);
-      contents.forEach((c, i) => {
-        if (i === index) {
-          c.classList.add("active");
-          tabButtons[i].classList.add("active");
-        } else {
-          c.classList.remove("active");
-          tabButtons[i].classList.remove("active");
-        }
-      });
+    // Touch/drag swipe support
+    let startX=null, dx=0;
+    viewport.addEventListener('pointerdown', (e)=>{ startX=e.clientX; dx=0; viewport.setPointerCapture(e.pointerId); });
+    viewport.addEventListener('pointermove', (e)=>{
+      if(startX!==null){ dx = e.clientX - startX; }
     });
+    viewport.addEventListener('pointerup', ()=>{
+      if(startX!==null){
+        if(Math.abs(dx)>42){ dx>0? prev(): next(); }
+        startX=null; dx=0;
+      }
+    });
+
+    // Resize guard (keeps each slide contained)
+    const ro = new ResizeObserver(()=>{
+      // Force re-translate to current slide so track width changes don’t misalign
+      track.style.transform = `translateX(-${index*100}%)`;
+    });
+    ro.observe(viewport);
+
+    // Initial announce
+    go(0);
   </script>
 </body>
 </html>
