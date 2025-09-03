@@ -73,13 +73,14 @@
     }
     .modal-content {
       background:#fff;
-      margin:5% auto;
+      margin:3% auto;
       padding:20px;
       border-radius:12px;
-      max-width:800px;
-      max-height:80vh;
+      max-width:900px;
+      max-height:85vh;
       overflow-y:auto;
       box-shadow:0 5px 20px rgba(0,0,0,.3);
+      scroll-behavior:smooth;
     }
     .close {
       float:right;
@@ -100,6 +101,22 @@
     }
     .policy-button:hover {
       background:#17a589;
+    }
+    .policy-nav {
+      margin-bottom:20px;
+      padding:10px;
+      background:#f1f3f5;
+      border-radius:8px;
+    }
+    .policy-nav a {
+      margin-right:12px;
+      text-decoration:none;
+      color:var(--brand);
+      font-weight:600;
+    }
+    .policy-nav a:hover {
+      text-decoration:underline;
+      color:var(--accent);
     }
   </style>
 </head>
@@ -170,8 +187,17 @@ Leaders and administrators have additional features available to them. They can 
     <div class="modal-content">
       <span class="close" id="closePolicy">&times;</span>
       <h2>AGT Web Application Policies</h2>
+
+      <div class="policy-nav">
+        <a href="#policy1">Data Protection</a>
+        <a href="#policy2">Consent</a>
+        <a href="#policy3">Access</a>
+        <a href="#policy4">Accountability</a>
+        <a href="#policy5">Security</a>
+        <a href="#policy6">Best Practices</a>
+      </div>
       
-      <h3>1. Data Protection & UK GDPR Compliance Policy</h3>
+      <h3 id="policy1">1. Data Protection & UK GDPR Compliance Policy</h3>
       <p><strong>Purpose:</strong> To ensure that all personal and church-related data processed through the AGT Web Application complies with the UK General Data Protection Regulation (UK GDPR).</p>
       <p><strong>Scope:</strong> Applies to all users of the AGT Web App, including members, leaders, administrators, and guests.</p>
       <p><strong>Policy Statement:</strong></p>
@@ -182,7 +208,7 @@ Leaders and administrators have additional features available to them. They can 
         <li>Data shall only be retained for as long as necessary to fulfil its purpose.</li>
       </ul>
 
-      <h3>2. Consent & Data Stewardship Policy</h3>
+      <h3 id="policy2">2. Consent & Data Stewardship Policy</h3>
       <p><strong>Purpose:</strong> To ensure responsible handling of member and church data, based on trust, integrity, and explicit consent.</p>
       <p><strong>Scope:</strong> Applies to all data collected, shared, or stored on the AGT Web App.</p>
       <p><strong>Policy Statement:</strong></p>
@@ -192,7 +218,7 @@ Leaders and administrators have additional features available to them. They can 
         <li>Members have the right to withdraw consent at any time.</li>
       </ul>
 
-      <h3>3. Role-Based Access Policy</h3>
+      <h3 id="policy3">3. Role-Based Access Policy</h3>
       <p><strong>Purpose:</strong> To safeguard sensitive data by ensuring that access is limited to authorized personnel only.</p>
       <p><strong>Scope:</strong> Covers all user roles within the AGT Web App: Admin, Leader, Member, and Guest.</p>
       <p><strong>Policy Statement:</strong></p>
@@ -202,7 +228,7 @@ Leaders and administrators have additional features available to them. They can 
         <li>Unauthorized access or sharing of credentials is prohibited.</li>
       </ul>
 
-      <h3>4. Accountability & Oversight Policy</h3>
+      <h3 id="policy4">4. Accountability & Oversight Policy</h3>
       <p><strong>Purpose:</strong> To ensure transparency and integrity in the management of all church records and member data.</p>
       <p><strong>Scope:</strong> Applies to all leaders, administrators, and data handlers within the AGT Web App.</p>
       <p><strong>Policy Statement:</strong></p>
@@ -212,7 +238,7 @@ Leaders and administrators have additional features available to them. They can 
         <li>Records of data activity shall be maintained for accountability.</li>
       </ul>
 
-      <h3>5. Security & Incident Response Policy</h3>
+      <h3 id="policy5">5. Security & Incident Response Policy</h3>
       <p><strong>Purpose:</strong> To protect the integrity, confidentiality, and availability of church data and respond effectively to security incidents.</p>
       <p><strong>Scope:</strong> Covers all digital records, communications, and transactions within the AGT Web App.</p>
       <p><strong>Policy Statement:</strong></p>
@@ -222,7 +248,7 @@ Leaders and administrators have additional features available to them. They can 
         <li>In case of errors or breaches, rapid response procedures shall be activated.</li>
       </ul>
 
-      <h3>6. User Best Practices Policy</h3>
+      <h3 id="policy6">6. User Best Practices Policy</h3>
       <p><strong>Purpose:</strong> To encourage responsible and secure use of the AGT Web App.</p>
       <p><strong>Scope:</strong> Applies to all registered users of the platform.</p>
       <p><strong>Policy Statement:</strong></p>
