@@ -14,12 +14,9 @@
       --card:#ffffff;
       --shadow:0 6px 18px rgba(0,0,0,.08);
       --radius:14px;
-      --safe-top: env(safe-area-inset-top);
-      --safe-bottom: env(safe-area-inset-bottom);
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%;}
     body{
       margin:0;
       font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
@@ -31,120 +28,119 @@
     }
 
     /* Navbar */
-    .navbar{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:clamp(10px,1.2vw,16px) max(20px,4vw);display:flex;align-items:center;justify-content:space-between}
-    .nav-brand{font-weight:800;color:var(--brand);letter-spacing:.2px}
-    .nav-links a{display:inline-block;text-decoration:none;color:var(--brand);font-weight:600;padding:.5rem .85rem;border-radius:999px;transition:.25s}
-    .nav-links a:hover{background:var(--accent);color:#fff;transform:translateY(-1px)}
+    .navbar{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-weight:800;color:var(--brand)}
+    .nav-links a{color:var(--brand);font-weight:600;padding:.5rem .85rem;text-decoration:none;border-radius:999px;transition:.25s}
+    .nav-links a:hover{background:var(--accent);color:#fff}
 
     /* Hero */
-    header{position:relative;isolation:isolate;background:url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') center/cover no-repeat;color:#fff}
-    header::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,.55))}
-    .header-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:clamp(28px,6vw,72px) max(20px,4vw)}
-    header h1{font-size:clamp(1.4rem,3.6vw,2.4rem);margin:0 0 .4rem;font-weight:800}
-    header p{font-size:clamp(.95rem,2.2vw,1.1rem);opacity:.95}
+    header{background:url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') center/cover no-repeat;color:#fff;position:relative}
+    header::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.55)}
+    .header-inner{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 20px}
+    header h1{margin:0;font-size:2rem;font-weight:800}
+    header h3{margin:.3rem 0}
+    header p{font-size:1rem;opacity:.95}
 
-    /* Slideshow Shell */
-    .slideshell{position:relative;max-width:1100px;margin:clamp(12px,2.4vw,24px) auto;padding:0 max(10px,3.6vw) clamp(10px,2vw,18px);}
+    /* Slideshow shell */
+    .slideshell{max-width:1000px;margin:20px auto;padding:0 16px}
 
-    /* Reduced default height so slides are not huge on small screens */
     .viewport{
       position:relative;
       overflow:hidden;
       border-radius:var(--radius);
       background:var(--card);
       box-shadow:var(--shadow);
-      height: min(66vh, 680px);
-      max-height: 80svh;
+      height:60vh;
+      max-height:600px;
+    }
+    @media (max-width:768px){
+      .viewport{height:50vh;max-height:420px;}
     }
 
-    /* Track + Slides */
-    .track{height:100%;display:flex;transition:transform .45s cubic-bezier(.2,.9,.3,1);will-change:transform}
-    .slide{flex:0 0 100%;height:100%;display:flex;align-items:center;justify-content:center;padding:clamp(12px,3.5vw,28px)}
+    .track{display:flex;height:100%;transition:transform .4s ease}
+    .slide{flex:0 0 100%;display:flex;justify-content:center;align-items:flex-start;padding:12px}
 
-    /* Slide card content: always contained */
-    .card{width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:18px}
-    .card h2{color:var(--brand);font-size:clamp(1.2rem,3vw,1.8rem)}
-    .card p,.card ul{max-width:70ch;line-height:1.6;color:#444;font-size:clamp(.95rem,2.2vw,1.05rem)}
-
-    /* Make long content scroll _inside_ the slide */
-    .scrollbox{max-height:calc(100% - 3.2rem);overflow:auto;-webkit-overflow-scrolling:touch;padding-right:.25rem}
-    .card ul{margin:0;padding-left:1.2rem;text-align:left}
-    .card li{margin:.4rem 0}
-
-    /* Arrows */
-    .arrow{position:absolute;top:50%;transform:translateY(-50%);border:0;background:#fff;width:46px;height:46px;border-radius:50%;box-shadow:0 8px 20px rgba(0,0,0,.12);cursor:pointer;display:grid;place-items:center;transition:transform .2s ease;z-index:999;pointer-events:auto}
-    .arrow svg{width:22px;height:22px}
-    .arrow:hover{transform:translateY(-50%) scale(1.06)}
-    .arrow:active{transform:translateY(-50%) scale(.98)}
-    .prev{left:clamp(6px,1.6vw,14px)}
-    .next{right:clamp(6px,1.6vw,14px)}
-
-    /* Bubbling animation (gentle pulse + lift) */
-    @keyframes bubble{
-      0%{transform:translateY(-50%) scale(1); box-shadow:0 8px 18px rgba(0,0,0,.14)}
-      50%{transform:translateY(calc(-50% - 6px)) scale(1.06); box-shadow:0 14px 24px rgba(0,0,0,.18)}
-      100%{transform:translateY(-50%) scale(1); box-shadow:0 8px 18px rgba(0,0,0,.14)}
+    /* Card box */
+    .card{
+      width:90%;
+      max-width:700px;
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      padding:1rem;
+      position:relative;
     }
-    .arrow.bubbling{animation:bubble 1.9s ease-in-out infinite}
+    @media(max-width:768px){
+      .card{width:95%;max-width:95%;padding:.75rem}
+    }
 
-    /* Pagination dots */
-    .dots{display:flex;gap:8px;justify-content:center;align-items:center;margin:12px 0 0}
-    .dot{width:8px;height:8px;border-radius:50%;background:#cfd6db;opacity:.8;border:0}
-    .dot.active{background:var(--accent);opacity:1;transform:scale(1.25)}
+    .scrollbox{
+      flex:1;
+      width:100%;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:.5rem;
+    }
 
-    /* A11y helpers */
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-
-    /* image styles — scales and stays contained on all devices */
     .slide-image{
-      display:block;
       width:100%;
       max-width:720px;
       height:auto;
-      max-height:40vmin;
+      max-height:30vh;
       object-fit:contain;
-      margin:0 auto 16px auto;
       border-radius:10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.06);
-      opacity:0;
-      transform:translateY(6px);
-      transition:opacity .45s ease, transform .45s ease;
-    }
-    .slide-image.visible{opacity:1;transform:none;}
-
-    /* Responsive adjustments */
-    @media (max-width: 992px){
-      .card{padding:14px}
-      .viewport{height: min(70vh, 620px)}
-    }
-    @media (max-width: 768px){
-      .viewport{height: min(60svh, 520px)}
-      .card{padding:12px}
-      .card p,.card ul{font-size:.98rem}
-      .arrow{width:40px;height:40px}
-      .arrow svg{width:20px;height:20px}
-      .slide-image{max-height:36vmin}
+      margin-bottom:1rem;
+      box-shadow:0 6px 16px rgba(0,0,0,.08);
     }
 
-    @media (prefers-reduced-motion: reduce){
-      .track{transition:none}
-      .arrow.bubbling{animation:none}
+    /* Arrows positioned relative to card */
+    .arrow{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      border:0;
+      background:#fff;
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      box-shadow:0 4px 10px rgba(0,0,0,.12);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      transition:transform .2s ease, opacity .2s;
+      z-index:10;
+      opacity:.7;
+    }
+    .arrow:hover{transform:translateY(-50%) scale(1.1);opacity:1;}
+    .arrow:active{transform:translateY(-50%) scale(.95)}
+    .arrow svg{width:18px;height:18px}
+
+    .prev{left:-20px}
+    .next{right:-20px}
+    @media(max-width:768px){
+      .prev{left:-12px}
+      .next{right:-12px}
     }
 
-    /* ensure vertical scrolling inside slides works */
-    .viewport { touch-action: pan-y; }
-    .card p, .card ul, .card li, .card a { word-wrap: break-word; overflow-wrap: break-word; }
+    /* Dots */
+    .dots{display:flex;gap:8px;justify-content:center;margin:12px 0}
+    .dot{width:8px;height:8px;border-radius:50%;background:#cfd6db;opacity:.8;border:0}
+    .dot.active{background:var(--accent);opacity:1;transform:scale(1.25)}
   </style>
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar" aria-label="Primary">
+  <nav class="navbar">
     <div class="nav-brand">AGT Sheffield</div>
     <div class="nav-links"><a href="/">Home</a></div>
   </nav>
 
   <!-- Hero -->
-  <header role="banner" aria-label="About the AGT App">
+  <header>
     <div class="header-inner">
       <h1>AGT Web Application</h1>
       <h3>Learn more about the app</h3>
@@ -322,7 +318,9 @@
     <div class="dots" id="dots" aria-label="Slide navigation"></div>
   </section>
 
-  <footer style="margin-top:auto;background:var(--brand);color:#fff;text-align:center;padding:18px">&copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love</footer>
+  <footer style="margin-top:auto;background:var(--brand);color:#fff;text-align:center;padding:18px">
+    &copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love
+  </footer>
 
   <script>
     (function () {
@@ -330,119 +328,41 @@
       const track = document.getElementById('track');
       const prevBtn = document.getElementById('prevBtn');
       const nextBtn = document.getElementById('nextBtn');
-      const dotsWrap = document.getElementById('dots');
       const slides = Array.from(track.querySelectorAll('.slide'));
+      const dotsWrap = document.getElementById('dots');
       let index = 0;
 
-      // Resize helpers
       function sizeSlides() {
         const w = viewport.clientWidth;
         slides.forEach(s => { s.style.width = w + 'px'; });
         track.style.width = (w * slides.length) + 'px';
       }
 
-      function applyTransform() {
+      function go(i) {
+        index = (i + slides.length) % slides.length;
         const w = viewport.clientWidth;
         track.style.transform = `translateX(-${index * w}px)`;
+        dots.forEach((d, di) => d.classList.toggle('active', di === index));
       }
 
-      // Build dots navigation
       const dots = slides.map((_, i) => {
         const d = document.createElement('button');
         d.className = 'dot';
         if (i === 0) d.classList.add('active');
-        d.setAttribute('aria-label', `Go to slide ${i + 1}`);
         d.addEventListener('click', () => go(i));
         dotsWrap.appendChild(d);
         return d;
       });
 
-      function updateUI() {
-        dots.forEach((d, di) => d.classList.toggle('active', di === index));
-        slides.forEach((s, si) => s.setAttribute('aria-hidden', si !== index));
-        slides[index].focus({ preventScroll: true });
-        viewport.setAttribute('aria-label', `${slides[index].dataset.title} (slide ${index + 1} of ${slides.length})`);
-      }
+      prevBtn.addEventListener('click', () => go(index - 1));
+      nextBtn.addEventListener('click', () => go(index + 1));
 
-      function revealSlideImage(idx) {
-        const imgs = Array.from(document.querySelectorAll('.slide-image'));
-        imgs.forEach((img, i) => {
-          if (i === idx) {
-            if (!img.getAttribute('src') && img.dataset.src) {
-              img.setAttribute('src', img.dataset.src);
-            }
-            requestAnimationFrame(() => img.classList.add('visible'));
-          } else {
-            img.classList.remove('visible');
-            // keep src for faster revisit; if memory is an issue you can remove it here
-            // img.removeAttribute('src');
-          }
-        });
-      }
+      window.addEventListener('resize', sizeSlides);
 
-      function go(i) {
-        index = (i + slides.length) % slides.length;
-        applyTransform();
-        updateUI();
-        revealSlideImage(index);
-      }
-
-      function next() { go(index + 1); }
-      function prev() { go(index - 1); }
-
-      nextBtn.addEventListener('click', next);
-      prevBtn.addEventListener('click', prev);
-
-      // keyboard arrows
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') next();
-        else if (e.key === 'ArrowLeft') prev();
-      });
-
-      // Pointer (swipe) support
-      let startX = null, dx = 0, activePointerId = null;
-
-      viewport.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('.arrow') || e.target.closest('.dot') || e.target.closest('button')) return;
-        startX = e.clientX;
-        dx = 0;
-        activePointerId = e.pointerId;
-        try { viewport.setPointerCapture(activePointerId); } catch (err) { activePointerId = null; }
-      });
-
-      viewport.addEventListener('pointermove', (e) => {
-        if (startX !== null) dx = e.clientX - startX;
-      });
-
-      function endPointer() {
-        if (startX === null) return;
-        if (Math.abs(dx) > 42) dx > 0 ? prev() : next();
-        if (activePointerId !== null) {
-          try { viewport.releasePointerCapture(activePointerId); } catch (err) {}
-          activePointerId = null;
-        }
-        startX = null; dx = 0;
-      }
-
-      viewport.addEventListener('pointerup', endPointer);
-      viewport.addEventListener('pointercancel', endPointer);
-
-      // Observe size changes
-      const ro = new ResizeObserver(() => { sizeSlides(); applyTransform(); });
-      ro.observe(viewport);
-      window.addEventListener('resize', () => { sizeSlides(); applyTransform(); });
-
-      // Initialize after DOM is ready
       document.addEventListener('DOMContentLoaded', () => {
         sizeSlides();
         go(0);
       });
-
-      // In case DOMContentLoaded already fired:
-      if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        sizeSlides();
-        go(0);
-      }
     })();
   </script>
 </body>
