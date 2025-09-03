@@ -61,6 +61,46 @@
       section {flex-direction:column !important;text-align:center}
       section img {max-height:220px}
     }
+
+    /* Modal styles */
+    .modal {
+      display:none;
+      position:fixed;
+      z-index:1000;
+      left:0;top:0;width:100%;height:100%;
+      overflow:auto;
+      background:rgba(0,0,0,0.7);
+    }
+    .modal-content {
+      background:#fff;
+      margin:5% auto;
+      padding:20px;
+      border-radius:12px;
+      max-width:800px;
+      max-height:80vh;
+      overflow-y:auto;
+      box-shadow:0 5px 20px rgba(0,0,0,.3);
+    }
+    .close {
+      float:right;
+      font-size:24px;
+      font-weight:bold;
+      cursor:pointer;
+      color:#333;
+    }
+    .policy-button {
+      margin-top:10px;
+      background:var(--accent);
+      border:none;
+      padding:10px 16px;
+      border-radius:8px;
+      font-size:1rem;
+      color:#fff;
+      cursor:pointer;
+    }
+    .policy-button:hover {
+      background:#17a589;
+    }
   </style>
 </head>
 <body>
@@ -90,12 +130,12 @@
       display:flex;
       justify-content:center;
       align-items:center;
-      gap:20px;               /* space between images */
-      flex-wrap:wrap;         /* allow wrapping on small screens */
+      gap:20px;               
+      flex-wrap:wrap;         
       margin:20px 0;
     }
     .image-row img {
-      max-width:200px;        /* adjust size as needed */
+      max-width:200px;        
       height:auto;
       border-radius:8px;
     }
@@ -110,10 +150,14 @@
 Leaders and administrators have additional features available to them. They can manage the membership database through a secure, centralized system, schedule and track events and activities, oversee donations and giving records, and communicate safely with members and leaders. The system also supports transparency and accountability by ensuring that data management is carried out responsibly. </p>
         <p><strong>Benefits of Using the App</strong></p>
         <p>For the wider church community, the AGT Web App offers several important benefits. It strengthens the connection between members, leaders, and groups, while ensuring compliance with UK GDPR regulations. The platform ensures that all data is handled responsibly, with transparency and consent at the forefront. It also protects information through encryption, role-based access controls, and regular audits. Most importantly, it builds trust through the responsible stewardship of both personal and financial data.</p>
-        <p><strong>Our Policies</strong>
+        
+        <p><strong>Our Policies</strong></p>
         <p>The AGT Web App is built on strong policies of data protection and transparency. In line with UK GDPR, all personal data is processed lawfully, fairly, and openly. Consent and stewardship are central principles: members are always informed about how their data is used, and no information is shared without permission. Access to sensitive records is strictly role-based, meaning only authorized personnel can reach them. Furthermore, accountability is ensured through oversight by the AGT Admin Centre, which supervises the management of all church data.</p>
-        <p><strong>Best Practices</strong>
+        <button class="policy-button" id="openPolicy">View Policy Statement</button>
+
+        <p><strong>Best Practices</strong></p>
         <p>To help ensure security, users are encouraged to adopt best practices. This includes using strong and unique passwords, keeping personal details up to date, and never sharing login credentials with others. Members should also report any suspicious or incorrect data immediately and communicate respectfully and with integrity when engaging in community groups.</p>
+        
         <p><strong>Data Protection and security</strong></p>
         <p> The AGT Web App guarantees that all records are securely encrypted and backed up. Access is carefully controlled through roles such as Admin, Leader, Member, and Guest. Regular audits and monitoring are carried out to ensure full compliance with policies and regulations. In addition, procedures are in place for a rapid response in the event of errors or breaches, ensuring that risks are minimized and trust is preserved. </p>
       </div>
@@ -121,19 +165,88 @@ Leaders and administrators have additional features available to them. They can 
     <img src="https://github.com/Tunnox/Images/blob/main/Best_Pract.png?raw=true" alt="Our policies"/>
   </main>
 
+  <!-- Modal -->
+  <div id="policyModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closePolicy">&times;</span>
+      <h2>AGT Web Application Policies</h2>
+      
+      <h3>1. Data Protection & UK GDPR Compliance Policy</h3>
+      <p><strong>Purpose:</strong> To ensure that all personal and church-related data processed through the AGT Web Application complies with the UK General Data Protection Regulation (UK GDPR).</p>
+      <p><strong>Scope:</strong> Applies to all users of the AGT Web App, including members, leaders, administrators, and guests.</p>
+      <p><strong>Policy Statement:</strong></p>
+      <ul>
+        <li>Personal data shall be collected, processed, and stored lawfully, fairly, and transparently.</li>
+        <li>Consent must be obtained before collecting or using personal information.</li>
+        <li>Data subjects shall be informed of how their data is used.</li>
+        <li>Data shall only be retained for as long as necessary to fulfil its purpose.</li>
+      </ul>
+
+      <h3>2. Consent & Data Stewardship Policy</h3>
+      <p><strong>Purpose:</strong> To ensure responsible handling of member and church data, based on trust, integrity, and explicit consent.</p>
+      <p><strong>Scope:</strong> Applies to all data collected, shared, or stored on the AGT Web App.</p>
+      <p><strong>Policy Statement:</strong></p>
+      <ul>
+        <li>No personal or financial information shall be shared without the member’s explicit consent.</li>
+        <li>Data shall only be used for church-related purposes.</li>
+        <li>Members have the right to withdraw consent at any time.</li>
+      </ul>
+
+      <h3>3. Role-Based Access Policy</h3>
+      <p><strong>Purpose:</strong> To safeguard sensitive data by ensuring that access is limited to authorized personnel only.</p>
+      <p><strong>Scope:</strong> Covers all user roles within the AGT Web App: Admin, Leader, Member, and Guest.</p>
+      <p><strong>Policy Statement:</strong></p>
+      <ul>
+        <li>Access rights shall be granted strictly according to role and responsibility.</li>
+        <li>Admins have the highest level of access; Guests have the least.</li>
+        <li>Unauthorized access or sharing of credentials is prohibited.</li>
+      </ul>
+
+      <h3>4. Accountability & Oversight Policy</h3>
+      <p><strong>Purpose:</strong> To ensure transparency and integrity in the management of all church records and member data.</p>
+      <p><strong>Scope:</strong> Applies to all leaders, administrators, and data handlers within the AGT Web App.</p>
+      <p><strong>Policy Statement:</strong></p>
+      <ul>
+        <li>All church data shall be managed under the supervision of the AGT Admin Centre.</li>
+        <li>Regular audits and reviews shall be conducted to ensure compliance.</li>
+        <li>Records of data activity shall be maintained for accountability.</li>
+      </ul>
+
+      <h3>5. Security & Incident Response Policy</h3>
+      <p><strong>Purpose:</strong> To protect the integrity, confidentiality, and availability of church data and respond effectively to security incidents.</p>
+      <p><strong>Scope:</strong> Covers all digital records, communications, and transactions within the AGT Web App.</p>
+      <p><strong>Policy Statement:</strong></p>
+      <ul>
+        <li>All data shall be encrypted and securely backed up.</li>
+        <li>Security monitoring and regular audits shall be conducted.</li>
+        <li>In case of errors or breaches, rapid response procedures shall be activated.</li>
+      </ul>
+
+      <h3>6. User Best Practices Policy</h3>
+      <p><strong>Purpose:</strong> To encourage responsible and secure use of the AGT Web App.</p>
+      <p><strong>Scope:</strong> Applies to all registered users of the platform.</p>
+      <p><strong>Policy Statement:</strong></p>
+      <ul>
+        <li>Users must use strong, unique passwords.</li>
+        <li>Users must keep their personal details up to date.</li>
+        <li>Login credentials must not be shared with others.</li>
+        <li>Users must communicate respectfully within community groups.</li>
+      </ul>
+    </div>
+  </div>
+
   <footer>
     &copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love
   </footer>
+
+  <script>
+    const modal = document.getElementById("policyModal");
+    const openBtn = document.getElementById("openPolicy");
+    const closeBtn = document.getElementById("closePolicy");
+
+    openBtn.onclick = () => modal.style.display = "block";
+    closeBtn.onclick = () => modal.style.display = "none";
+    window.onclick = (e) => { if(e.target == modal){ modal.style.display="none"; } }
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
