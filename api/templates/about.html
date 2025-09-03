@@ -1,368 +1,198 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>About AGT App</title>
+  <title>About AGT App — Stacked Carousel</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
     :root{
-      --brand:#04395E;
-      --accent:#20c997;
-      --bg:#f8f9fa;
-      --text:#212529;
-      --card:#ffffff;
-      --shadow:0 6px 18px rgba(0,0,0,.08);
-      --radius:14px;
+      --brand:#04395E; --accent:#20c997; --bg:#f8f9fa; --text:#212529; --card:#fff; --shadow:0 6px 18px rgba(0,0,0,.08); --radius:14px;
     }
-
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      display:flex;flex-direction:column;
-      max-width:100%;
-      overflow-x:hidden;
-    }
-
-    /* Navbar */
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh}
     .navbar{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
     .nav-brand{font-weight:800;color:var(--brand)}
-    .nav-links a{color:var(--brand);font-weight:600;padding:.5rem .85rem;text-decoration:none;border-radius:999px;transition:.25s}
-    .nav-links a:hover{background:var(--accent);color:#fff}
-
-    /* Hero */
     header{background:url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') center/cover no-repeat;color:#fff;position:relative}
     header::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.55)}
-    .header-inner{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 20px}
-    header h1{margin:0;font-size:2rem;font-weight:800}
-    header h3{margin:.3rem 0}
-    header p{font-size:1rem;opacity:.95}
+    .header-inner{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:28px 20px}
+    header h1{margin:0;font-size:1.6rem;font-weight:800}
 
-    /* Slideshow shell */
-    .slideshell{max-width:1000px;margin:20px auto;padding:0 16px}
+    /* Shell for carousel */
+    .slideshell{max-width:980px;margin:20px auto;padding:0 16px}
+    .stack-viewport{position:relative;height:56vh;max-height:640px;display:grid;place-items:center}
+    @media(max-width:900px){.stack-viewport{height:52vh;max-height:520px}}
+    @media(max-width:520px){.stack-viewport{height:62vh;max-height:640px;padding:8px}}
 
-    .viewport{
-      position:relative;
-      overflow:hidden;
-      border-radius:var(--radius);
-      background:var(--card);
-      box-shadow:var(--shadow);
-      height:60vh;
-      max-height:600px;
+    /* Stack container: each card absolutely positioned on top of each other */
+    .stack{position:relative;width:100%;max-width:800px;height:100%}
+    .card {
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:86%;max-width:720px;height:86%;background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;overflow:hidden;transition:transform .45s cubic-bezier(.2,.9,.3,1),opacity .35s ease,filter .35s ease;will-change:transform,opacity;
     }
-    @media (max-width:768px){
-      .viewport{height:50vh;max-height:420px;}
-    }
+    .card .scrollbox{overflow:auto;padding:.5rem}
+    .card img{width:100%;height:auto;max-height:28vh;object-fit:contain;border-radius:10px;margin-bottom:10px}
 
-    .track{display:flex;height:100%;transition:transform .4s ease}
-    .slide{flex:0 0 100%;display:flex;justify-content:center;align-items:flex-start;padding:12px}
+    /* visible / offscreen states */
+    .card:not(.active){pointer-events:none}
+    .card.active{z-index:40;transform:translate(-50%,-50%) scale(1);opacity:1}
+    .card.prev{z-index:30;transform:translate(calc(-50% - 48px),-50%) scale(.86) rotate(-2deg);opacity:.9;filter:grayscale(.05)}
+    .card.next{z-index:30;transform:translate(calc(-50% + 48px),-50%) scale(.86) rotate(2deg);opacity:.9;filter:grayscale(.05)}
+    .card.left2{z-index:20;transform:translate(calc(-50% - 120px),-50%) scale(.72);opacity:.65;filter:grayscale(.2)}
+    .card.right2{z-index:20;transform:translate(calc(-50% + 120px),-50%) scale(.72);opacity:.65;filter:grayscale(.2)}
+    .card.off{z-index:10;transform:translate(-50%,-60%) scale(.6);opacity:0;pointer-events:none}
 
-    /* Card box */
-    .card{
-      width:90%;
-      max-width:700px;
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      text-align:center;
-      padding:1rem;
-      position:relative;
-    }
-    @media(max-width:768px){
-      .card{width:95%;max-width:95%;padding:.75rem}
-    }
+    /* Controls */
+    .controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:12px}
+    .btn{background:#fff;border:0;padding:10px;border-radius:999px;box-shadow:0 6px 16px rgba(0,0,0,.08);cursor:pointer;display:grid;place-items:center;min-width:44px;min-height:44px}
+    .btn:active{transform:scale(.98)}
 
-    .scrollbox{
-      flex:1;
-      width:100%;
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-      padding:.5rem;
-    }
+    .dots{display:flex;gap:8px;justify-content:center;margin-top:12px}
+    .dot{width:9px;height:9px;border-radius:50%;background:#cfd6db;opacity:.9;border:0}
+    .dot.active{background:var(--accent);transform:scale(1.25)}
 
-    .slide-image{
-      width:100%;
-      max-width:720px;
-      height:auto;
-      max-height:30vh;
-      object-fit:contain;
-      border-radius:10px;
-      margin-bottom:1rem;
-      box-shadow:0 6px 16px rgba(0,0,0,.08);
-    }
+    footer{margin-top:auto;background:var(--brand);color:#fff;text-align:center;padding:14px}
 
-    /* Arrows positioned relative to card */
-    .arrow{
-      position:absolute;
-      top:50%;
-      transform:translateY(-50%);
-      border:0;
-      background:#fff;
-      width:40px;
-      height:40px;
-      border-radius:50%;
-      box-shadow:0 4px 10px rgba(0,0,0,.12);
-      cursor:pointer;
-      display:grid;
-      place-items:center;
-      transition:transform .2s ease, opacity .2s;
-      z-index:10;
-      opacity:.7;
+    /* Make layout friendlier on very small screens */
+    @media(max-width:420px){
+      .card{width:94%;height:92%;padding:12px;border-radius:12px}
+      .card img{max-height:22vh}
+      header h1{font-size:1.2rem}
     }
-    .arrow:hover{transform:translateY(-50%) scale(1.1);opacity:1;}
-    .arrow:active{transform:translateY(-50%) scale(.95)}
-    .arrow svg{width:18px;height:18px}
-
-    .prev{left:-20px}
-    .next{right:-20px}
-    @media(max-width:768px){
-      .prev{left:-12px}
-      .next{right:-12px}
-    }
-
-    /* Dots */
-    .dots{display:flex;gap:8px;justify-content:center;margin:12px 0}
-    .dot{width:8px;height:8px;border-radius:50%;background:#cfd6db;opacity:.8;border:0}
-    .dot.active{background:var(--accent);opacity:1;transform:scale(1.25)}
   </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-brand">AGT Sheffield</div>
-    <div class="nav-links"><a href="/">Home</a></div>
-  </nav>
+  <nav class="navbar"><div class="nav-brand">AGT Sheffield</div><div class="nav-links"><a href="/">Home</a></div></nav>
+  <header><div class="header-inner"><h1>AGT Web Application</h1><h3>Learn more about the app</h3><p>what it is, how to use it, our policies, best practices, data protection & security, and how you can get accross to us</p></div></header>
 
-  <!-- Hero -->
-  <header>
-    <div class="header-inner">
-      <h1>AGT Web Application</h1>
-      <h3>Learn more about the app</h3>
-      <p>what it is, how to use it, our policies, best practices, data protection & security, and how you can get accross to us</p>
-    </div>
-  </header>
+  <section class="slideshell" aria-label="About sections carousel">
+    <div class="stack-viewport" id="viewport">
+      <div class="stack" id="stack">
 
-  <!-- Slideshow -->
-  <section class="slideshell" aria-label="About sections slideshow">
-    <div class="viewport" id="viewport" aria-live="polite">
-      <button class="arrow prev bubbling" id="prevBtn" aria-label="Previous slide">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <button class="arrow next bubbling" id="nextBtn" aria-label="Next slide">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <div class="track" id="track" role="group">
-        <!-- Slide 1 -->
-        <article class="slide" data-title="What it is" tabindex="-1">
-          <div class="card">
-            <picture>
-                <source srcset="https://github.com/Tunnox/Images/blob/main/What_it_is.png?raw=true 2x, https://github.com/Tunnox/Images/blob/main/What_it_is.png?raw=true 1x" />
-                <img
-                  class="slide-image"
-                  data-src="https://github.com/Tunnox/Images/blob/main/What_it_is.png?raw=true"
-                  alt="Cartoon people collaborating around a tablet showing the AGT app"
-                  loading="lazy"
-                  width="1200" height="720"
-                />
-              </picture>
-            <div class="scrollbox">
-              <p>The AGT Web App is a secure digital platform created for Amazing Grace Tabernacle, Sheffield. It is designed to make it easier to collect, store, and access church records in a structured and responsible way. Through this platform, members and leaders can connect, share information, and manage church activities while ensuring that data is handled with fairness and transparency.</p>
-            </div>
-          </div>
+        <!-- Re-used content from your slides; images now have src set (no lazy-only data-src) -->
+        <article class="card" data-title="What it is">
+          <picture>
+            <img src="https://github.com/Tunnox/Images/blob/main/What_it_is.png?raw=true" alt="Cartoon people collaborating around a tablet showing the AGT app"/>
+          </picture>
+          <div class="scrollbox"><h3>What it is</h3><p>The AGT Web App is a secure digital platform created for Amazing Grace Tabernacle, Sheffield. It is designed to make it easier to collect, store, and access church records in a structured and responsible way. Through this platform, members and leaders can connect, share information, and manage church activities while ensuring that data is handled with fairness and transparency.</p></div>
         </article>
 
-        <!-- Slide 2 -->
-        <article class="slide" data-title="How you can use it" tabindex="-1">
-          <div class="card">
-            <picture>
-                <source srcset="https://github.com/Tunnox/Images/blob/main/How_you_can_use_it.png?raw=true 2x, https://github.com/Tunnox/Images/blob/main/How_you_can_use_it.png?raw=true 1x" />
-                <img
-                  class="slide-image"
-                  data-src="https://github.com/Tunnox/Images/blob/main/How_you_can_use_it.png?raw=true"
-                  alt="Cartoon people collaborating around a tablet showing the AGT app"
-                  loading="lazy"
-                  width="1200" height="720"
-                />
-              </picture>
-            <div class="scrollbox">
-              <p>Members can log in to update and manage their own personal information, register attendance at services and events, access sermons and resources, and submit prayer requests or join community groups.</p>
-              <p>Church administrators and leaders can manage membership databases, schedule and track events, oversee donations and giving records, and communicate announcements safely and effectively.</p>
-            </div>
-          </div>
+        <article class="card" data-title="How you can use it">
+          <picture>
+            <img src="https://github.com/Tunnox/Images/blob/main/How_you_can_use_it.png?raw=true" alt="How you can use it"/>
+          </picture>
+          <div class="scrollbox"><h3>How you can use it</h3><p>Members can log in to update and manage their own personal information, register attendance at services and events, access sermons and resources, and submit prayer requests or join community groups.</p><p>Church administrators and leaders can manage membership databases, schedule and track events, oversee donations and giving records, and communicate announcements safely and effectively.</p></div>
         </article>
 
-       <!-- Slide 3 -->
-<article class="slide" data-title="Benefits of using the App" tabindex="-1">
-  <div class="card">
-    <picture>
-      <source srcset="https://github.com/Tunnox/Images/blob/main/How_you_can_use_it.png?raw=true 2x, https://github.com/Tunnox/Images/blob/main/How_you_can_use_it.png?raw=true 1x" />
-      <img
-        class="slide-image"
-        data-src="https://github.com/Tunnox/Images/blob/main/How_you_can_use_it.png?raw=true"
-        alt="Cartoon people collaborating around a tablet showing the AGT app"
-        loading="lazy"
-        width="1200" height="720"
-      />
-    </picture>
-    <div class="scrollbox">
-      <h3>Benefits of Using the AGT Web App</h3>
-
-      <h4>For Members</h4>
-      <ul>
-        <li>Easily update and manage your personal information.</li>
-        <li>Register attendance at services and events with just a few clicks.</li>
-        <li>Access sermons, teaching materials, and other church resources online.</li>
-        <li>Submit prayer requests and join community groups for support and fellowship.</li>
-        <li>Stay informed through secure announcements and communications.</li>
-      </ul>
-
-      <h4>For Leaders & Administrators</h4>
-      <ul>
-        <li>Centralized management of membership records in a structured, secure way.</li>
-        <li>Streamlined scheduling and tracking of events and activities.</li>
-        <li>Efficient oversight of donations and giving records.</li>
-        <li>Safer, role-based communication with members and leaders.</li>
-        <li>Accountability through transparent and compliant data management.</li>
-      </ul>
-
-      <h4>For the Church Community</h4>
-      <ul>
-        <li>Strengthens connection between members, leaders, and groups.</li>
-        <li>Provides a trustworthy platform that ensures UK GDPR compliance.</li>
-        <li>Ensures data is handled responsibly, with consent and transparency.</li>
-        <li>Enhances security with encrypted records, access controls, and regular audits.</li>
-        <li>Builds trust through responsible stewardship of personal and financial information.</li>
-      </ul>
-    </div>
-  </div>
-</article>
-
-        <!-- Slide 4 -->
-        <article class="slide" data-title="Our Policies" tabindex="-1">
-          <div class="card">
-            <picture>
-                <source srcset="https://github.com/Tunnox/Images/blob/main/our_Policies.png?raw=true 2x, https://github.com/Tunnox/Images/blob/main/our_Policies.png?raw=true 1x" />
-                <img
-                  class="slide-image"
-                  data-src="https://github.com/Tunnox/Images/blob/main/our_Policies.png?raw=true"
-                  alt="Cartoon people collaborating around a tablet showing the AGT app"
-                  loading="lazy"
-                  width="1200" height="720"
-                />
-              </picture>
-            <div class="scrollbox">
-              <ul>
-                <li><strong>UK GDPR compliance</strong> — ensuring personal data is processed lawfully, fairly, and transparently.</li>
-                <li><strong>Consent and stewardship</strong> — members always know how their information is used, and no data is shared without permission.</li>
-                <li><strong>Role-based access</strong> — only authorized personnel can access sensitive records.</li>
-                <li><strong>Accountability</strong> — all church data is managed under the oversight of the AGT Admin Centre.</li>
-              </ul>
-            </div>
-          </div>
+        <article class="card" data-title="Benefits">
+          <picture>
+            <img src="https://github.com/Tunnox/Images/blob/main/How_you_can_use_it.png?raw=true" alt="Benefits of using"/>
+          </picture>
+          <div class="scrollbox"><h3>Benefits of Using the AGT Web App</h3><ul><li>Easily update and manage your personal information.</li><li>Register attendance at services and events with just a few clicks.</li><li>Access sermons, teaching materials, and other church resources online.</li></ul></div>
         </article>
 
-        <!-- Slide 5 -->
-        <article class="slide" data-title="Best Practices" tabindex="-1">
-          <div class="card">
-            <h2>Best Practices</h2>
-            <div class="scrollbox">
-              <ul>
-                <li>Use strong, unique passwords.</li>
-                <li>Update your personal details regularly to keep records accurate.</li>
-                <li>Never share your login with others.</li>
-                <li>Report any suspicious or incorrect data to church administrators immediately.</li>
-                <li>Communicate with respect and integrity in community groups.</li>
-              </ul>
-            </div>
-          </div>
+        <article class="card" data-title="Our Policies">
+          <picture>
+            <img src="https://github.com/Tunnox/Images/blob/main/our_Policies.png?raw=true" alt="Our policies"/>
+          </picture>
+          <div class="scrollbox"><h3>Our Policies</h3><ul><li><strong>UK GDPR compliance</strong> — ensuring personal data is processed lawfully, fairly, and transparently.</li><li><strong>Consent and stewardship</strong> — members always know how their information is used.</li></ul></div>
         </article>
 
-        <!-- Slide 6 -->
-        <article class="slide" data-title="Data Protection & Security" tabindex="-1">
-          <div class="card">
-            <h2>Data Protection & Security</h2>
-            <div class="scrollbox">
-              <ul>
-                <li>All records are backed up securely and encrypted to prevent loss.</li>
-                <li>Access is controlled through roles (Admin, Leader, Member, Guest).</li>
-                <li>Regular audits and monitoring are carried out to ensure compliance.</li>
-                <li>Procedures are in place for rapid response and correction in case of errors or breaches.</li>
-              </ul>
-            </div>
-          </div>
+        <article class="card" data-title="Best Practices">
+          <div class="scrollbox"><h3>Best Practices</h3><ul><li>Use strong, unique passwords.</li><li>Update your personal details regularly.</li><li>Never share your login with others.</li></ul></div>
         </article>
 
-        <!-- Slide 7 -->
-        <article class="slide" data-title="Contact Us" tabindex="-1">
-          <div class="card">
-            <h2>Contact Us</h2>
-            <div class="scrollbox">
-              <p>Email: <a href="mailto:info@agt-sheffield.org">info@agt-sheffield.org</a><br>
-                Phone: +44 123 456 789<br>
-                Address: 120 SYAC Building, Wicker, Sheffield
-              </p>
-            </div>
-          </div>
+        <article class="card" data-title="Data Protection & Security">
+          <div class="scrollbox"><h3>Data Protection & Security</h3><ul><li>All records are backed up securely and encrypted.</li><li>Access is controlled through roles (Admin, Leader, Member, Guest).</li></ul></div>
         </article>
+
+        <article class="card" data-title="Contact Us">
+          <div class="scrollbox"><h3>Contact Us</h3><p>Email: <a href="mailto:info@agt-sheffield.org">info@agt-sheffield.org</a><br>Phone: +44 123 456 789<br>Address: 120 SYAC Building, Wicker, Sheffield</p></div>
+        </article>
+
       </div>
     </div>
 
-    <!-- Dots -->
-    <div class="dots" id="dots" aria-label="Slide navigation"></div>
+    <div class="controls" role="group" aria-label="Carousel controls">
+      <button class="btn" id="prev" aria-label="Previous"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="btn" id="next" aria-label="Next"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+
+    <div class="dots" id="dots" role="tablist" aria-label="Slide navigation"></div>
   </section>
 
-  <footer style="margin-top:auto;background:var(--brand);color:#fff;text-align:center;padding:18px">
-    &copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love
-  </footer>
+  <footer>&copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love</footer>
 
   <script>
-    (function () {
-      const viewport = document.getElementById('viewport');
-      const track = document.getElementById('track');
-      const prevBtn = document.getElementById('prevBtn');
-      const nextBtn = document.getElementById('nextBtn');
-      const slides = Array.from(track.querySelectorAll('.slide'));
+    (function(){
+      const stack = document.getElementById('stack');
+      const cards = Array.from(stack.querySelectorAll('.card'));
+      const prevBtn = document.getElementById('prev');
+      const nextBtn = document.getElementById('next');
       const dotsWrap = document.getElementById('dots');
       let index = 0;
 
-      function sizeSlides() {
-        const w = viewport.clientWidth;
-        slides.forEach(s => { s.style.width = w + 'px'; });
-        track.style.width = (w * slides.length) + 'px';
-      }
-
-      function go(i) {
-        index = (i + slides.length) % slides.length;
-        const w = viewport.clientWidth;
-        track.style.transform = `translateX(-${index * w}px)`;
-        dots.forEach((d, di) => d.classList.toggle('active', di === index));
-      }
-
-      const dots = slides.map((_, i) => {
-        const d = document.createElement('button');
-        d.className = 'dot';
-        if (i === 0) d.classList.add('active');
-        d.addEventListener('click', () => go(i));
-        dotsWrap.appendChild(d);
-        return d;
+      // create dots
+      const dots = cards.map((c,i)=>{
+        const b = document.createElement('button');
+        b.className = 'dot';
+        b.setAttribute('aria-label', c.dataset.title || `Slide ${i+1}`);
+        b.addEventListener('click', ()=>go(i));
+        dotsWrap.appendChild(b);
+        return b;
       });
 
-      prevBtn.addEventListener('click', () => go(index - 1));
-      nextBtn.addEventListener('click', () => go(index + 1));
+      function layout(){
+        // clear classes
+        cards.forEach(c=>{c.className = 'card';});
+        const len = cards.length;
+        const prev = (index-1+len)%len; const next = (index+1)%len;
+        const left2 = (index-2+len)%len; const right2 = (index+2)%len;
 
-      window.addEventListener('resize', sizeSlides);
+        cards[index].classList.add('active');
+        cards[prev].classList.add('prev');
+        cards[next].classList.add('next');
+        if(cards[left2]) cards[left2].classList.add('left2');
+        if(cards[right2]) cards[right2].classList.add('right2');
+        cards.forEach((c,i)=>{ dots[i].classList.toggle('active', i===index); });
+      }
 
-      document.addEventListener('DOMContentLoaded', () => {
-        sizeSlides();
-        go(0);
+      function go(i){ index = (i + cards.length) % cards.length; layout(); focusActive(); }
+      function focusActive(){ // move keyboard focus to active card for accessibility
+        const active = cards[index];
+        active.setAttribute('tabindex','-1');
+        active.focus({preventScroll:true});
+      }
+
+      prevBtn.addEventListener('click', ()=>go(index-1));
+      nextBtn.addEventListener('click', ()=>go(index+1));
+
+      // Keyboard
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'ArrowLeft') go(index-1);
+        if(e.key === 'ArrowRight') go(index+1);
       });
+
+      // Touch swipe support
+      let startX=null; const threshold=40;
+      const vp = document.getElementById('viewport');
+      vp.addEventListener('touchstart', (e)=>{ startX = e.changedTouches[0].clientX; });
+      vp.addEventListener('touchend', (e)=>{
+        if(startX===null) return;
+        const dx = e.changedTouches[0].clientX - startX;
+        if(Math.abs(dx) > threshold){ if(dx>0) go(index-1); else go(index+1); }
+        startX=null;
+      });
+
+      // Ensure images are fully loaded where possible to avoid layout jumps
+      cards.forEach(imgCard => {
+        const img = imgCard.querySelector('img');
+        if(img && !img.complete){ img.addEventListener('load', () => {/* noop */}); }
+      });
+
+      // initial layout
+      window.addEventListener('load', ()=>{ layout(); });
+      window.addEventListener('resize', ()=>{ /* layout recalculates but our layout is CSS driven */ });
+
     })();
   </script>
 </body>
