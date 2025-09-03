@@ -19,26 +19,26 @@
     header h1{margin:0;font-size:1.6rem;font-weight:800}
 
     /* Shell for carousel */
-    .slideshell{max-width:980px;margin:20px auto;padding:0 16px}
-    .stack-viewport{position:relative;height:56vh;max-height:640px;display:grid;place-items:center}
-    @media(max-width:900px){.stack-viewport{height:52vh;max-height:520px}}
-    @media(max-width:520px){.stack-viewport{height:62vh;max-height:640px;padding:8px}}
+    .slideshell{max-width:1100px;margin:20px auto;padding:0 16px}
+    .stack-viewport{position:relative;height:64vh;max-height:720px;display:grid;place-items:center}
+    @media(max-width:900px){.stack-viewport{height:58vh;max-height:620px}}
+    @media(max-width:520px){.stack-viewport{height:68vh;max-height:680px;padding:8px}}
 
     /* Stack container: each card absolutely positioned on top of each other */
-    .stack{position:relative;width:100%;max-width:800px;height:100%}
+    .stack{position:relative;width:100%;max-width:900px;height:100%}
     .card {
-      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:86%;max-width:720px;height:86%;background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;overflow:hidden;transition:transform .45s cubic-bezier(.2,.9,.3,1),opacity .35s ease,filter .35s ease;will-change:transform,opacity;
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:100%;max-width:860px;height:94%;background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;overflow:hidden;transition:transform .45s cubic-bezier(.2,.9,.3,1),opacity .35s ease,filter .35s ease;will-change:transform,opacity;
     }
-    .card .scrollbox{overflow:auto;padding:.5rem}
-    .card img{width:100%;height:auto;max-height:28vh;object-fit:contain;border-radius:10px;margin-bottom:10px}
+    .card .scrollbox{overflow:auto;padding:.75rem}
+    .card img{width:100%;height:auto;max-height:32vh;object-fit:contain;border-radius:12px;margin-bottom:12px}
 
     /* visible / offscreen states */
     .card:not(.active){pointer-events:none}
     .card.active{z-index:40;transform:translate(-50%,-50%) scale(1);opacity:1}
-    .card.prev{z-index:30;transform:translate(calc(-50% - 48px),-50%) scale(.86) rotate(-2deg);opacity:.9;filter:grayscale(.05)}
-    .card.next{z-index:30;transform:translate(calc(-50% + 48px),-50%) scale(.86) rotate(2deg);opacity:.9;filter:grayscale(.05)}
-    .card.left2{z-index:20;transform:translate(calc(-50% - 120px),-50%) scale(.72);opacity:.65;filter:grayscale(.2)}
-    .card.right2{z-index:20;transform:translate(calc(-50% + 120px),-50%) scale(.72);opacity:.65;filter:grayscale(.2)}
+    .card.prev{z-index:30;transform:translate(calc(-50% - 56px),-50%) scale(.9) rotate(-2deg);opacity:.9;filter:grayscale(.05)}
+    .card.next{z-index:30;transform:translate(calc(-50% + 56px),-50%) scale(.9) rotate(2deg);opacity:.9;filter:grayscale(.05)}
+    .card.left2{z-index:20;transform:translate(calc(-50% - 130px),-50%) scale(.76);opacity:.65;filter:grayscale(.2)}
+    .card.right2{z-index:20;transform:translate(calc(-50% + 130px),-50%) scale(.76);opacity:.65;filter:grayscale(.2)}
     .card.off{z-index:10;transform:translate(-50%,-60%) scale(.6);opacity:0;pointer-events:none}
 
     /* Controls */
@@ -54,8 +54,8 @@
 
     /* Make layout friendlier on very small screens */
     @media(max-width:420px){
-      .card{width:94%;height:92%;padding:12px;border-radius:12px}
-      .card img{max-height:22vh}
+      .card{width:98%;height:96%;padding:14px;border-radius:14px}
+      .card img{max-height:26vh}
       header h1{font-size:1.2rem}
     }
   </style>
