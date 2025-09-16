@@ -364,6 +364,64 @@
     /* small helper */
     .muted { color: var(--muted); font-size:13px }
     .small { font-size:12px; color:var(--muted) }
+    .tagline{
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .tagline .word{
+      display:inline-flex;
+      align-items:center;
+      gap:0.35rem;
+      white-space:nowrap;
+    }
+    
+    /* highlight for the initial letter */
+    .tagline .initial{
+      display:inline-grid;
+      place-items:center;
+      min-width:1.6em;
+      height:1.6em;
+      font-weight:700;
+      font-size:0.95em;
+      color:#ffffff;
+      background: linear-gradient(135deg,#0ea5a4,#7c3aed); /* teal -> purple gradient */
+      border-radius:.4rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      transform: translateY(-1px);
+      padding: 0 .15rem;
+      line-height:1;
+    }
+    
+    /* separator style */
+    .tagline .sep{
+      color: #666666;
+      font-weight:600;
+      margin: 0 .2rem;
+    }
+    
+    /* subtle hover effect */
+    .tagline .word:hover .initial{
+      transform: translateY(-4px) scale(1.05);
+      transition: transform 180ms cubic-bezier(.2,.9,.3,1);
+    }
+    
+    /* accessibility: respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .tagline .word:hover .initial,
+      .tagline .initial { transition: none; transform: none; }
+    }
+    
+    /* responsive size */
+    @media (max-width:420px){
+      .tagline{ font-size: .95rem; gap:.4rem; }
+      .tagline .initial{ min-width:1.4em; height:1.4em; font-size:.85em; }
+    }
   </style>
 </head>
 <body>
@@ -576,6 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
 
 
 
