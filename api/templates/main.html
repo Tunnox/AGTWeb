@@ -397,7 +397,7 @@
       <div class="hero-inner">
         <div class="hero-text">
           <h1>RCCG Amazing Grace Tabernacle Sheffield</h1>
-          <div class="tagline">Engage • Manage • Flourish</div>
+          <div class="tagline">Archive • Govern • Track</div>
           <p style="margin-bottom:8px">AGT data management app is your secure hub for staying connected with Amazing Grace Tabernacle, Sheffield. Manage records, access resources, and engage with the community in one trusted place.</p>
         </div>
       </div>
@@ -552,7 +552,23 @@
     })();
 
   </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const tag = document.querySelector('.tagline');
+  if (!tag) return;
+  // split by separators (• or middle dot or spaces) while keeping separators
+  const pieces = tag.textContent.split(/(\u2022|\u00B7|\u2023|\s•\s|\s)/).filter(Boolean);
+  tag.innerHTML = pieces.map(p => {
+    // keep separator as-is
+    if (p.trim() === '•' || p.trim() === '·') return `<span class="sep">${p}</span>`;
+    const trimmed = p.trim();
+    if (!trimmed) return p; // spaces etc
+    return `<span class="word"><span class="initial">${trimmed[0]}</span>${trimmed.slice(1)}</span>`;
+  }).join(' ');
+});
+</script>
 
 </body>
 </html>
+
 
