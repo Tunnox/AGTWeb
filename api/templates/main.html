@@ -478,43 +478,65 @@
 
     <!-- Welcome card (intro) -->
     <section class="card welcome" id="intro" aria-labelledby="welcomeTitle">
-        <h2 id="welcomeTitle">Welcome</h2>
-        <p style="margin-bottom:8px">
-          AGT data management app is your secure hub for staying connected with Amazing Grace Tabernacle, Sheffield. Manage records, access resources, and engage with the community in one trusted place.
-        </p>
-      
-        <div class="notification">
-          <strong>New here?</strong><br>
-          Please speak to an <b>admin</b> first to register your details in the database.  
-          Registration requires your consent for AGT to process your data in line with <b>UK GDPR</b>.
+      <h2 id="welcomeTitle">Welcome</h2>
+      <p style="margin-bottom:8px">
+        AGT data management app is your secure hub for staying connected with Amazing Grace Tabernacle, Sheffield. Manage records, access resources, and engage with the community in one trusted place.
+      </p>
+    
+      <div class="get-started">
+        <div class="icon">ℹ️</div>
+        <div class="text">
+          <h3>New here?</h3>
+          <p>
+            Please speak to an <b>admin</b> first to register your details in the database.  
+            Registration requires your consent for AGT to process your data in line with <b>UK GDPR</b>.
+          </p>
         </div>
-      </section>
-      
-      <style>
-        .notification {
-          margin-top: 12px;
-          padding: 12px;
-          border-radius: 12px;
-          background-color: #fff4e5; /* soft highlight */
-          border: 1px solid #f0b429;
-          font-size: 0.95rem;
-          line-height: 1.4;
+      </div>
+    </section>
+    
+    <style>
+      .get-started {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-top: 16px;
+        padding: 16px;
+        background: #f9fafb;
+        border-left: 4px solid #2563eb;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+    
+      .get-started .icon {
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+    
+      .get-started .text h3 {
+        margin: 0 0 4px 0;
+        font-size: 1.1rem;
+        color: #2563eb;
+      }
+    
+      .get-started .text p {
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        color: #374151;
+      }
+    
+      @media (max-width: 600px) {
+        .get-started {
+          flex-direction: column;
+          align-items: flex-start;
         }
-      
-        .notification strong {
-          display: block;
-          font-size: 1rem;
-          margin-bottom: 4px;
-          color: #a65c00;
+        .get-started .icon {
+          font-size: 1.8rem;
         }
-      
-        @media (max-width: 600px) {
-          .notification {
-            font-size: 1rem;
-            padding: 14px;
-          }
-        }
-      </style>
+      }
+    </style>
+
     <!-- Watch out / Posters gallery -->
     <section class="card" id="posters" aria-labelledby="postersTitle">
       <h2 id="postersTitle">Watch out</h2>
@@ -666,6 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
 
 
 
