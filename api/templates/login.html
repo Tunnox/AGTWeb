@@ -7,16 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-light: #f1f3f5;
-      --bg-dark: #12121c;
+      --bg-light: #f4f6fa;
+      --bg-dark: #0a0f1a;
       --card-bg-light: #ffffff;
-      --card-bg-dark: #1e1e2f;
-      --text-light: #212529;
+      --card-bg-dark: #1a2233;
+      --text-light: #1a1f29;
       --text-dark: #f8f9fa;
-      --primary: #20c997;
-      --primary-hover: #198754;
-      --accent: #0dcaf0;
+      --primary: #0d3b66;       /* Navy Blue */
+      --primary-hover: #0a2d4d; /* Darker Navy */
+      --accent: #3f87f5;        /* Bright Blue Accent */
       --error: #dc3545;
+      --radius: 18px;
     }
 
     [data-theme="dark"] {
@@ -24,14 +25,11 @@
       color: var(--text-dark);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       min-height: 100vh;
       background: url('https://github.com/Tunnox/Images/blob/main/AGT_profile_page_BG.jpg?raw=true') no-repeat center center fixed;
       background-size: cover;
@@ -43,8 +41,9 @@
       transition: background 0.3s ease;
     }
 
+    /* NAVBAR */
     .navbar {
-      background-color: rgba(255, 255, 255, 0.85);
+      background-color: rgba(255, 255, 255, 0.92);
       padding: 15px 20px;
       display: flex;
       justify-content: space-between;
@@ -52,42 +51,32 @@
       position: sticky;
       top: 0;
       backdrop-filter: blur(12px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
       z-index: 999;
     }
-
     [data-theme="dark"] .navbar {
-      background-color: rgba(18, 18, 28, 0.85);
+      background-color: rgba(10, 15, 26, 0.9);
     }
 
     .nav-brand {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      letter-spacing: -0.5px;
       color: var(--primary);
-      text-shadow: 0 0 6px rgba(32,201,151,0.6);
-      transition: all 0.3s ease;
-    }
-
-    .nav-brand:hover {
-      transform: scale(1.05);
     }
 
     .nav-links a {
       text-decoration: none;
       color: var(--primary);
-      padding: 10px 16px;
-      border-radius: 12px;
+      padding: 8px 14px;
+      border-radius: var(--radius);
       font-weight: 600;
-      transition: all 0.3s ease;
-      background: rgba(32, 201, 151, 0.1);
+      transition: 0.3s;
+      background: rgba(13,59,102,0.1);
     }
-
     .nav-links a:hover {
       background-color: var(--primary);
       color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(32,201,151,0.3);
     }
 
     .theme-toggle {
@@ -95,69 +84,64 @@
       color: white;
       border: none;
       padding: 8px 14px;
-      border-radius: 10px;
+      border-radius: var(--radius);
       cursor: pointer;
       font-weight: 600;
-      margin-left: 16px;
-      transition: all 0.3s ease;
+      margin-left: 12px;
+      transition: 0.3s;
     }
-
     .theme-toggle:hover {
       background: var(--primary-hover);
       transform: scale(1.05);
     }
 
+    /* HEADER */
     header {
       text-align: center;
       margin-top: 40px;
       color: inherit;
     }
 
+    /* LOGIN CARD */
     section {
       background: var(--card-bg-light);
-      padding: 40px 30px;
-      border-radius: 24px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.2);
-      width: 90%;
+      padding: 32px 24px;
+      border-radius: var(--radius);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      width: 92%;
       max-width: 420px;
       margin: 30px auto;
       text-align: center;
-      animation: fadeInUp 0.6s ease both;
+      animation: fadeInUp 0.5s ease both;
     }
-
     [data-theme="dark"] section {
       background: var(--card-bg-dark);
     }
 
-    h1, h2 {
-      margin: 10px 0;
-    }
+    h1, h2 { margin: 10px 0; }
 
+    /* FORM */
     form {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       margin-top: 20px;
     }
-
-    .form-control {
-      position: relative;
-    }
+    .form-control { position: relative; }
 
     input {
       width: 100%;
       padding: 14px;
-      font-size: 16px;
-      border-radius: 12px;
+      font-size: 15px;
+      border-radius: var(--radius);
       border: 1px solid #dee2e6;
       background: #f8f9fa;
-      transition: all 0.3s ease;
+      transition: 0.3s;
     }
-
     input:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 8px rgba(13,202,240,0.4);
+      box-shadow: 0 0 6px rgba(63,135,245,0.35);
       background: white;
     }
 
@@ -165,19 +149,19 @@
       padding: 14px;
       font-size: 16px;
       border: none;
-      border-radius: 12px;
-      background: linear-gradient(45deg, var(--primary), var(--accent));
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
       color: white;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: 0.3s;
     }
-
     button[type="submit"]:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(32,201,151,0.35);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(13,59,102,0.3);
     }
 
+    /* FOOTER */
     footer {
       text-align: center;
       padding: 20px;
@@ -186,20 +170,25 @@
       margin-top: auto;
     }
 
+    /* ANIMATIONS */
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* MOBILE OPTIMIZATION */
+    @media (max-width: 480px) {
+      .nav-brand { font-size: 18px; }
+      section { padding: 24px 18px; }
+      input, button { font-size: 14px; padding: 12px; }
+    }
   </style>
 </head>
 <body>
   <nav class="navbar">
     <div class="nav-brand">AGT Sheffield</div>
     <div style="display:flex; align-items:center; gap:10px;">
-      <div class="nav-links">
-        <a href="/">Home</a>
-      </div>
+      <div class="nav-links"><a href="/">Home</a></div>
       <button class="theme-toggle" onclick="toggleTheme()">🌗 Theme</button>
     </div>
   </nav>
@@ -249,12 +238,10 @@
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);
     }
-
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
       setTheme(current === 'dark' ? 'light' : 'dark');
     }
-
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
