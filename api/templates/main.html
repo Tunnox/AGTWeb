@@ -478,10 +478,43 @@
 
     <!-- Welcome card (intro) -->
     <section class="card welcome" id="intro" aria-labelledby="welcomeTitle">
-      <h2 id="welcomeTitle">Welcome</h2>
-      <p style="margin-bottom:8px">AGT data management app is your secure hub for staying connected with Amazing Grace Tabernacle, Sheffield. Manage records, access resources, and engage with the community in one trusted place.</p>
-    </section>
-
+        <h2 id="welcomeTitle">Welcome</h2>
+        <p style="margin-bottom:8px">
+          AGT data management app is your secure hub for staying connected with Amazing Grace Tabernacle, Sheffield. Manage records, access resources, and engage with the community in one trusted place.
+        </p>
+      
+        <div class="notification">
+          <strong>New here?</strong><br>
+          Please speak to an <b>admin</b> first to register your details in the database.  
+          Registration requires your consent for AGT to process your data in line with <b>UK GDPR</b>.
+        </div>
+      </section>
+      
+      <style>
+        .notification {
+          margin-top: 12px;
+          padding: 12px;
+          border-radius: 12px;
+          background-color: #fff4e5; /* soft highlight */
+          border: 1px solid #f0b429;
+          font-size: 0.95rem;
+          line-height: 1.4;
+        }
+      
+        .notification strong {
+          display: block;
+          font-size: 1rem;
+          margin-bottom: 4px;
+          color: #a65c00;
+        }
+      
+        @media (max-width: 600px) {
+          .notification {
+            font-size: 1rem;
+            padding: 14px;
+          }
+        }
+      </style>
     <!-- Watch out / Posters gallery -->
     <section class="card" id="posters" aria-labelledby="postersTitle">
       <h2 id="postersTitle">Watch out</h2>
@@ -633,6 +666,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
 
 
 
