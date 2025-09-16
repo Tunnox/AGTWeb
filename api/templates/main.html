@@ -1,306 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AGT Sheffield</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@300;400;600&family=Monoton&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f8f9fa;
-      color: #212529;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+    :root{
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --brand: #04395E;
+      --accent: #20c997;
+      --muted: #6c757d;
+      --glass: rgba(255,255,255,0.65);
+      --radius: 14px;
+      --gap: 14px;
+      --max-width: 900px;
     }
 
-    header {
-      background: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true') no-repeat center center / cover;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,var(--bg), #eef3f7 200px);
+      color:#0b1720;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      gap: var(--gap);
+      padding-bottom:84px; /* for bottom nav */
+      align-items:center;
+    }
+
+    .container{
+      width:100%;
+      max-width:var(--max-width);
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    /* Top header / hero */
+    header.hero {
+      width:100%;
+      border-radius: var(--radius);
+      overflow:hidden;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
       color: white;
-      padding: 60px 20px;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
+      background-image: url('https://github.com/Tunnox/Images/blob/main/agt_background_home.jpg?raw=true');
+      background-size:cover;
+      background-position:center;
+      box-shadow: 0 10px 30px rgba(10,20,30,0.12);
+    }
+    header.hero::after{
+      content:'';
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(4,57,94,0.62), rgba(0,0,0,0.35));
+      mix-blend-mode:multiply;
+    }
+    .hero-inner{
+      position:relative;
+      z-index:2;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      width:100%;
+      padding:14px;
+    }
+    .hero-text{
+      flex:1;
+      text-align:left;
+    }
+    .hero-text h1{
+      font-size:20px;
+      margin:0 0 6px 0;
+      font-weight:800;
+      letter-spacing:0.6px;
+    }
+    .hero-text .tagline{
+      font-family:'Poppins',sans-serif;
+      font-weight:600;
+      letter-spacing:1px;
+      font-size:12px;
+      text-transform:uppercase;
+      opacity:0.95;
+    }
+    .hero-text p{
+      margin-top:8px;
+      font-size:13px;
+      line-height:1.35;
+      opacity:0.95;
+      max-width: 54ch;
     }
 
-    header::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0, 0, 0, 0.6);
-      z-index: 1;
+    /* datetime pill */
+    .datetime-pill{
+      margin-left:12px;
+      background: rgba(255,255,255,0.12);
+      padding:8px 12px;
+      border-radius:12px;
+      font-weight:600;
+      font-size:13px;
+      box-shadow: 0 6px 20px rgba(2,8,23,0.18);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:#e6f7ff;
+      white-space:nowrap;
     }
 
-    .header-content {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
+    /* Top nav (hamburger) */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      width:100%;
+      margin-top:6px;
+    }
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .brand .logo{
+      width:44px; height:44px; border-radius:10px;
+      background:linear-gradient(135deg,var(--accent),#0ea5a4);
+      display:flex; align-items:center; justify-content:center;
+      color:white; font-weight:800; box-shadow:0 6px 18px rgba(2,8,23,0.08);
+      font-family: 'Monoton', cursive; font-size:16px;
+    }
+    .brand .title{
+      font-weight:700; font-size:14px; color:var(--brand);
+    }
+    button.hamburger{
+      background:var(--card);
+      border: none;
+      padding:10px 12px;
+      border-radius:10px;
+      box-shadow: 0 6px 18px rgba(2,8,23,0.06);
+      font-size:18px;
+      display:flex;
+      align-items:center;
+      gap:8px;
     }
 
-    .header-text h2 {
-      font-size: 32px;
-      margin-bottom: 8px;
+    /* Slide-out nav panel */
+    .nav-panel{
+      position:fixed;
+      right:14px;
+      top:76px;
+      width: calc(100% - 40px);
+      max-width: 320px;
+      background: var(--card);
+      border-radius:12px;
+      padding:12px;
+      box-shadow: 0 18px 40px rgba(2,8,23,0.18);
+      transform: translateY(-6px);
+      opacity:0;
+      pointer-events:none;
+      transition: all 220ms ease;
+      z-index:1200;
+    }
+    .nav-panel.open{
+      opacity:1;
+      pointer-events:auto;
+      transform: translateY(0);
+    }
+    .nav-links{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .nav-links a{
+      text-decoration:none;
+      color:var(--brand);
+      font-weight:600;
+      padding:10px 12px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .nav-links a:hover{
+      background: linear-gradient(90deg, rgba(32,201,151,0.12), rgba(4,57,94,0.04));
+      color:var(--brand);
     }
 
-    .header-text p { font-size: 16px; }
-
-    /* Navigation */
-    nav {
-      background: #fff;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      padding: 15px 20px;
-      animation: slideDown 1s ease;
-      position: sticky;
-      top: 0;
-      z-index: 999;
+    /* sections: card-like */
+    section.card{
+      background: var(--card);
+      border-radius: var(--radius);
+      padding:14px;
+      box-shadow: 0 10px 30px rgba(2,8,23,0.06);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
 
-    nav a {
-      text-decoration: none;
-      color: #04395E;
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
+    section.card h2{
+      color: var(--brand);
+      margin:0;
+      font-size:16px;
+      font-weight:700;
     }
+    section.card p{ margin:0; color:var(--muted); font-size:14px; line-height:1.45; }
 
-    nav a:hover {
-      background: #20c997;
-      color: #fff;
-      transform: translateY(-3px);
+    /* Intro big welcome */
+    .welcome{
+      text-align:center;
+      padding: 24px 12px;
+      background: linear-gradient(135deg, #fffafa, #f4efe9);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(10,20,30,0.04);
     }
-
-    @keyframes slideDown {
-      from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    section { padding: 60px 20px; text-align: center; }
-
-    footer {
-      background: #04395E;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      margin-top: auto;
-    }
-
-    footer .social-icons {
-      margin-top: 12px;
-    }
-
-    footer a {
-      color: white;
-      margin: 0 10px;
-      font-size: 22px;
-      transition: color 0.3s;
-    }
-
-    footer a:hover { color: #20c997; }
-
-    .datetime-display {
-      margin-top: 10px;
-      font-size: 16px;
-      font-weight: 500;
-      color: #17a2b8;
-      background-color: #f1f3f5;
-      padding: 6px 12px;
-      border-radius: 8px;
-      display: inline-block;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    #intro {
-      text-align: center;
-      padding: 80px 20px;
-      background: linear-gradient(135deg, #fdfcfb, #e2d1c3);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    }
-
-    #intro h2 {
+    .welcome h2{
       font-family: 'Monoton', cursive;
-      font-size: 80px;
-      color: #3a1c71;
-      margin-bottom: 20px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
+      font-size:46px;
+      line-height:0.9;
+      margin:0;
+      color:#3a1c71;
+      letter-spacing:3px;
+      text-transform:uppercase;
+    }
+    .welcome p{
+      font-family:'Poppins',sans-serif;
+      font-size:15px;
+      color:#334155;
+      margin-top:8px;
     }
 
-    #intro p {
-      font-family: 'Poppins', sans-serif;
-      font-size: 22px;
-      color: #333;
-      max-width: 800px;
-      margin: 0 auto;
-      line-height: 1.6;
+    /* Gallery (horizontal scroll but mobile-friendly) */
+    .gallery-area{
+      overflow:hidden;
     }
-    /* General Mobile-Friendly Adjustments */
-    img, iframe, video {
-      max-width: 100%;
-      height: auto;
+    .gallery-track{
+      display:flex;
+      gap:12px;
+      padding:8px 2px;
+      overflow-x:auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling:touch;
     }
-    
-    section {
-      padding: 40px 15px; /* less padding on small screens */
+    .gallery-track img{
+      height:220px;
+      min-width: 72%;
+      max-width: 72%;
+      object-fit:cover;
+      border-radius:12px;
+      box-shadow: 0 8px 26px rgba(2,8,23,0.1);
+      scroll-snap-align:center;
+      transition: transform .25s ease;
+      display:block;
     }
-    
-    h1, h2, h3 {
-      word-wrap: break-word;
+    .gallery-track img:active{ transform:scale(0.995) }
+
+    /* Map iframe responsive */
+    .map-wrap{
+      overflow:hidden;
+      border-radius:12px;
+      box-shadow: 0 10px 30px rgba(2,8,23,0.06);
     }
-    
-    /* Responsive Tab Buttons (about.html only) */
-    @media (max-width: 768px) {
-      .tabs {
-        flex-direction: column;
-        gap: 10px;
-      }
-      .tab-btn {
-        width: 100%;
-        text-align: center;
-      }
+    .map-wrap iframe{
+      width:100%;
+      height:260px;
+      border:0;
+      display:block;
     }
-    
-    /* Responsive Navbar */
-    @media (max-width: 768px) {
-      .nav-links {
-        flex-direction: column;
-        position: absolute;
-        top: 60px;
-        right: 20px;
-        background: #fff;
-        padding: 15px;
-        border-radius: 8px;
-        display: none;
-      }
-      .nav-links.open {
-        display: flex;
-      }
-      .nav-toggle {
-        display: block;
-        font-size: 24px;
-        background: #04395E;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 6px;
-      }
+
+    /* Giving CTA */
+    .cta{
+      display:flex;
+      gap:10px;
+      flex-direction:column;
+      align-items:flex-start;
     }
+    a.button-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      background: linear-gradient(90deg,var(--brand), #11557b);
+      color:white;
+      padding:10px 14px;
+      border-radius:12px;
+      text-decoration:none;
+      font-weight:700;
+      box-shadow: 0 8px 26px rgba(2,8,23,0.08);
+    }
+
+    /* Footer */
+    footer.site-footer{
+      width:100%;
+      max-width:var(--max-width);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px;
+      color:#fff;
+      border-radius:12px;
+      background: linear-gradient(90deg,var(--brand), #0b3f59);
+      box-shadow: 0 8px 30px rgba(2,8,23,0.12);
+      position:relative;
+      z-index:10;
+    }
+    footer.site-footer .social a{ color:#fff; margin-left:10px; font-size:18px; text-decoration:none; }
+
+    /* Bottom navigation (touch-friendly) */
+    .bottom-nav{
+      position:fixed;
+      bottom:12px;
+      left:50%;
+      transform:translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 760px;
+      background: rgba(255,255,255,0.98);
+      border-radius: 14px;
+      display:flex;
+      justify-content:space-around;
+      padding:10px 8px;
+      box-shadow: 0 18px 40px rgba(2,8,23,0.12);
+      z-index:1400;
+      align-items:center;
+    }
+    .bottom-nav a{
+      text-decoration:none;
+      color:var(--brand);
+      font-weight:700;
+      font-size:13px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+    }
+    .bottom-nav a i{ font-size:18px; }
+
+    /* Responsive adjustments */
+    @media (min-width:760px){
+      .hero-text h1{ font-size:22px }
+      .gallery-track img{ min-width: 31%; max-width: 31% }
+      .hero-inner{ padding:20px }
+      .hero { padding: 30px }
+    }
+
+    @media (max-width:420px){
+      .hero-text p{ display:none } /* trim long text on smallest screens to keep hero compact */
+      .welcome h2{ font-size:36px }
+      .gallery-track img{ height:180px; min-width:78% }
+    }
+
+    /* small helper */
+    .muted { color: var(--muted); font-size:13px }
+    .small { font-size:12px; color:var(--muted) }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-content">
-      <div class="header-text">
-        <h2>RCCG Amazing Grace Tabernacle Sheffield</h2>
-        <h3 style="font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 600; letter-spacing: 2px; color: white; text-transform: uppercase; text-align: center;">
-  Engage • Manage • Flourish</h3>
-        <p>AGT Web App is your secure hub for staying connected with Amazing Grace Tabernacle, Sheffield. The platform allows you to manage your records, access resources, and engage with the community, all within one trusted and secure space. </p>
-        <div id="datetime" class="datetime-display"></div>
+  <div class="container">
+
+    <!-- Topbar: Brand + Hamburger -->
+    <div class="topbar" aria-hidden="false">
+      <div class="brand" aria-hidden="false">
+        <div class="logo" aria-hidden="true">AGT</div>
+        <div>
+          <div class="title">Amazing Grace Tabernacle</div>
+          <div class="small">Sheffield</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:8px">
+        <!-- datetime pill -->
+        <div id="datetime" class="datetime-pill" aria-live="polite" title="Local date and time"></div>
+
+        <!-- Hamburger for quick nav -->
+        <button class="hamburger" id="navToggle" aria-expanded="false" aria-controls="navPanel">
+          <i class="fa fa-bars" aria-hidden="true"></i>
+          <span class="small" style="display:none">Menu</span>
+        </button>
       </div>
     </div>
-  </header>
 
-  <nav>
-    <a href="/about">About App</a>
-    <a href="/my_profile">My Profile</a>
-    <a href="/login_admin">Admin Center</a>
-    <a href="https://www.rccgamazinggracesheffield.org/">AGT Web</a>
+    <!-- Hero with intro text -->
+    <header class="hero" role="banner" aria-label="AGT hero">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <h1>RCCG Amazing Grace Tabernacle Sheffield</h1>
+          <div class="tagline">Engage • Manage • Flourish</div>
+          <p style="margin-bottom:8px">AGT Web App is your secure hub for staying connected with Amazing Grace Tabernacle, Sheffield. Manage records, access resources, and engage with the community in one trusted place.</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Slide-out nav panel (same links as original nav) -->
+    <nav id="navPanel" class="nav-panel" aria-hidden="true">
+      <div class="nav-links" role="navigation" aria-label="Main site navigation">
+        <a href="/about"><i class="fa fa-info-circle"></i> About App</a>
+        <a href="/my_profile"><i class="fa fa-user"></i> My Profile</a>
+        <a href="/login_admin"><i class="fa fa-shield-halved"></i> Admin Center</a>
+        <a href="https://www.rccgamazinggracesheffield.org/" target="_blank" rel="noopener"><i class="fa fa-globe"></i> AGT Web</a>
+      </div>
+    </nav>
+
+    <!-- Welcome card (intro) -->
+    <section class="card welcome" id="intro" aria-labelledby="welcomeTitle">
+      <h2 id="welcomeTitle">Welcome</h2>
+      <p>We are a vibrant church community based in Sheffield, dedicated to worship, outreach, and transformation through God’s grace.</p>
+    </section>
+
+    <!-- Watch out / Posters gallery -->
+    <section class="card" id="posters" aria-labelledby="postersTitle">
+      <h2 id="postersTitle">Watch out</h2>
+      <p class="muted">Upcoming events and notices — swipe to browse.</p>
+
+      <div class="gallery-area" aria-hidden="false">
+        <div class="gallery-track" id="galleryTrack" role="list">
+          <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250703_133334000_iOS.jpg?raw=true" alt="Poster 1" role="listitem">
+          <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250712_075353000_iOS.jpg?raw=true" alt="Poster 2" role="listitem">
+          <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250719_085940000_iOS.jpg?raw=true" alt="Poster 3" role="listitem">
+        </div>
+      </div>
+      <div class="small">Tip: use two-finger drag to scroll faster on some devices.</div>
+    </section>
+
+    <!-- Announcements -->
+    <section class="card" id="announcements" aria-labelledby="annTitle">
+      <h2 id="annTitle">Announcements</h2>
+      <p>Check here for upcoming programs, church-wide news, and more updates weekly.</p>
+    </section>
+
+    <!-- Find Us -->
+    <section class="card" id="location" aria-labelledby="locTitle">
+      <h2 id="locTitle">Find Us</h2>
+      <p class="muted">RCCG Amazing Grace Tabernacle<br>120 SYAC Building, Wicker, Sheffield, S3 8JD</p>
+      <div class="map-wrap" aria-hidden="false">
+        <!-- Same iframe source as original -->
+        <iframe loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAGTqfjT333p5iz5e32tMdsNz7P31265Fo&q=RCCG+Amazing+Grace+Tabernacle+SYAC+Building+Sheffield"
+          title="Map showing RCCG Amazing Grace Tabernacle, Sheffield"></iframe>
+      </div>
+    </section>
+
+    <!-- Giving -->
+    <section class="card" id="giving" aria-labelledby="giveTitle">
+      <h2 id="giveTitle">Giving &amp; Donations</h2>
+      <div class="cta">
+        <p class="muted">Your generous giving supports our mission.</p>
+        <a class="button-link" href="#" role="button" aria-label="Give online (under development)">
+          <i class="fa fa-hand-holding-heart" aria-hidden="true"></i>
+          Click here to give online
+        </a>
+        <p style="margin-top:6px"><strong>Note:</strong> This is still under development. <strong>DO NOT USE</strong> for now.</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer" role="contentinfo">
+      <div>&copy; 2025 Amazing Grace Tabernacle, Sheffield<br><small style="opacity:0.9">Built with love</small></div>
+      <div class="social" aria-label="social links">
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.youtube.com/@rccgamazinggracetabernacleshef" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      </div>
+    </footer>
+
+  </div> <!-- .container -->
+
+  <!-- Bottom navigation (mirrors main links for one-tap access) -->
+  <nav class="bottom-nav" aria-label="Quick navigation">
+    <a href="/about" title="About App"><i class="fa fa-info-circle"></i><span>About</span></a>
+    <a href="/my_profile" title="My Profile"><i class="fa fa-user-circle"></i><span>Profile</span></a>
+    <a href="/login_admin" title="Admin center"><i class="fa fa-user-shield"></i><span>Admin</span></a>
+    <a href="https://www.rccgamazinggracesheffield.org/" target="_blank" rel="noopener" title="AGT Web"><i class="fa fa-globe"></i><span>AGT Web</span></a>
   </nav>
 
-  <section id="intro">
-    <h2>Welcome</h2>
-    <p>We are a vibrant church community based in Sheffield, dedicated to worship, outreach, and transformation through God’s grace.</p>
-  </section>
-
-  <section id="posters" style="background:#f8f9fa;">
-    <h2 style="color:#04395E; font-size:28px; margin-bottom:24px;">Watch out</h2>
-    <div class="scroll-gallery">
-      <div class="scroll-wrapper" id="gallery-track">
-        <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250703_133334000_iOS.jpg?raw=true" alt="Poster 1">
-        <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250712_075353000_iOS.jpg?raw=true" alt="Poster 2">
-        <img src="https://github.com/Tunnox/Images/blob/main/upcomig_events/20250719_085940000_iOS.jpg?raw=true" alt="Poster 3">
-      </div>
-    </div>
-    <style>
-      .scroll-gallery { overflow: hidden; position: relative; }
-      .scroll-wrapper {
-        display: flex; gap: 24px;
-        animation: scrollLoop 12s linear infinite;
-      }
-      .scroll-wrapper img {
-        height: 240px; border-radius: 16px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-        flex-shrink: 0;
-        transition: transform 0.3s ease;
-      }
-      .scroll-wrapper img:hover { transform: scale(1.06); }
-      @keyframes scrollLoop {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-      }
-    </style>
-  </section>
-
-  <section id="announcements">
-    <h2>Announcements</h2>
-    <p>Check here for upcoming programs, church-wide news, and more updates weekly.</p>
-  </section>
-
-  <section id="location" style="background:#eef2f5;">
-    <h2 style="color:#04395E;">Find Us</h2>
-    <p>RCCG Amazing Grace Tabernacle<br>120 SYAC Building, Wicker, Sheffield, S3 8JD</p>
-    <div style="max-width: 960px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-      <iframe width="100%" height="400" loading="lazy" style="border:0;"
-        allowfullscreen referrerpolicy="no-referrer-when-downgrade"
-        src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAGTqfjT333p5iz5e32tMdsNz7P31265Fo&q=RCCG+Amazing+Grace+Tabernacle+SYAC+Building+Sheffield"></iframe>
-    </div>
-  </section>
-
-  <section id="giving">
-    <h2>Giving & Donations</h2>
-    <p>Your generous giving supports our mission. <a class="button-link" href="#">Click here to give online</a></p>
-    <p><strong>Note:</strong> This is still under development. <b>DO NOT USE</b> for now.</p>
-  </section>
-
-  <footer>
-    &copy; 2025 Amazing Grace Tabernacle, Sheffield | Built with love
-    <div class="social-icons">
-      <a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
-      <a href="https://www.youtube.com/@rccgamazinggracetabernacleshef" target="_blank"><i class="fab fa-youtube"></i></a>
-    </div>
-  </footer>
-
+  <!-- Scripts -->
   <script>
-    function updateDateTime() {
-      const now = new Date();
-      const options = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
-      document.getElementById('datetime').textContent = now.toLocaleString('en-US', options).replace(',', ' ·');
-    }
-    setInterval(updateDateTime, 1000);
-    updateDateTime();
+    // --- Date/time updater (keeps original functionality, just uses nicer format) ---
+    (function updateDateTime() {
+      const el = document.getElementById('datetime');
+      function tick(){
+        const now = new Date();
+        // Use 'en-GB' to match Sheffield timezone display format for mobile users in the UK
+        const options = {
+          weekday: 'short', month: 'short', day: 'numeric',
+          hour: 'numeric', minute: '2-digit', hour12: true
+        };
+        // show a separator for readability
+        const text = now.toLocaleString('en-GB', options).replace(',', ' ·');
+        el.textContent = text;
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+
+    // --- Hamburger toggle for nav-panel ---
+    (function(){
+      const navToggle = document.getElementById('navToggle');
+      const navPanel = document.getElementById('navPanel');
+      navToggle.addEventListener('click', function(){
+        const isOpen = navPanel.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+        navPanel.setAttribute('aria-hidden', String(!isOpen));
+      });
+
+      // Close panel when clicking outside of it
+      document.addEventListener('click', function(e){
+        if (!navPanel.classList.contains('open')) return;
+        const withinPanel = navPanel.contains(e.target);
+        const withinToggle = navToggle.contains(e.target);
+        if (!withinPanel && !withinToggle) {
+          navPanel.classList.remove('open');
+          navPanel.setAttribute('aria-hidden', 'true');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Close with Escape key
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape' && navPanel.classList.contains('open')){
+          navPanel.classList.remove('open');
+          navPanel.setAttribute('aria-hidden', 'true');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+
+    // --- Improve horizontal gallery behavior: pause native CSS animation (if any), ensure focus -- 
+    (function(){
+      const track = document.getElementById('galleryTrack');
+      // allow tapping images to open full resolution in new tab (non-destructive; original functionality preserved)
+      Array.from(track.querySelectorAll('img')).forEach(img=>{
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', ()=> {
+          // open original image in new tab for closer view
+          window.open(img.src, '_blank', 'noopener');
+        });
+      });
+    })();
+
   </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
