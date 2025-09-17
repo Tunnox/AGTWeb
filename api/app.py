@@ -391,7 +391,7 @@ def adult_insert():
 
         cursor = connection.cursor()
         cursor.execute("""
-            INSERT INTO "public"."agt_user_data_records"
+            INSERT INTO public.agt_user_data_records
                 (first_name, last_name, age, gender, birthday, contact_number,
                  age_group, department, relationship_status, email, address, consent)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
@@ -1281,4 +1281,5 @@ def delete_record():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
